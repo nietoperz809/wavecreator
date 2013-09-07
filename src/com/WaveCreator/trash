@@ -1,0 +1,916 @@
+/**
+    Nice Wave16 routines
+**/
+
+//////////////////////////////////////// test functions ////////////////////////////////////////
+
+    // y = (x-x0)^-1
+
+    public Wave16 residue()
+    {
+        Wave16 out = create();
+        for (int s = 1; s < data.length; s++)
+        {
+            out.data[s] = Math.pow(data[s] - data[s - 1], -1.0);
+        }
+        out.data[0] = out.data[1];
+        out.data = adjustValues(out.data);
+        return out;
+    }
+
+    public Wave16 convolve(Wave16 w2)
+    {
+        Wave16 out = create();
+        for (int s = 0; s < data.length; s++)
+        {
+            out.data[s] = data[s] * w2.data[s];
+        }
+        out.data = adjustValues(out.data);
+        return out;
+    }
+
+    public Wave16 ztransform_1()
+    {
+        Wave16 out = create();
+        for (int s = 0; s < data.length; s++)
+        {
+            out.data[s] = data[s] / ((-2 + data[s]) * (-2 + data[s]));
+        }
+        out.data = adjustValues(out.data);
+        return out;
+    }
+
+    public Wave16 integrateQuadratic_1()
+    {
+        Wave16 out = create();
+        double sum = 0.0;
+
+        for (int k = 0; k < data.length; k++)
+        {
+            sum = sum + (data[k] * data[k]);
+            out.data[k] = sum;
+        }
+        out.data = adjustValues(out.data);
+        return out;
+    }
+
+    public Wave16 integrateQuadratic_2()
+    {
+        Wave16 out = create();
+        double sum = 0.0;
+
+        for (int k = 0; k < data.length; k++)
+        {
+            sum = Math.sqrt(sum + (data[k] * data[k]));
+            out.data[k] = sum;
+        }
+        out.data = adjustValues(out.data);
+        return out;
+    }
+
+    public Wave16 integrateQuadratic_3()
+    {
+        Wave16 out = create();
+        double sum = 0.0;
+
+        for (int k = 0; k < data.length; k++)
+        {
+            sum = Math.sqrt(sum) + data[k] * data[k];
+            out.data[k] = sum;
+        }
+        out.data = adjustValues(out.data);
+        return out;
+    }
+
+    public Wave16 integrateQuadratic_4()
+    {
+        Wave16 out = create();
+        double sum = 0.0;
+
+        for (int k = 0; k < data.length; k++)
+        {
+            sum = sum + data[k] * data[k];
+            out.data[k] = Math.sqrt(sum);
+        }
+        out.data = adjustValues(out.data);
+        return out;
+    }
+
+    public Wave16 integrateQuadratic_5()
+    {
+        Wave16 out = create();
+        double sum = 0.0;
+
+        for (int k = 0; k < data.length; k++)
+        {
+            sum = Math.sqrt(sum) + data[k];
+            out.data[k] = sum;
+        }
+        out.data = adjustValues(out.data);
+        return out;
+    }
+
+    public Wave16 integrateQuadratic_6()
+    {
+        Wave16 out = create();
+        double sum = 0.0;
+
+        for (int k = 0; k < data.length; k++)
+        {
+            sum = sum + Math.sqrt(data[k]);
+            out.data[k] = sum;
+        }
+        out.data = adjustValues(out.data);
+        return out;
+    }
+
+    public Wave16 integrateQuadratic_7()
+    {
+        Wave16 out = create();
+        double sum = 0.0;
+
+        for (int k = 0; k < data.length; k++)
+        {
+            sum = sum + data[k] * k;
+            out.data[k] = sum;
+        }
+        out.data = adjustValues(out.data);
+        return out;
+    }
+
+    public Wave16 integrateQuadratic_8()
+    {
+        Wave16 out = create();
+        double sum = 0.0;
+
+        for (int k = 0; k < data.length; k++)
+        {
+            sum = sum + data[k] / (k + 1);
+            out.data[k] = sum;
+        }
+        out.data = adjustValues(out.data);
+        return out;
+    }
+
+    public Wave16 integrateQuadratic_9()
+    {
+        Wave16 out = create();
+        double sum = 0.0;
+
+        for (int k = 0; k < data.length; k++)
+        {
+            sum = Math.sqrt(Math.abs(sum)) + data[k] / (k + 1);
+            out.data[k] = sum;
+        }
+        out.data = adjustValues(out.data);
+        return out;
+    }
+
+    public Wave16 integrateQuadratic_10()
+    {
+        Wave16 out = create();
+        double sum = 0.0;
+
+        for (int k = 0; k < data.length; k++)
+        {
+            sum = Math.sqrt(Math.abs(sum)) + (k + 1) * data[k];
+            out.data[k] = sum;
+        }
+        out.data = adjustValues(out.data);
+        return out;
+    }
+
+    // Makes a ramp!!!
+    public Wave16 integrateQuadratic_11()
+    {
+        Wave16 out = create();
+        double sum = 0.0;
+
+        for (int k = 0; k < data.length; k++)
+        {
+            sum = sum + 1.0 / Math.pow(1, data[k]);
+            out.data[k] = sum;
+        }
+        out.data = adjustValues(out.data);
+        return out;
+    }
+
+    // Makes a bell !!!
+    public Wave16 integrateQuadratic_12()
+    {
+        Wave16 out = create();
+        double sum = 0.0;
+
+        for (int k = 0; k < data.length; k++)
+        {
+            sum = sum + 1.0 / Math.pow(data[k], -3);
+            out.data[k] = sum;
+        }
+        out.data = adjustValues(out.data);
+        return out;
+    }
+
+    // Makes a stair wave !!!
+    public Wave16 integrateQuadratic_13()
+    {
+        Wave16 out = create();
+        double sum = 0.0;
+
+        for (int k = 0; k < data.length; k++)
+        {
+            sum = sum + 1.0 / Math.pow(data[k], -6);
+            out.data[k] = sum;
+        }
+        out.data = adjustValues(out.data);
+        return out;
+    }
+
+    // Makes a reverse bell
+    public Wave16 integrateQuadratic_14()
+    {
+        Wave16 out = create();
+        double sum = 0.0;
+
+        for (int k = 0; k < data.length; k++)
+        {
+            sum = sum + Math.pow(data[k], 2) - Math.pow(data[k], 3);
+            out.data[k] = sum;
+        }
+        out.data = adjustValues(out.data);
+        return out;
+    }
+
+    // Makes a reverse stair wave
+    public Wave16 integrateQuadratic_15()
+    {
+        Wave16 out = create();
+        double sum = 0.0;
+
+        for (int k = 0; k < data.length; k++)
+        {
+            sum = sum + Math.pow(data[k], 3) - Math.pow(data[k], 4);
+            out.data[k] = sum;
+        }
+        out.data = adjustValues(out.data);
+        return out;
+    }
+
+    // nice !!!
+    public Wave16 integrateQuadratic_16()
+    {
+        Wave16 out = create();
+        double sum = 0.0;
+
+        for (int k = 0; k < data.length; k++)
+        {
+            sum = 1.0 / (sum + 1) + Math.pow(data[k], 3) - Math.pow(data[k], 4);
+            out.data[k] = sum;
+        }
+        out.data = adjustValues(out.data);
+        return out;
+    }
+
+    // nice !!!
+    public Wave16 integrateQuadratic_17()
+    {
+        Wave16 out = create();
+        double sum = 0.0;
+
+        for (int k = 0; k < data.length; k++)
+        {
+            sum = sum + Math.tan(data[k]);
+            out.data[k] = sum;
+        }
+        out.data = adjustValues(out.data);
+        return out;
+    }
+
+    // nice !!!
+    public Wave16 integrateQuadratic_18()
+    {
+        Wave16 out = create();
+        double sum = 0.0;
+
+        for (int k = 0; k < data.length; k++)
+        {
+            sum = sum + Math.tan(data[k] * k);
+            out.data[k] = sum;
+        }
+        out.data = adjustValues(out.data);
+        return out;
+    }
+
+    public Wave16 integrateQuadratic()
+    {
+        Wave16 out = create();
+        double sum = 0.0;
+
+        for (int k = 0; k < data.length; k++)
+        {
+            sum = sum + Math.asin(Math.tan(data[k]));
+            out.data[k] = sum;
+        }
+        out.data = adjustValues(out.data);
+        return out;
+    }
+
+    public Wave16 integrateReciprocal()
+    {
+        Wave16 out = create();
+        double sum = 0.0;
+
+        for (int k = 0; k < data.length; k++)
+        {
+            sum = sum + 1.0 / (data[k] + 0.000000001);
+            out.data[k] = sum;
+        }
+        out.data = adjustValues(out.data);
+        return out;
+    }
+
+//    /*
+//     * I'm giving this to you, as the implementation is rather messy.
+//     * This is the version with full "tails" implemented: a value is assigned
+//     * whenever samples and the kernel have any overlap at all.
+//     * As of June 19, it is only partially tested.
+//     */
+//    private double[] convolveEngine (double[] samples, double[] kernel)
+//    {
+//        int len = kernel.length;
+//        double[] result = new double[samples.length + len - 1];
+//        for (int n = 0; n < result.length; n++)
+//        {
+//            double sum = 0;
+//            for (int i = 0; i < len; i++)
+//            {
+//                if (i < samples.length + (len - 1) - n && i >= len - n - 1)
+//                {
+//                    sum += samples[i + n - len + 1] * kernel[len - i - 1];
+//                }
+//            }
+//            result[n] = sum;
+//
+//        }
+//        return result;
+//    }
+
+    private double[] convolveEngine(double[] samples, double[] kernel)
+    {
+        double[] result = new double[samples.length];
+        for (int n = 0; n < result.length; n++)
+        {
+            double sum = 0.0;
+            for (double aKernel : kernel)
+            {
+                sum += samples[n] + aKernel;
+            }
+            result[n] = sum;
+
+        }
+        return adjustValues(result);
+    }
+
+    public Wave16 convolve()
+    {
+        Wave16 out = create();
+
+//        int len1 = 1000;	// random value
+//        double[] k1 = new double[len1];
+//
+//        // now initialize k1
+//        for (int s=0; s<k1.length; s++)
+//                k1[s] = s;
+        Wave16 w = Wave16.curveSine(samplingRate, 2000);
+
+        // here we do the convolution operation; may need twice for bandpass!
+        out.data = convolveEngine(data, w.data);
+        return out;
+    }
+
+//    public Wave16 smoothe (int degree)
+//    {
+//        Wave16 out = create();
+//        for (int n=0; n<data.length; n++)
+//        {
+//            double sum = 0.0;
+//            int cnt = 0;
+//            for (int s=0; s<degree; s++)
+//            {
+//                sum = sum + data[n+s];
+//                cnt++;
+//                if (n+s == (data.length-1))
+//                    break;
+//            }
+//            sum /= cnt;
+//            out.data[n] = sum;
+//        }
+//        out.data = adjustValues (out.data);
+//        return out;
+//    }
+
+//    static public double[] smoothWithDegreeThree(double[] vector)
+//    {
+//        vector[2] = (vector[1] + vector[2] + vector[3] + vector[4]) / 4.0;
+//        vector[1] = (vector[0] + vector[1] + vector[3]) / 3.0;
+//        vector[0] = (vector[0] + vector[1]) / 3.0;
+//        vector[vector.length - 3] = (vector[vector.length - 1] + vector[vector.length - 2] + vector[vector.length - 3] + vector[vector.length - 4]) / 4.0;
+//        vector[vector.length - 2] = (vector[vector.length - 1] + vector[vector.length - 2] + vector[vector.length - 3]) / 3.0;
+//        vector[vector.length - 1] = (vector[vector.length - 1] + vector[vector.length - 2]) / 2.0;
+//        for (int i = 3; i < (vector.length - 3); i++)
+//        {
+//            vector[i] = (vector[i] + vector[i + 1] + vector[i - 1] + vector[i + 2] + vector[i - 2] + vector[i + 3] + vector[i - 3]) / 7.0;
+//        }
+//        return vector;
+//    }
+
+//    vector[4] = (vector[0] + vector[1] + vector[2] + vector[3] + vector[4] + vector[5]) / 6.0;
+//    vector[3] = (vector[0] + vector[1] + vector[2] + vector[3] + vector[4]) / 5.0;
+//    vector[2] = (vector[0] + vector[1] + vector[2] + vector[3]) / 4.0;
+//    vector[1] = (vector[0] + vector[1] + vector[2]) / 3.0;
+//    vector[0] = (vector[0] + vector[1]) / 2.0;
+
+//    public Wave16 smoothe (int degree)
+//    {
+//        Wave16 out = create();
+//        //System.arraycopy (data, 0, out.data, 0, data.length);
+//
+//        // beginning
+//        for (int i = degree-1; i>=0; i--)
+//        {
+//            int count = 0;
+//            double sum = 0.0;
+//            for (int n=0; n<=(i+1); n++)
+//            {
+//                //System.out.print (n+" ");
+//                count++;
+//                sum = sum + data[n];
+//            }
+//            sum = sum/(double)count;
+//            out.data[i] = sum;
+//            //System.out.println();
+//        }
+//
+////        // Inner part
+////        for (int i=degree; i<(data.length-degree); i++)
+////        {
+////            double sum = 0.0;
+////            for (int n=-degree; n<=degree; n++)
+////            {
+////                sum = sum + data[i+n];
+////                //System.out.println (""+(n));
+////            }
+////            //sum = sum/((double)degree+1)/(1+1.0/degree);
+////            sum = sum/(2*((double)degree+1.0));
+////            out.data[i] = sum;
+////        }
+//
+//        //out.data = adjustValues (out.data);
+//        return out;
+//    }
+
+    /**
+     * This static class does the autocorrelation for the given float vector.
+     * It uses the fuction: autocorrelation[lag] = SUM(n=0,N) (signal[n]*signal[n+lag])
+     * with <em>n</em> ist the input sample index, and 0<lag<N. The degree to which
+     * the values of <em>signal</em> at different times <em>n</em> are the same values
+     * of the same <em>signal</em> delayes by <em>lag</em> samples determines the magnitude of
+     * <em>autocorrelation[lag]</em>. The output of an autocorrelation shows the magnitude
+     * for different lag times.
+     * Note that the array length of the signal vector must have a length from at least
+     * window length + window shift (signal.length >= N+lag-max).
+     * If the length is smaler a null float array will be given back.
+     * @param  signal - the signal vector.
+     * @param  windowlength - the length of correlation build with the summaration loop. Corresponds to lag-max
+     * @param  windowshift - the length of the summaration lopp. Corresponds to N
+     * @return float[] - the autocorrelated signal vector.
+     */
+    public static double[] autoCorrelate(double[] signal,int windowlength, int windowshift)
+    {
+        int signallenth = signal.length;
+        if (signallenth < windowlength+windowshift)
+            return null;
+        double[] autocorrelation = new double[windowlength];
+        // loop over the magnitude of the autocorrelation
+        for (int lag=0;lag<windowlength;lag++)
+        {
+            // loop over the sum
+            for (int n=0;n<windowshift;n++)
+            {
+                autocorrelation[lag]+=signal[n]*signal[n+lag];
+            }
+        }
+        return autocorrelation;
+    }
+
+    public Wave16 ac (int windowlength, int windowshift)
+    {
+        Wave16 res = create();
+        res.data = autoCorrelate (data, windowlength, windowshift);
+        res.data = adjustValues (res.data);
+        return res;
+    }
+
+    public Wave16 cepstrum (boolean logarithmic)
+    {
+        Wave16 res = create().stretchToNextPowerOfTwo();
+        Wave16 in = stretchToNextPowerOfTwo();
+        CepstrumTransform cep = new CepstrumTransform();
+        res.data = cep.doCepstrumTransform (in.data, logarithmic);
+        res.data = adjustValues (res.data);
+        return res;
+    }
+}
+
+/////////////////////////////////////////////// SCRATCHPAD /////////////////////////////////////////////
+
+//        //Wave16 samp = loadWave16 ("C:\\Users\\peter\\Desktop\\open.wav");
+//        Wave16 samp = Wave16.curveSine (96000, new int[]{1000}, 1024);
+//        samp = samp.fft(true);
+//        //samp = samp.grayCode();
+//        //samp = samp.grayCodeInverse();
+//        //play (samp);
+//        showAll (samp);
+
+//DTMF d = new DTMF(4400, 600, 50);
+//Wave16 e = d.dtmfFromString("01705917110");
+////showAll (e);
+////play (e);
+//saveWave16 (e, "C:\\Users\\peter\\Desktop\\dtmf.wav");
+
+/*
+//        Wave16 samp = loadWave16 ("C:\\Users\\peter\\Desktop\\open.wav");
+    Wave16 samp = Wave16.makeSineWave (96000, 1000);
+    samp = samp.equalize(32000);
+    samp = samp.integrate();
+    if (samp.data.length < 1000)
+        showAll (samp); //, 100000, 102000);
+    else
+        showAll (samp, 0, 1000);
+    play (samp);
+}
+*/
+//Wave16 samp = loadWave16 ("C:\\Users\\peter\\Desktop\\open.wav");
+//Wave16 samp = Wave16.makeSineWave(128000, 1000);
+//        Wave16 samp = Wave16.curveSine(96000,
+//                                      new int[]{1000},
+//                                      97);
+//        Wave16 samp1 = Wave16.curveSaw(96000,
+//                                      new int[]{44},
+//                                      2000);
+//        samp = samp.combineArithmeticAverage(samp1);
+//        Wave16 samp = Wave16.curveSaw (96000, 100);
+//samp = samp.adjustValues();
+// samp = samp.stretchKeepSamplingRate(600);
+//samp = samp.fft(false);
+//samp = samp.integrate();
+//samp = samp.alternate(48);
+//samp = samp.combineArithmeticAverage(samp1);
+//samp = samp.adjustValues();
+//samp = samp.multiply(10);
+//samp = samp.derive();
+//        Wave16 samp2 = samp.rotateRight(1000);
+//        samp = samp.combineArithmeticAverage(samp2);
+//        Wave16[] parts = samp.partitionize(1000);
+//        for (int s=0; s<parts.length; s++)
+//        {
+//           parts[s] = parts[s].fadeIn();
+//        }
+//        samp = Wave16.combineAppend(parts);
+//        if (samp.data.length > 10000)
+//            play (samp);
+//        else
+//            showAll (samp);
+
+//        for (int s=0; s<parts.length; s++)
+//        {
+//            //showAll (parts[s]);
+//            play (parts[s]);
+//        }
+
+//        Wave16 s1 = Wave16IO.load("C:\\Users\\Administrator\\Desktop\\wavetest\\music.wav");
+//        s1 = s1.integrateAndFitValues().integrateAndFitValues();
+//        Wave16IO.save (s1, "C:\\Users\\Administrator\\Desktop\\wavetest\\music_frickytransform.wav");
+//        s1 = s1.deriveAndFitValues().deriveAndFitValues();
+//        Wave16IO.save (s1, "C:\\Users\\Administrator\\Desktop\\wavetest\\music_inverse_frickytransform.wav");
+//        Wave16IO.show (s1);
+//
+//        Wave16 s2 = Wave16.curveSine(96000, 1000).combineAppend(10000);
+//        Wave16IO.save (s2, "C:\\Users\\Administrator\\Desktop\\wavetest\\sine.wav");
+//        s2 = s2.integrateAndFitValues().integrateAndFitValues();
+//        Wave16IO.save (s2, "C:\\Users\\Administrator\\Desktop\\wavetest\\sine_frickytransform.wav");
+//        s2 = s2.deriveAndFitValues().deriveAndFitValues();
+//        Wave16IO.save (s2, "C:\\Users\\Administrator\\Desktop\\wavetest\\sine_inverse_frickytransform.wav");
+//        Wave16IO.show (s2);
+
+        Wave16 s3 = Wave16.random(96000, 10000*96);
+        Wave16IO.save (s3, "C:\\Users\\Administrator\\Desktop\\wavetest\\random.wav");
+        s3 = s3.integrateAndFitValues().integrateAndFitValues();
+        Wave16IO.save (s3, "C:\\Users\\Administrator\\Desktop\\wavetest\\random_frickytransform.wav");
+        s3 = s3.deriveAndFitValues().deriveAndFitValues();
+        Wave16IO.save (s3, "C:\\Users\\Administrator\\Desktop\\wavetest\\random_inverse_frickytransform.wav");
+        Wave16IO.show (s3);
+
+
+//        Wave16 a = Wave16.curveSine(128000, 1000);
+//        Wave16IO.showAll (a);
+//        System.out.println (a);
+//        Wave16 t = a.smoothe(a.data.length);
+//        System.out.println (a);
+//        Wave16IO.showAll (t);
+
+//        Wave16 a = Wave16.curveTriangle(96000, 1000);
+//        Wave16IO.showAll (a);
+//        System.out.println (a);
+//        for (int s=1; s<=48; s+=3)
+//        {
+//            Wave16 t = a.smoothe (s).setName(" --> "+s);
+//            System.out.println (a);
+//            Wave16IO.showAll (t);
+//        }
+
+//        Wave16 a = Wave16.curveSine(128000, 1000);
+//        Wave16IO.show (a);
+//        Wave16 s1 = Wave16IO.load("C:\\Users\\Administrator\\Desktop\\demo.wav");
+
+//        System.out.println (a);
+//        Wave16 t = a.smoothe(10);
+//        System.out.println (a);
+//        Wave16IO.showAll (t);
+
+//        a = Wave16.curveTriangle(96000, 1000);
+//        Wave16IO.showAll (a);
+//        System.out.println (a);
+//        t = a.smoothe (10);
+//        System.out.println (a);
+//        Wave16IO.showAll (t);
+
+//        Wave16 s1 = Wave16IO.load("C:\\Users\\Administrator\\Desktop\\demo.wav");
+//        Wave16IO.show (s1);
+
+//        Wave16 s2 = Wave16IO.load("C:\\Users\\peter\\Desktop\\open.wav");
+//        Wave16IO.show (s2);
+//        Wave16 t = s2.derive().derive().derive();
+//        Wave16IO.show (t);
+
+        //Wave16IO.play (s2);
+        //Wave16IO.show (samp);
+        //Wave16IO.play (samp);
+
+//        Wave16 t = samp.smoothe (10);
+//        Wave16IO.show (t);
+//        Wave16IO.play (t);
+
+//        Wave16IO.save(t, "C:\\Users\\Administrator\\Desktop\\demotest.wav");
+
+
+//        System.out.println (samp);
+//        Wave16 t = samp.smoothe (2);
+//        System.out.println (t);
+//        Wave16IO.play (t);
+
+//        Wave16 samp = Wave16IO.load("C:\\Users\\peter\\Desktop\\open.wav");
+//        System.out.println (samp);
+//        int[] points = samp.getIntegerOffsetPoints(samp.data.length/5);
+//        Wave16 t = Wave16.curveRectangleFromValues(samp.samplingRate, samp.data.length, points);
+//        Wave16IO.play (t);
+
+//        Wave16 sine = Wave16.curveSine(96000, 1000);
+//        Wave16IO.showAll (sine);
+//        int[] points = sine.getIntegerOffsetPoints(5);
+//        Wave16 t = Wave16.curvePulseFromValues(96000, sine.data.length, points);
+//        Wave16IO.showAll (t);
+//        Wave16 u = Wave16.curvePulseFromValues(96000, points.length, points);
+//        Wave16IO.showAll (u);
+
+//        Wave16 sine = Wave16.random(96000, 1000);
+//        Wave16IO.showAll(sine);
+//        Wave16IO.showAll(sine.smoothe(1000));
+//        Wave16IO.showAll (sine.integrate());
+
+//        Wave16 tri = Wave16.random(96000, 1000);
+//        Wave16IO.showAll(tri);
+//        Wave16IO.showAll(tri.smoothe(200));
+
+        //int[] pt = sine.getIntegerOffsetPoints(sine.data.length/10);
+        //int pt[] = {10000, -10000, 10000, -10000, -20000, 20000, -10000};
+        //Wave16 u = Wave16.curveTriangleFromValues(96000, 96, pt).integrate();
+        //Wave16IO.showAll (u);
+
+//        Wave16 samp = Wave16IO.load("C:\\Users\\peter\\Desktop\\open.wav");
+//        Wave16 sine = Wave16.curveSine(96000, 1000);
+//        Wave16 rect = Wave16.curveRectangle(96000, 1000);
+//        //Wave16 t = samp.residue().integrate(); //.integrate();
+//        Wave16 c = sine.residue(); //ztransform_1();
+//
+//        Wave16IO.showAll (sine);
+//        Wave16IO.showAll (rect);
+//        Wave16IO.showAll (c);
+//        //Wave16IO.showAll (t);
+//        Wave16IO.play (samp);
+
+//        System.out.println(samp);
+//        System.out.println(sine);
+//
+//        Wave16 m = samp.combineQuadraticAverage(sine);
+//        Wave16IO.play (m);
+
+        //System.out.println(samp);
+        //Wave16IO.showAll (samp);
+
+//        Wave16 b = Wave16.rampPlus(96000, 96);
+//
+//        Wave16 a = samp.combineXor(b); //deleteConsecutiveSameSamples(1000);
+//        System.out.println(a);
+//        Wave16IO.play (a);
+//        Wave16IO.showAll (a);
+
+//        int[] seg = {-10000, 10000, -10000, 10000, -10000, 10000, -10000, 10000}; //, 1000, 2000, 3000, 4000, 5000};
+//        Wave16 s1 = Wave16.curveTriangleFromValues(96000, 96, seg);
+//        Wave16 s2 = Wave16.curveSine(96000, 1000);
+//        Wave16IO.showAll(s1);
+//        Wave16IO.showAll(s2);
+//        Wave16IO.showAll(s1.combineArithmeticAverage(s2));
+//        Wave16IO.showAll (s1.deleteConsecutiveSameSamples().deleteConsecutiveSameSamples());
+//        System.out.println (s1);
+
+//        a = samp.mod(20000).integrate();
+//        a = samp.grayCode();
+//        a = a.grayCodeInverse();
+        //a = samp.derive().derive().derive().derive().derive();
+        //a = a.compressAndKeepSpeed(2);
+        //a = a.changeAmplitude(15);
+        //Wave16IO.play (a);
+        //Wave16IO.showAll(samp);
+//        Wave16IO.showAll(a);
+
+//        Wave16 b = a.deleteSamples (0.0, Wave16.MIN_VALUE-1);
+//        Wave16IO.showAll (b);
+
+//        Wave16 a = Wave16.curveSine(96000, 1000);
+//        Wave16IO.showAll (a);
+//        Wave16 c = a.deletePositiveSamples();
+//        Wave16IO.showAll (c);
+//        Wave16 b = a.deleteNegativeSamples ();
+//        Wave16IO.showAll (b);
+
+        //fftLab();
+
+//    	Wave16 cc = Wave16.rampLogarithmicPlus(96000, 10000);
+//        Wave16IO.showAll (cc);
+//        cc = cc.integrate();
+//        Wave16IO.showAll (cc);
+
+//        int[] seg = {10000, -10000, 2000, -2000};
+//        Wave16 a = Wave16.curveRectangleFromValues(96000, 1000, seg);
+//        Wave16IO.showAll (a);
+
+//        Wave16 a = Wave16.curveSine(96000, 1000);
+//        Wave16IO.showAll(a);
+//
+//        Wave16 b = Wave16.curveExponential(96000, 1000);
+//        Wave16IO.showAll(b);
+
+//        Wave16 c = a.insertSamples (10, 20, 2000);
+//        Wave16IO.showAll(c);
+
+//        Wave16 a = Wave16.rampPlus(96000, 100);
+//        Wave16IO.showAll(a);
+//
+//        Wave16 c = a.insertSamples (10, 20, 2000);
+//        Wave16IO.showAll(c);
+
+//        double[] v = {-2000, -1000};
+//        Wave16 c = a.insertSamples(10,v);
+//        Wave16IO.showAll(c);
+
+//        Wave16 d = c.deleteSamples(10, 20);
+//        Wave16IO.showAll(d);
+
+//        Wave16 b = a.insertSamplesAtEnd(-2000, 30);
+//        Wave16IO.showAll(b);
+
+//        a = a.reverse();
+//        Wave16IO.showAll (a);
+
+//    	Wave16 dd = Wave16.rampLogarithmicPlus (96000, 25).changeAmplitude(0.5).shiftAmplitude(Wave16.MAX_VALUE/2);
+//    	Wave16 ee = dd.reverse();
+//    	Wave16IO.showAll (dd);
+//    	Wave16IO.showAll (ee);
+//
+//        Wave16[] c = new Wave16[]{dd,ee};
+//        Wave16 ff = Wave16.combineAppend(c);
+//        Wave16IO.showAll (ff);
+
+//        Wave16 a = Wave16.rampPlus(96000, 100);
+//        Wave16IO.showAll (a);
+//        a = a.deleteSamplesFromBeginning(1);
+//        Wave16IO.showAll (a);
+
+    }
+}
+
+/*
+        Wave16 samp = Wave16IO.loadWave16("C:\\Users\\peter\\Desktop\\open.wav");
+        samp = samp.stretchToNextPowerOfTwo();
+        samp = samp.fft(Wave16.FFTTYPE.ABSOLUTE, Wave16.FFTALGORITHM.CIRCULAR_CONVOLUTION);
+        Wave16IO.play(samp);
+
+        Wave16 samp = Wave16.curveSine (128000, new int[]{1000}, 128);
+        samp = samp.stretchByFactorKeepSamplingRate(0.1);
+        Wave16IO.showAll (samp);
+        Wave16IO.playMultiple(samp, 1000);
+
+
+        Wave16 samp = Wave16IO.loadWave16("C:\\Users\\peter\\Desktop\\open.wav");
+        samp = samp.stretchByFactorKeepSamplingRate(1.5);
+        Wave16IO.saveWave16(samp, "C:\\Users\\peter\\Desktop\\wavs\\open1.wav");
+
+        samp = Wave16IO.loadWave16("C:\\Users\\peter\\Desktop\\wavs\\open1.wav");
+
+
+        Wave16IO.play(samp);
+
+        int[] f1 = new int[]{1000, 33333};
+        Wave16 samp = Wave16.curveSaw(96000, f1, 96);
+        Wave16IO.showAll(samp);
+
+        int[] f2 = new int[]{1000};
+        Wave16 s1 = Wave16.curveSaw(96000, f2, 96);
+        int[] f3 = new int[]{33333};
+        Wave16 s2 = Wave16.curveSaw(96000, f3, 96);
+        Wave16IO.showAll(s1.combineArithmeticAverage(s2));
+
+//        int[] f1 = new int[]{1000};
+//        int[] f2 = new int[]{500};
+//        Wave16 s1 = Wave16.curveSine (96000, f1, 96*2);
+//        Wave16 s2 = Wave16.curveRectangle (96000, f2, 96*2);
+//        Wave16 samp = s1.combineInsert(s2, 96);
+//        //samp = samp.stretchToNextPowerOfTwo();
+//
+//        Wave16IO.showAll(s1);
+//        Wave16IO.showAll(s2);
+//        Wave16IO.showAll(samp);
+//        //Wave16IO.play (samp, 1000);
+//        //fftLab2();
+*/
+
+//int[] f = {1000, 20};
+//Wave16 samp = Wave16.curveSaw(128000, f, 1000);
+//Wave16 samp = Wave16.curveSine(11000, 0, 1000, 2000);
+
+/*
+Wave16 samp;
+samp = Wave16.rampExponentialPlus(96000, 1000).setName("exp_plus");
+Wave16IO.showAll(samp);
+samp = Wave16.rampLogarithmicPlus(96000, 1000).setName("log_plus");
+Wave16IO.showAll(samp);
+samp = Wave16.rampExponentialMinus(96000, 1000).setName("exp_minus");
+Wave16IO.showAll(samp);
+samp = Wave16.rampLogarithmicMinus(96000, 1000).setName("log_minus");
+Wave16IO.showAll(samp);
+*/
+
+//Wave16 samp2 = samp0.combineArithmeticAverage(samp1).setName("average");
+//Wave16IO.showAll(samp2);
+
+//Wave16 samp = Wave16.rampPlus(96000, 4);
+//Wave16 samp = Wave16.curveSine (96000, 1000);
+//samp = samp.insertSamplesAtEnd (0, 100);
+//samp = samp.grayCode();
+//Wave16IO.play (samp);
+//Wave16IO.saveWave16(samp, "c:\\users\\administrator\\desktop\\test.wav");
+//Wave16 samp = Wave16.curveBow(96000, 960);
+//Wave16IO.showAll(samp);
+//Wave16IO.play(samp,100);
+
+//fftLab();
+
+//int[] f1 = new int[]{10, 20, 30, 100, 1000};
+////int[] f1 = new int[]{1000, 1300, 900}; //, 2000, 400, 200};
+////int[] f1 = new int[]{1000};
+//int samples = 1000;
+//int rate = 96000;
+//Wave16 s1 = Wave16.curveSaw(rate, f1, samples).setName("curveSaw");
+//Wave16 s2 = Wave16.curveSine(rate, f1, samples).setName ("curveSine");
+//Wave16 s3 = Wave16.curvePulse(rate, f1, samples).setName ("curvePulse");
+//Wave16 s4 = Wave16.curveRectangle(rate, f1, samples).setName ("rect");
+//Wave16 s5 = Wave16.curveTriangle(rate, f1, samples).setName ("curveTriangle");
+//Wave16IO.showAll(s1);
+//Wave16IO.showAll(s2);
+//Wave16IO.showAll(s3);
+//Wave16IO.showAll(s4);
+//Wave16IO.showAll(s5);
+
+//int f1 = 10000;
+//int rate = 96000;
+//Wave16 s1 = Wave16.curveSine(rate, f1).setName ("curveSine");
+//Wave16 s2 = Wave16.curveTriangle(rate, f1).setName ("curveTriangle");
+//Wave16 s3 = Wave16.curveRectangle(rate, f1).setName ("rect");
+//Wave16 s4 = Wave16.curveSaw(rate, f1).setName("curveSaw");
+//Wave16 s5 = Wave16.curvePulse(rate, f1).setName ("curvePulse");
+//Wave16IO.showAll(s1);
+//Wave16IO.showAll(s2);
+//Wave16IO.showAll(s3);
+//Wave16IO.showAll(s4);
+//Wave16IO.showAll(s5);
+
