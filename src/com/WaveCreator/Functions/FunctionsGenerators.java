@@ -418,6 +418,7 @@ public final class FunctionsGenerators extends Functions
         return sequencePulse (rate, frequencies, l);
     }
 
+    
     /**
      * Generates wave object of multiple sine curves
      * @param samplingrate The sampling rate
@@ -488,6 +489,23 @@ public final class FunctionsGenerators extends Functions
         return curveSine (samplingrate, f, samples);
     }
 
+    /**
+     * Makes a timed sine wave
+     * @param samplingrate The sampling rate
+     * @param frequency    The frequency
+     * @param msecs        Length of output in milliseconds
+     * @return A single wave
+     */
+    public Wave16 curveSine (@ParamDesc("Sampling rate") int samplingrate,
+                             @ParamDesc("Frequency") double frequency,
+                             @ParamDesc ("Milliseconds") int msecs)
+    {
+        double[] f = {frequency};
+        double time = samplingrate / 1000 * msecs;
+        return curveSine (samplingrate, f, (int)time);
+    }
+   
+    
     /**
      * Creates one whole wave of all ferquencies
      * @param samplingrate sampling rate

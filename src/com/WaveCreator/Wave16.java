@@ -666,7 +666,7 @@ public class Wave16 implements Serializable
     }
 
     // Gets information about amplitudes of this Wave16
-    Wave16AmplitudeInfo getAmplitude()
+    public Wave16AmplitudeInfo getAmplitude()
     {
         return new Wave16AmplitudeInfo(this);
     }
