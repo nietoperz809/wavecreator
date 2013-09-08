@@ -1601,8 +1601,8 @@ public boolean handleEvent(Event ev)
                                                    new Class[]{afclass, int.class});
                 opmeth.invoke(line, format,
                               4096);
-                Method stmeth = sdlclass.getMethod("start", null);
-                stmeth.invoke(line, null);
+                Method stmeth = sdlclass.getMethod("start", (Class) null);
+                stmeth.invoke(line, (Object) null);
                 byte b[] = new byte[1];
                 wrmeth = sdlclass.getMethod("write",
                                             new Class[]{b.getClass(), int.class, int.class});

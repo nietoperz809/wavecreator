@@ -1,6 +1,7 @@
 package com.WaveCreator.Functions;
 
 import com.WaveCreator.ParamDesc;
+import com.WaveCreator.Tools;
 import com.WaveCreator.Wave16;
 import com.WaveCreator.Wave16AmplitudeInfo;
 
@@ -168,7 +169,7 @@ public final class FunctionsAmplitude extends Functions
     public Wave16 fitValues()
     {
         Wave16 out = m_base.createEmptyCopy();
-        out.data = Wave16.fitValues(m_base.data);
+        out.data = Tools.fitValues(m_base.data);
         return out;
     }
 

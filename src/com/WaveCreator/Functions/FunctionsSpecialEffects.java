@@ -1,6 +1,7 @@
 package com.WaveCreator.Functions;
 
 import com.WaveCreator.ParamDesc;
+import com.WaveCreator.Tools;
 import com.WaveCreator.Wave16;
 
 /**
@@ -29,7 +30,7 @@ public final class FunctionsSpecialEffects extends Functions
             sum = m_base.data[s] + m_base.data[m_base.data.length-s-1];
             out.data[s] = sum;
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -46,7 +47,7 @@ public final class FunctionsSpecialEffects extends Functions
             sum = m_base.data[s] * m_base.data[m_base.data.length-s-1];
             out.data[s] = sum;
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 

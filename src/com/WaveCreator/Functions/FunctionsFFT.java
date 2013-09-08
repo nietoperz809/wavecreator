@@ -3,6 +3,7 @@ package com.WaveCreator.Functions;
 import com.WaveCreator.FFT.CepstrumTransform;
 import com.WaveCreator.FFT.Complex;
 import com.WaveCreator.FFT.FFT;
+import com.WaveCreator.Tools;
 import com.WaveCreator.Wave16;
 
 /**
@@ -84,7 +85,7 @@ public final class FunctionsFFT extends Functions
         CepstrumTransform cp = new CepstrumTransform();
         out.data = cp.doCepstrumTransform(out.data,false);
         out = out.functionsDeletions.extractSamples(0, out.data.length / 2);
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -94,7 +95,7 @@ public final class FunctionsFFT extends Functions
         CepstrumTransform cp = new CepstrumTransform();
         out.data = cp.doCepstrumTransform(out.data, true);
         out = out.functionsDeletions.extractSamples(0, out.data.length / 2);
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -198,7 +199,7 @@ public final class FunctionsFFT extends Functions
                 break;
         }
         out = out.functionsDeletions.deleteSamplesFromEnd(out.data.length-in.data.length);
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 

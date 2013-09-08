@@ -6,7 +6,10 @@ import com.WaveCreator.MatrixRoutines.DMatrixEvd;
 import com.WaveCreator.MatrixRoutines.DMatrixLud;
 import com.WaveCreator.MatrixRoutines.DMatrixQrd;
 import com.WaveCreator.ParamDesc;
+import com.WaveCreator.Tools;
 import com.WaveCreator.Wave16;
+import java.util.Random;
+import com.WaveCreator.FFT.*;
 
 /**
  * New Class.
@@ -85,7 +88,7 @@ public final class FunctionsTesting extends Functions
         {
             out.data[s] = m_base.data[s]+(s*step);
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -97,7 +100,7 @@ public final class FunctionsTesting extends Functions
         {
             out.data[s] = m_base.data[s]-(s*step);
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -112,7 +115,7 @@ public final class FunctionsTesting extends Functions
         {
             out.data[s] = m_base.data[s]*(s+1);
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -127,7 +130,7 @@ public final class FunctionsTesting extends Functions
         {
             out.data[s] = m_base.data[s]/(s+1);
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -225,7 +228,7 @@ public final class FunctionsTesting extends Functions
             long[] d = bestTwoDivisors ((long)Math.abs(m_base.data[s]));
             out.data[s] = (d[0]+d[1]) * sign;
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -289,7 +292,7 @@ public final class FunctionsTesting extends Functions
             double v = myfield ((long)Math.abs(m_base.data[s]), base);
             out.data[s] = v * sign;
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -297,7 +300,7 @@ public final class FunctionsTesting extends Functions
     {
         Wave16 out = new Wave16();
         out.samplingRate = m_base.samplingRate;
-        out.data = Wave16.fitValuesToPositiveByteRange(m_base.data);
+        out.data = Tools.fitValuesToPositiveByteRange(m_base.data);
         return out;
     }
 
@@ -305,7 +308,7 @@ public final class FunctionsTesting extends Functions
     {
         Wave16 out = new Wave16();
         out.samplingRate = m_base.samplingRate;
-        out.data = Wave16.fitValuesToByteRange(m_base.data);
+        out.data = Tools.fitValuesToByteRange(m_base.data);
         return out;
     }
 
@@ -317,7 +320,7 @@ public final class FunctionsTesting extends Functions
         {
             w.data[s] = gf.Product((int)w.data[s], mult);
         }
-        w.data = Wave16.fitValues(w.data);
+        w.data = Tools.fitValues(w.data);
         return w;
     }
 
@@ -329,7 +332,7 @@ public final class FunctionsTesting extends Functions
         {
             w.data[s] = gf.Quotient((int)w.data[s], mult);
         }
-        w.data = Wave16.fitValues(w.data);
+        w.data = Tools.fitValues(w.data);
         return w;
     }
 
@@ -341,7 +344,7 @@ public final class FunctionsTesting extends Functions
             int v = (int)Math.abs(Math.round(m_base.data[s]));
             out.data[s] = qSum(v, mod);
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -353,7 +356,7 @@ public final class FunctionsTesting extends Functions
             int v = (int)Math.abs(Math.round(m_base.data[s]));
             out.data[s] = qSumSum(v, max);
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -365,7 +368,7 @@ public final class FunctionsTesting extends Functions
             int v = (int)Math.abs(Math.round(m_base.data[s]));
             out.data[s] = qSumMult(v, max);
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -377,7 +380,7 @@ public final class FunctionsTesting extends Functions
             double p = Math.sqrt(m_base.data[s]*m_base.data[s]+m_base.data[s-1]*m_base.data[s-1]);
             out.data[s-1] = p * Math.signum(m_base.data[s]);
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -396,7 +399,7 @@ public final class FunctionsTesting extends Functions
                 out.data[k] = out.data[k] - m_base.data[i] * Math.sin (2*Math.PI*k*i/m_base.data.length);
             }
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -415,7 +418,7 @@ public final class FunctionsTesting extends Functions
                 out.data[k] = out.data[k] + m_base.data[i] * Math.cos (2*Math.PI*k*i/m_base.data.length);
             }
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -425,7 +428,7 @@ public final class FunctionsTesting extends Functions
         DMatrix dm = new DMatrix (mat);
         DMatrixEvd evd = new DMatrixEvd (dm);
         Wave16 wv = m_base.fromMatrix (evd.getV().getArray());
-        wv.data = Wave16.fitValues(wv.data);
+        wv.data = Tools.fitValues(wv.data);
         return wv;
     }
 
@@ -435,7 +438,7 @@ public final class FunctionsTesting extends Functions
         DMatrix dm = new DMatrix (mat);
         DMatrixEvd evd = new DMatrixEvd (dm);
         Wave16 wv = m_base.fromMatrix (evd.getD().getArray());
-        wv.data = Wave16.fitValues(wv.data);
+        wv.data = Tools.fitValues(wv.data);
         return wv;
     }
 
@@ -445,7 +448,7 @@ public final class FunctionsTesting extends Functions
         DMatrix dm = new DMatrix (mat);
         DMatrixLud evd = new DMatrixLud (dm);
         Wave16 wv = m_base.fromMatrix (evd.getU().getArray());
-        wv.data = Wave16.fitValues(wv.data);
+        wv.data = Tools.fitValues(wv.data);
         return wv;
     }
 
@@ -455,7 +458,7 @@ public final class FunctionsTesting extends Functions
         DMatrix dm = new DMatrix (mat);
         DMatrixLud evd = new DMatrixLud (dm);
         Wave16 wv = m_base.fromMatrix (evd.getL().getArray());
-        wv.data = Wave16.fitValues(wv.data);
+        wv.data = Tools.fitValues(wv.data);
         return wv;
     }
 
@@ -465,7 +468,7 @@ public final class FunctionsTesting extends Functions
         DMatrix dm = new DMatrix (mat);
         DMatrixQrd evd = new DMatrixQrd (dm);
         Wave16 wv = m_base.fromMatrix (evd.getQ().getArray());
-        wv.data = Wave16.fitValues(wv.data);
+        wv.data = Tools.fitValues(wv.data);
         return wv;
     }
 
@@ -475,7 +478,7 @@ public final class FunctionsTesting extends Functions
         DMatrix dm = new DMatrix (mat);
         DMatrixQrd evd = new DMatrixQrd (dm);
         Wave16 wv = m_base.fromMatrix (evd.getR().getArray());
-        wv.data = Wave16.fitValues(wv.data);
+        wv.data = Tools.fitValues(wv.data);
         return wv;
     }
 
@@ -531,7 +534,7 @@ public final class FunctionsTesting extends Functions
             if (out.data[s] != 0.0)
                 out.data[s] = sign*Math.log(Math.abs(out.data[s]));
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -543,7 +546,7 @@ public final class FunctionsTesting extends Functions
             if (out.data[s] != 0.0)
                 out.data[s] = Math.exp(out.data[s]);
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -587,9 +590,132 @@ public final class FunctionsTesting extends Functions
             }
             out.data[s] *= sign;
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
-/////////////////////////////////////////////////// END Test functions //////////////////////////////////////////////////
+    static class MathMusic
+    {
+        static final double A = 1.4;      //Default value for a in Henon equations
+        static final double B = 0.3;      //Default value for b in Henon equations
+        static final double X_MAX = 2.0;  //Max value for X, used for normalizing values
+        static final double Y_MAX = 0.5;  //Analogous to X_MAX
+
+        protected int[] minorScale = {440, 470, 496, 528, 564, 634, 660, 704, 760, 792, 844, 880, 939, 1056, 1276};
+        
+        static final int SAMPLERATE = 22000;
+        
+        Wave16 pause = FunctionsGenerators.constant(SAMPLERATE, 200, 0);
+        
+        public Wave16 makeMandel (int notes)
+        {
+            Random r = new Random(System.currentTimeMillis());
+            Complex c, z, zold;
+            double normr, normi;
+            int pitchr, pitchi, pitchOld, repeatCount;
+            Wave16 ret = new Wave16(0, SAMPLERATE);
+            final int ITERATIONS = 20;
+
+            while (notes-- >= 0)
+            {
+                c = new Complex(r.nextDouble() * 4.0 - 2.0, r.nextDouble() * 4.0 - 2.0);
+                z = new Complex(0,0);
+                zold = z;
+                repeatCount = 0;
+                pitchOld = -1;
+                
+                for (int k = 0; k < ITERATIONS; k++)
+                {
+                    z = (z.times(z)).plus(c); // z^2 + c
+                    if (modulus(z) > 2)
+                    {
+                        break;
+                    }
+                    normr = (z.re + 2.0) / 4.0;
+                    normi = (z.im + 2.0) / 4.0;
+                    pitchr = (int) (normr * (minorScale.length - 1));
+                    pitchi = (int) (normi * (minorScale.length - 1));
+
+                    Wave16 w1 = FunctionsGenerators.curveSine(SAMPLERATE, new double[]{minorScale[pitchr], minorScale[pitchi]}, SAMPLERATE);
+                    ret = Wave16.combineAppend(ret, w1, pause);
+
+                    if (zold.equals(z) || modulus(z) > 2)
+                    {
+                        break;
+                    }
+
+                    if (pitchr == pitchOld)
+                    {
+                        repeatCount++;
+                    }
+                    if (repeatCount >= 3)
+                    {
+                        break;
+                    }
+                    pitchOld = pitchr;
+                    zold = z;
+                }
+            }
+            return ret;
+        }
+
+        private double modulus(Complex c)
+        {
+            return Math.sqrt(c.re * c.re + c.im * c.im);
+        }
+        
+        public Wave16 makeHenon (int notes)
+        {
+            double x = Math.random(); //0.0;
+            double y = Math.random(); //0.0;
+            double xnew, ynew, normx, normy;
+            int pitchx, pitchy;
+            
+            Wave16 ret = new Wave16(0, SAMPLERATE);
+            
+            while (notes-- >= 0)
+            {
+                normx = (x + X_MAX)/(2*X_MAX);
+                normy = (y + Y_MAX)/(2*Y_MAX);
+                pitchx = (int)(normx*(minorScale.length-1));
+                pitchy = (int)(normy*(minorScale.length-1));
+                
+                Wave16 w1 = FunctionsGenerators.curveSine(SAMPLERATE, new double[]{minorScale[pitchx], minorScale[pitchy]}, SAMPLERATE);
+                ret = Wave16.combineAppend(ret, w1, pause);
+                
+                //System.out.println ("("+minorScale[pitchx]+"/"+minorScale[pitchy]+")");
+                //System.out.println ("("+pitchx+"/"+pitchy+")");
+
+                //Henon equations:
+                xnew = 1 + y - A*x*x;
+                ynew = B*x;
+        
+                x = xnew;
+                y = ynew;
+            }
+            return ret;
+        }
+    }
+    
+    /*
+    public static void testHenon ()
+    {
+        Henon h = new Henon();
+        h.make(100);
+    }
+    */
+    
+    public Wave16 HenonMusic (@ParamDesc("notes")int num)
+    {
+        MathMusic h = new MathMusic();
+        return h.makeHenon(num);
+    }
+
+    public Wave16 MandelMusic (@ParamDesc("notes")int num)
+    {
+        MathMusic h = new MathMusic();
+        return h.makeMandel(num);
+    }
+    
+    /////////////////////////////////////////////////// END Test functions //////////////////////////////////////////////////
 }

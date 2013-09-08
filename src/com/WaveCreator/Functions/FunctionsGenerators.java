@@ -24,13 +24,13 @@ public final class FunctionsGenerators extends Functions
         return m_base.copy();
     }
 
-    public Wave16 dtmf (@ParamDesc("Phone number")String numbers)
+    static public Wave16 dtmf (@ParamDesc("Phone number")String numbers)
     {
         return new DTMF(10000, 1500).dtmfFromString(numbers);
     }
 
 
-    public Wave16 fromString (@ParamDesc("String used as values") String str,
+    static public Wave16 fromString (@ParamDesc("String used as values") String str,
                               @ParamDesc("Sampling rate") int rate)
     {
         short[] arr = new short[str.length()];
@@ -39,11 +39,11 @@ public final class FunctionsGenerators extends Functions
             arr[s] = (short)str.charAt(s);
         }
         Wave16 wave = fromShortArray (arr, rate);
-        wave.data = Wave16.fitValues(wave.data);
+        wave.data = Tools.fitValues(wave.data);
         return wave;
     }
 
-    public Wave16 fromPiDigits (@ParamDesc("First digit of PI sequence") int first,
+    static public Wave16 fromPiDigits (@ParamDesc("First digit of PI sequence") int first,
                                 @ParamDesc("Last digit of PI sequence") int last,
                                 @ParamDesc("Sampling rate") int rate)
     {
@@ -58,7 +58,7 @@ public final class FunctionsGenerators extends Functions
      * @param value        Value of all Y-values
      * @return The new sampling object
      */
-    public Wave16 constant(@ParamDesc("Sampling rate") int samplingrate,
+    static public Wave16 constant(@ParamDesc("Sampling rate") int samplingrate,
                            @ParamDesc("Number of samples")int samples,
                            @ParamDesc("Constant value") double value)
     {
@@ -71,7 +71,7 @@ public final class FunctionsGenerators extends Functions
      * @param rate  The sampling rate
      * @return The new object
      */
-    public Wave16 fromShortArray(@ParamDesc("Array of values")short[] array,
+    static public Wave16 fromShortArray(@ParamDesc("Array of values")short[] array,
                                  @ParamDesc("Sampling rate") int rate)
     {
         Wave16 out = new Wave16(array.length, rate);
@@ -88,7 +88,7 @@ public final class FunctionsGenerators extends Functions
      * @param samples      number of samples
      * @return random array
      */
-    public Wave16 random (@ParamDesc("Sampling rate") int samplingrate,
+    static public Wave16 random (@ParamDesc("Sampling rate") int samplingrate,
                           @ParamDesc("Number of samples") int samples)
     {
         Wave16 t = new Wave16(samples, samplingrate);
@@ -102,7 +102,7 @@ public final class FunctionsGenerators extends Functions
         return t;
     }
 
-    public Wave16 curveBow(@ParamDesc("Sampling rate")int samplingrate,
+    static public Wave16 curveBow(@ParamDesc("Sampling rate")int samplingrate,
                            @ParamDesc("Array of frequencies")int[] freq,
                            @ParamDesc("Number of Samples")int samples)
     {
@@ -119,11 +119,11 @@ public final class FunctionsGenerators extends Functions
             }
             out.data[x] = f / freq.length;
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
-    public Wave16 curveBow (@ParamDesc("Sampling rate") int samplingrate,
+    static public Wave16 curveBow (@ParamDesc("Sampling rate") int samplingrate,
                             @ParamDesc("Frequency") int frequency)
     {
         int[] f = {frequency};
@@ -132,14 +132,14 @@ public final class FunctionsGenerators extends Functions
     }
 
 
-    public Wave16 curvePulse(@ParamDesc("Sampling rate")int s,
+    static public Wave16 curvePulse(@ParamDesc("Sampling rate")int s,
                              @ParamDesc("Array of frequencies")int[] freq,
                              @ParamDesc("Number of samples")int samples)
     {
         return curveSquare (s, freq, samples).functionsMathematical.deriveAndFitValues();
     }
 
-    public Wave16 curvePulse (@ParamDesc("Sampling rate") int samplingrate,
+    static public Wave16 curvePulse (@ParamDesc("Sampling rate") int samplingrate,
                               @ParamDesc("Frequency") int frequency)
     {
         int[] f = {frequency};
@@ -147,20 +147,6 @@ public final class FunctionsGenerators extends Functions
         return curvePulse (samplingrate, f, samples);
     }
 
-
-//        public Wave16 curvePulseFromValues(@ParamDesc("Sampling rate")int samplingrate,
-//                                           @ParamDesc("Number of samples")int samples,
-//                                           @ParamDesc("Segments")int[] segments)
-//        {
-//            Wave16 out = new Wave16(samples, samplingrate);
-//            double div = (double) samples / (segments.length - 1);
-//            for (int n = 0; n < segments.length - 1; n++)
-//            {
-//                out.data[(int) (n * div)] = segments[n];
-//            }
-//            out.data[out.data.length - 1] = segments[segments.length - 1];
-//            return out;
-//        }
 
     /**
      * Makes an exponential curve
@@ -184,7 +170,7 @@ public final class FunctionsGenerators extends Functions
         return m_base.combineAppend(w);
     }
 
-    public Wave16 curveSquareFromValues(@ParamDesc("Sampling rate")int samplingrate,
+    static public Wave16 curveSquareFromValues(@ParamDesc("Sampling rate")int samplingrate,
                                            @ParamDesc("Number of samples")int samples,
                                            @ParamDesc("Array of segments")int[] segments)
     {
@@ -207,7 +193,7 @@ public final class FunctionsGenerators extends Functions
      * @param samples      Number of samples of output array
      * @return the output array
      */
-    public Wave16 curveSquare (@ParamDesc("Sampling rate")int samplingrate,
+    static public Wave16 curveSquare (@ParamDesc("Sampling rate")int samplingrate,
                                  @ParamDesc("Array of frequencies")int[] freq,
                                  @ParamDesc("Number of samples")int samples)
     {
@@ -222,7 +208,7 @@ public final class FunctionsGenerators extends Functions
             }
             out.data[x] = f / freq.length;
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -232,7 +218,7 @@ public final class FunctionsGenerators extends Functions
      * @param frequency    the frequency
      * @return A single square Wave
      */
-    public Wave16 curveSquare (@ParamDesc("Sampling rate") int samplingrate,
+    static public Wave16 curveSquare (@ParamDesc("Sampling rate") int samplingrate,
                                   @ParamDesc("Frequency") int frequency)
     {
         int[] f = {frequency};
@@ -248,7 +234,7 @@ public final class FunctionsGenerators extends Functions
      * @param samples      number of samples to generate
      * @return The new sampling data
      */
-    public Wave16 sweepSine(@ParamDesc("Sampling rate") int samplingrate,
+    static public Wave16 sweepSine(@ParamDesc("Sampling rate") int samplingrate,
                              @ParamDesc("Starting frequency") int fstart,
                              @ParamDesc("Last frequency") int fend,
                              @ParamDesc("Number of samples") int samples)
@@ -267,7 +253,7 @@ public final class FunctionsGenerators extends Functions
             return out.functionsReorder.reverse();
     }
 
-    public Wave16 sweepTriangle(@ParamDesc("Sampling rate") int samplingrate,
+    static public Wave16 sweepTriangle(@ParamDesc("Sampling rate") int samplingrate,
                              @ParamDesc("Starting frequency") int fstart,
                              @ParamDesc("Last frequency") int fend,
                              @ParamDesc("Number of samples") int samples)
@@ -287,7 +273,7 @@ public final class FunctionsGenerators extends Functions
             return out.functionsReorder.reverse();
     }
 
-    public Wave16 sweepSquare(@ParamDesc("Sampling rate") int samplingrate,
+    static public Wave16 sweepSquare(@ParamDesc("Sampling rate") int samplingrate,
                              @ParamDesc("Starting frequency") int fstart,
                              @ParamDesc("Last frequency") int fend,
                              @ParamDesc("Number of samples") int samples)
@@ -306,7 +292,7 @@ public final class FunctionsGenerators extends Functions
             return out.functionsReorder.reverse();
     }
 
-    public Wave16 sweepPulse(@ParamDesc("Sampling rate") int samplingrate,
+    static public Wave16 sweepPulse(@ParamDesc("Sampling rate") int samplingrate,
                              @ParamDesc("Starting frequency") int fstart,
                              @ParamDesc("Last frequency") int fend,
                              @ParamDesc("Number of samples") int samples)
@@ -314,7 +300,7 @@ public final class FunctionsGenerators extends Functions
         return sweepSquare(samplingrate, fstart, fend, samples).functionsMathematical.deriveAndFitValues();
     }
 
-    public Wave16 sweepSine(@ParamDesc("Sampling rate") int samplingrate,
+    static public Wave16 sweepSine(@ParamDesc("Sampling rate") int samplingrate,
                              @ParamDesc("Starting frequency") int fstart,
                              @ParamDesc("Last frequency") int fend,
                              @ParamDesc("Seconds for whole curve") double seconds)
@@ -330,20 +316,20 @@ public final class FunctionsGenerators extends Functions
      * @param lengths Length of tone (in seconds)
      * @return The new sampling array
      */
-    public Wave16 sequenceSine (@ParamDesc("Sampling rate")int rate,
+    static public Wave16 sequenceSine (@ParamDesc("Sampling rate")int rate,
                                 @ParamDesc("Array of frequencies")int[] frequencies,
                                 @ParamDesc("Length of tones in seconds")double lengths[])
     {
         Wave16[] parts = new Wave16[frequencies.length];
         for(int s=0; s<parts.length; s++)
         {
-            parts[s] = m_base.functionsGenerators.curveSine(rate, frequencies[s]);
+            parts[s] = curveSine(rate, frequencies[s]);
             parts[s] = parts[s].functionsLength.appendSelf((int)(lengths[s]*frequencies[s]));
         }
-        return m_base.combineAppend(parts);
+        return Wave16.combineAppend(parts);
     }
 
-    public Wave16 sequenceSine (@ParamDesc("Sampling rate")int rate,
+    static public Wave16 sequenceSine (@ParamDesc("Sampling rate")int rate,
                                 @ParamDesc("Array of frequencies")int[] frequencies,
                                 @ParamDesc("Length of all tones in seconds")double length)
     {
@@ -352,20 +338,20 @@ public final class FunctionsGenerators extends Functions
         return sequenceSine (rate, frequencies, l);
     }
 
-    public Wave16 sequenceSquare (@ParamDesc("Sampling rate")int rate,
+    static public Wave16 sequenceSquare (@ParamDesc("Sampling rate")int rate,
                                      @ParamDesc("Array of frequencies")int[] frequencies,
                                      @ParamDesc("Length of tones in seconds")double lengths[])
     {
         Wave16[] parts = new Wave16[frequencies.length];
         for(int s=0; s<parts.length; s++)
         {
-            parts[s] = m_base.functionsGenerators.curveSquare(rate, frequencies[s]);
+            parts[s] = curveSquare(rate, frequencies[s]);
             parts[s] = parts[s].functionsLength.appendSelf((int)(lengths[s]*frequencies[s]));
         }
-        return m_base.combineAppend(parts);
+        return Wave16.combineAppend(parts);
     }
 
-    public Wave16 sequenceSquare (@ParamDesc("Sampling rate")int rate,
+    static public Wave16 sequenceSquare (@ParamDesc("Sampling rate")int rate,
                                 @ParamDesc("Array of frequencies")int[] frequencies,
                                 @ParamDesc("Length of all tones in seconds")double length)
     {
@@ -374,20 +360,20 @@ public final class FunctionsGenerators extends Functions
         return sequenceSquare (rate, frequencies, l);
     }
 
-    public Wave16 sequenceTriangle (@ParamDesc("Sampling rate")int rate,
+    static public Wave16 sequenceTriangle (@ParamDesc("Sampling rate")int rate,
                                     @ParamDesc("Array of frequencies")int[] frequencies,
                                     @ParamDesc("Length of tones in seconds")double lengths[])
     {
         Wave16[] parts = new Wave16[frequencies.length];
         for(int s=0; s<parts.length; s++)
         {
-            parts[s] = m_base.functionsGenerators.curveTriangle(rate, frequencies[s]);
+            parts[s] = curveTriangle(rate, frequencies[s]);
             parts[s] = parts[s].functionsLength.appendSelf((int)(lengths[s]*frequencies[s]));
         }
-        return m_base.combineAppend(parts);
+        return Wave16.combineAppend(parts);
     }
 
-    public Wave16 sequenceTriangle (@ParamDesc("Sampling rate")int rate,
+    static public Wave16 sequenceTriangle (@ParamDesc("Sampling rate")int rate,
                                 @ParamDesc("Array of frequencies")int[] frequencies,
                                 @ParamDesc("Length of all tones in seconds")double length)
     {
@@ -396,20 +382,20 @@ public final class FunctionsGenerators extends Functions
         return sequenceTriangle (rate, frequencies, l);
     }
 
-    public Wave16 sequencePulse (@ParamDesc("Sampling rate")int rate,
+    static public Wave16 sequencePulse (@ParamDesc("Sampling rate")int rate,
                                  @ParamDesc("Array of frequencies")int[] frequencies,
                                  @ParamDesc("Length of tones in seconds")double lengths[])
     {
         Wave16[] parts = new Wave16[frequencies.length];
         for(int s=0; s<parts.length; s++)
         {
-            parts[s] = m_base.functionsGenerators.curvePulse(rate, frequencies[s]);
+            parts[s] = curvePulse(rate, frequencies[s]);
             parts[s] = parts[s].functionsLength.appendSelf((int)(lengths[s]*frequencies[s]));
         }
-        return m_base.combineAppend(parts);
+        return Wave16.combineAppend(parts);
     }
 
-    public Wave16 sequencePulse (@ParamDesc("Sampling rate")int rate,
+    static public Wave16 sequencePulse (@ParamDesc("Sampling rate")int rate,
                                 @ParamDesc("Array of frequencies")int[] frequencies,
                                 @ParamDesc("Length of all tones in seconds")double length)
     {
@@ -426,7 +412,7 @@ public final class FunctionsGenerators extends Functions
      * @param samples      Number of samples of output array
      * @return A single wave
      */
-    public Wave16 curveSine(@ParamDesc("Sampling rate")int samplingrate,
+    static public Wave16 curveSine(@ParamDesc("Sampling rate")int samplingrate,
                             @ParamDesc("Array of frequencies")double[] freq,
                             @ParamDesc("Number of samples")int samples)
     {
@@ -441,7 +427,7 @@ public final class FunctionsGenerators extends Functions
             }
             out.data[x] = f / freq.length;
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -452,7 +438,7 @@ public final class FunctionsGenerators extends Functions
      * @param samples Number of samples to generate
      * @return A new WAVE object
      */
-    public Wave16 sineDur (@ParamDesc("Sampling rate") int samplingrate,
+    static public Wave16 sineDur (@ParamDesc("Sampling rate") int samplingrate,
                            @ParamDesc("Base frequency") double startfreq,
                            @ParamDesc("Number of samples") int samples)
     {
@@ -467,7 +453,7 @@ public final class FunctionsGenerators extends Functions
      * @param samples Number of samples to generate
      * @return A new WAVE object
      */
-    public Wave16 sineMoll (@ParamDesc("Sampling rate") int samplingrate,
+    static public Wave16 sineMoll (@ParamDesc("Sampling rate") int samplingrate,
                            @ParamDesc("Base frequency") double startfreq,
                            @ParamDesc("Number of samples") int samples)
     {
@@ -481,7 +467,7 @@ public final class FunctionsGenerators extends Functions
      * @param frequency    The frequency
      * @return A single wave
      */
-    public Wave16 curveSine (@ParamDesc("Sampling rate") int samplingrate,
+    static public Wave16 curveSine (@ParamDesc("Sampling rate") int samplingrate,
                              @ParamDesc("Frequency") double frequency)
     {
         double[] f = {frequency};
@@ -496,7 +482,7 @@ public final class FunctionsGenerators extends Functions
      * @param msecs        Length of output in milliseconds
      * @return A single wave
      */
-    public Wave16 curveSine (@ParamDesc("Sampling rate") int samplingrate,
+    static public Wave16 curveSine (@ParamDesc("Sampling rate") int samplingrate,
                              @ParamDesc("Frequency") double frequency,
                              @ParamDesc ("Milliseconds") int msecs)
     {
@@ -506,27 +492,6 @@ public final class FunctionsGenerators extends Functions
     }
    
     
-    /**
-     * Creates one whole wave of all ferquencies
-     * @param samplingrate sampling rate
-     * @param freq Array of frequencies
-     * @return A new wave object
-     */
-    /*
-    public Wave16 curveSine (@ParamDesc("Sampling rate") int samplingrate,
-                             @ParamDesc("Array of Frequencies") double[] freq)
-    {
-        long[] t = new long[freq.length];
-        for (int s=0; s<freq.length; s++)
-        {
-            t[s] = (int)(samplingrate/freq[s]);
-        }
-        long g = Tools.lcm(t);
-        if (g > samplingrate)
-            g = samplingrate;
-        return curveSine (samplingrate, freq, (int)g);
-    }
-    */
 
     /**
      * Makes a wave of multiple Triangle curves
@@ -535,7 +500,7 @@ public final class FunctionsGenerators extends Functions
      * @param samples      Number of samples of output array
      * @return the output array
      */
-    public Wave16 curveTriangle(@ParamDesc("Sampling rate")int samplingrate,
+    static public Wave16 curveTriangle(@ParamDesc("Sampling rate")int samplingrate,
                                 @ParamDesc("Array of frequencies")int[] freq,
                                 @ParamDesc("Number of samples")int samples)
     {
@@ -551,7 +516,7 @@ public final class FunctionsGenerators extends Functions
             }
             out.data[x] = f / freq.length;
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -561,7 +526,7 @@ public final class FunctionsGenerators extends Functions
      * @param frequency    the frequency
      * @return A single triangle wave
      */
-    public Wave16 curveTriangle (@ParamDesc("Sampling rate") int samplingrate,
+    static public Wave16 curveTriangle (@ParamDesc("Sampling rate") int samplingrate,
                                  @ParamDesc("Frequency") int frequency)
     {
         int[] f = {frequency};
@@ -576,7 +541,7 @@ public final class FunctionsGenerators extends Functions
      * @param samples Number of samples
      * @return The new sampling object
      */
-    public Wave16 curveSaw (@ParamDesc("Sampling rate")int s,
+    static public Wave16 curveSaw (@ParamDesc("Sampling rate")int s,
                             @ParamDesc("Array of frequencies")int[] freq,
                             @ParamDesc("Number of samples")int samples)
     {
@@ -592,7 +557,7 @@ public final class FunctionsGenerators extends Functions
             }
             out.data[x] = v / freq.length;
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -602,7 +567,7 @@ public final class FunctionsGenerators extends Functions
      * @param frequency the frequency
      * @return A single sawtooth wave
      */
-    public Wave16 curveSaw (@ParamDesc("Sampling rate") int samplingrate,
+    static public Wave16 curveSaw (@ParamDesc("Sampling rate") int samplingrate,
                             @ParamDesc("Frequency") int frequency)
     {
         int[] f = {frequency};
@@ -618,7 +583,7 @@ public final class FunctionsGenerators extends Functions
      * @param samples Number of samples
      * @return New sampling array
      */
-    public Wave16 ramp (@ParamDesc("Sampling rate")int rate,
+    static public Wave16 ramp (@ParamDesc("Sampling rate")int rate,
                         @ParamDesc("First value")int start,
                         @ParamDesc("Last value")int stop,
                         @ParamDesc("Number of samples")int samples)
@@ -640,13 +605,13 @@ public final class FunctionsGenerators extends Functions
      * @param samples      Number of samples to create
      * @return New object
      */
-    public Wave16 rampPlus (@ParamDesc("Sampling rate")int samplingrate,
+    static public Wave16 rampPlus (@ParamDesc("Sampling rate")int samplingrate,
                             @ParamDesc("Number of samples") int samples)
     {
         return ramp(samplingrate, (int) Wave16.MIN_VALUE, (int) Wave16.MAX_VALUE, samples);
     }
 
-    public Wave16 rampExponentialPlus (@ParamDesc("Sampling rate")int samplingrate,
+    static public Wave16 rampExponentialPlus (@ParamDesc("Sampling rate")int samplingrate,
                                        @ParamDesc("Number of samples") int samples) throws Exception
     {
         Wave16 out = new Wave16(samples, samplingrate);
@@ -659,7 +624,7 @@ public final class FunctionsGenerators extends Functions
         return out;
     }
 
-    public Wave16 rampLogarithmicPlus (@ParamDesc("Sampling rate")int samplingrate,
+    static public Wave16 rampLogarithmicPlus (@ParamDesc("Sampling rate")int samplingrate,
                                        @ParamDesc("Number of samples")int samples) throws Exception
     {
         return rampExponentialMinus (samplingrate, samples).functionsReorder.reverse();
@@ -671,13 +636,13 @@ public final class FunctionsGenerators extends Functions
      * @param samples      NUmber of samples to create
      * @return New object
      */
-    public Wave16 rampMinus (@ParamDesc("Sampling rate") int samplingrate,
+    static public Wave16 rampMinus (@ParamDesc("Sampling rate") int samplingrate,
                              @ParamDesc("Number of samples")int samples)
     {
         return ramp(samplingrate, (int) Wave16.MAX_VALUE, (int) Wave16.MIN_VALUE, samples);
     }
 
-    public Wave16 rampExponentialMinus (@ParamDesc("Sampling rate")int samplingrate,
+    static public Wave16 rampExponentialMinus (@ParamDesc("Sampling rate")int samplingrate,
                                         @ParamDesc("Number of samples") int samples) throws Exception
     {
         Wave16 out = new Wave16(samples, samplingrate);
@@ -690,7 +655,7 @@ public final class FunctionsGenerators extends Functions
         return out;
     }
 
-    public Wave16 rampLogarithmicMinus (@ParamDesc("Sampling rate")int samplingrate,
+    static public Wave16 rampLogarithmicMinus (@ParamDesc("Sampling rate")int samplingrate,
                                         @ParamDesc("Number of samples")int samples) throws Exception
     {
         return rampExponentialPlus(samplingrate, samples).functionsReorder.reverse();

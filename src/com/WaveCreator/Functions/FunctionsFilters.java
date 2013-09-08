@@ -4,6 +4,7 @@ import com.WaveCreator.ParamDesc;
 import com.WaveCreator.Wave16;
 import com.WaveCreator.OtherFilters.MoogFilter;
 import com.WaveCreator.Equalizer.Equalizer;
+import com.WaveCreator.Tools;
 
 /**
  * New Class.
@@ -48,7 +49,7 @@ public final class FunctionsFilters extends Functions
             equalizer.setBandDbValue(s, vals[s]);
         }
         equalizer.iir (res.data);
-        res.data = Wave16.fitValues (res.data);
+        res.data = Tools.fitValues (res.data);
         return res;
     }
 
@@ -100,7 +101,7 @@ public final class FunctionsFilters extends Functions
             }
             out.data[n] = res/vals;
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -123,7 +124,7 @@ public final class FunctionsFilters extends Functions
                 out.data[i] = (out.data[i] + out.data[i + 1] + out.data[i - 1] + out.data[i + 2] + out.data[i - 2]) / 5.0;
             }
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -160,7 +161,7 @@ public final class FunctionsFilters extends Functions
             }
             out.data[s] = v1;
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 }

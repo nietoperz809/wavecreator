@@ -1,5 +1,6 @@
 package com.WaveCreator.Functions;
 
+import com.WaveCreator.Tools;
 import com.WaveCreator.Wave16;
 
 /**
@@ -65,7 +66,7 @@ public final class FunctionsTwoWaves extends Functions
             }
             out.data[tau] = s;
         }
-        out.data = Wave16.fitValues (out.data);
+        out.data = Tools.fitValues (out.data);
         return out;
     }
 
@@ -98,7 +99,7 @@ public final class FunctionsTwoWaves extends Functions
             int in_idx = s % in.data.length;
             out.data[s] = m_base.data[s] - in.data[in_idx];
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -110,7 +111,7 @@ public final class FunctionsTwoWaves extends Functions
             int in_idx = s % in.data.length;
             out.data[s] = m_base.data[s] + in.data[in_idx];
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -130,7 +131,7 @@ public final class FunctionsTwoWaves extends Functions
             sum = sum + m_base.data[k] - in.data[in_idx];
             out.data[k] = sum;
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -142,7 +143,7 @@ public final class FunctionsTwoWaves extends Functions
             int in_idx = s % in.data.length;
             out.data[s] = m_base.data[s] * in.data[in_idx];
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -153,7 +154,7 @@ public final class FunctionsTwoWaves extends Functions
         {
             out.data[s] = m_base.data[s] / in.data[s % in.data.length];
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -164,7 +165,7 @@ public final class FunctionsTwoWaves extends Functions
         {
             out.data[s] = Math.pow(m_base.data[s], in.data[s % in.data.length]);
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -175,7 +176,7 @@ public final class FunctionsTwoWaves extends Functions
         {
             out.data[s] = Math.log(m_base.data[s])/Math.log(in.data[s % in.data.length]);
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -186,7 +187,7 @@ public final class FunctionsTwoWaves extends Functions
         {
             out.data[s] = m_base.data[s] % in.data[s % in.data.length];
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -281,7 +282,7 @@ public final class FunctionsTwoWaves extends Functions
         {
             out.data[s] = (int) m_base.data[s] + (int) in.data[s % in.data.length];
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -348,7 +349,7 @@ public final class FunctionsTwoWaves extends Functions
                 sign = Math.signum (in.data[idx]);
             out.data[s] = sign * Math.sqrt(q1 + q2);
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -388,7 +389,7 @@ public final class FunctionsTwoWaves extends Functions
         {
             out.data[s] = gcd ((long)m_base.data[s], (long)in.data[s % in.data.length]);
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -399,7 +400,7 @@ public final class FunctionsTwoWaves extends Functions
         {
             out.data[s] = lcm ((long)m_base.data[s], (long)in.data[s % in.data.length]);
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -410,7 +411,7 @@ public final class FunctionsTwoWaves extends Functions
         {
             out.data[s] = Math.atan2 (m_base.data[s], in.data[s % in.data.length]);
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 

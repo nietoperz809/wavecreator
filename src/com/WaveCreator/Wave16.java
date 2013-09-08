@@ -301,76 +301,6 @@ public class Wave16 implements Serializable
         return (short) data[idx];
     }
 
-
-    /**
-     * Fit values into defined range
-     * @param in array of double value
-     * @return array of converted double values
-     */
-    public static double[] fitValues(double[] in)
-    {
-        double out[] = new double[in.length];
-        Wave16AmplitudeInfo am = new Wave16AmplitudeInfo();
-        am.calc (in);
-
-        // Calc absolute span in short range
-        double div = am.span / (MAX_VALUE - MIN_VALUE);
-        // Divide them and shift into 'short' range
-        am.min = am.min / div;
-        for (int s = 0; s < in.length; s++)
-        {
-            out[s] = in[s] / div + MIN_VALUE - am.min;
-            // Force forbidden values to zero
-            if (Double.isInfinite(out[s]) || Double.isNaN(out[s]))
-                out[s] = 0.0;
-        }
-        return out;
-    }
-
-    /**
-     * Fit values into BYTE range
-     * @param in array of double value
-     * @return array of converted double values
-     */
-    public static double[] fitValuesToByteRange(double[] in)
-    {
-        double out[] = new double[in.length];
-        Wave16AmplitudeInfo am = new Wave16AmplitudeInfo();
-        am.calc (in);
-
-        // Calc absolute span in short range
-        double div = am.span / (Byte.MAX_VALUE - Byte.MIN_VALUE);
-        // Divide them and shift into 'short' range
-        am.min = am.min / div;
-        for (int s = 0; s < in.length; s++)
-        {
-            out[s] = Math.round(in[s] / div + Byte.MIN_VALUE - am.min);
-        }
-        return out;
-    }
-
-    /**
-     * Fit values into BYTE range
-     * @param in array of double value
-     * @return array of converted double values
-     */
-    public static double[] fitValuesToPositiveByteRange(double[] in)
-    {
-        double out[] = new double[in.length];
-        Wave16AmplitudeInfo am = new Wave16AmplitudeInfo();
-        am.calc (in);
-
-        // Calc absolute span in short range
-        double div = am.span / (Byte.MAX_VALUE - Byte.MIN_VALUE);
-        // Divide them and shift into 'short' range
-        am.min = am.min / div;
-        for (int s = 0; s < in.length; s++)
-        {
-            out[s] = 128 + Math.round(in[s] / div + Byte.MIN_VALUE - am.min);
-        }
-        return out;
-    }
-
     /**
      * Inserts Wave16 <b>in</b> at position <b>pos</b>
      * Increases number of samples
@@ -440,7 +370,7 @@ public class Wave16 implements Serializable
      * @param in Array of sampling objects
      * @return Concatenated sampling object
      */
-    public Wave16 combineAppend(Wave16[] in)
+    static public Wave16 combineAppend(Wave16... in)
     {
         int total = 0;
         for (Wave16 anIn : in)

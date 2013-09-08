@@ -1,6 +1,7 @@
 package com.WaveCreator.Functions;
 
 import com.WaveCreator.ParamDesc;
+import com.WaveCreator.Tools;
 import com.WaveCreator.Wave16;
 
 /**
@@ -87,7 +88,7 @@ public final class FunctionsMathematical extends Functions
         {
             out.data[s] = Math.pow(m_base.data[s], -1.0);
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -98,7 +99,7 @@ public final class FunctionsMathematical extends Functions
         {
             out.data[s] = Math.cbrt(m_base.data[s]);
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -109,7 +110,7 @@ public final class FunctionsMathematical extends Functions
         {
             out.data[s] = Math.log(m_base.data[s]+Wave16.MAX_VALUE);
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -170,7 +171,7 @@ public final class FunctionsMathematical extends Functions
         {
             out.data[s] = m_base.data[s] % m;
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -221,7 +222,7 @@ public final class FunctionsMathematical extends Functions
     public Wave16 deriveAndFitValues()
     {
         Wave16 derived = derive();
-        derived.data = Wave16.fitValues(derived.data);
+        derived.data = Tools.fitValues(derived.data);
         return derived;
     }
 
@@ -250,7 +251,7 @@ public final class FunctionsMathematical extends Functions
     public Wave16 integrateAndFitValues()
     {
         Wave16 out = normalize().functionsMathematical.integrateRaw();
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 
@@ -303,7 +304,7 @@ public final class FunctionsMathematical extends Functions
             }
             out.data[s] = sum;
         }
-        out.data = Wave16.fitValues(out.data);
+        out.data = Tools.fitValues(out.data);
         return out;
     }
 }
