@@ -117,7 +117,7 @@ public final class FunctionsTesting extends Functions
     }
 
     /**
-     * Devides samples by x-value
+     * Divides samples by x-value
      * @return The new sample array
      */
     public Wave16 divX ()

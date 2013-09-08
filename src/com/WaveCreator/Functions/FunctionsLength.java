@@ -2,6 +2,7 @@ package com.WaveCreator.Functions;
 
 import com.WaveCreator.ParamDesc;
 import com.WaveCreator.Wave16;
+import com.WaveCreator.Tools;
 
 /**
  * New Class.
@@ -47,7 +48,7 @@ public final class FunctionsLength extends Functions
      */
     public Wave16 padToNextPowerOfTwo (@ParamDesc("Value to append") int padvalue)
     {
-        return insertSamplesAtEnd(padvalue, m_base.nextPowerOfTwo(m_base.data.length) - m_base.data.length);
+        return insertSamplesAtEnd(padvalue, Tools.nextPowerOfTwo(m_base.data.length) - m_base.data.length);
     }
 
     /**
@@ -170,7 +171,7 @@ public final class FunctionsLength extends Functions
      */
     public Wave16 padToNextPowerOfTwo()
     {
-        return insertSamplesAtEnd(0, m_base.nextPowerOfTwo(m_base.data.length) - m_base.data.length);
+        return insertSamplesAtEnd(0, Tools.nextPowerOfTwo(m_base.data.length) - m_base.data.length);
     }
 
     /**
@@ -179,7 +180,7 @@ public final class FunctionsLength extends Functions
      */
     public Wave16 stretchToNextPowerOfTwo()
     {
-        return stretchToNumberOfSamples(m_base.nextPowerOfTwo(m_base.data.length));
+        return stretchToNumberOfSamples(Tools.nextPowerOfTwo(m_base.data.length));
     }
 
 }

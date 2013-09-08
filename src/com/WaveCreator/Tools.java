@@ -1,7 +1,5 @@
 package com.WaveCreator;
 
-import java.util.Arrays;
-
 /**
  */
 public class Tools
@@ -48,5 +46,16 @@ public class Tools
             }
         }
         return res;
+    }
+
+    /**
+     * Calculates next 2's power of input value
+     * Thus, 127 gives 128, 128 gives 128 and 129 gives 256
+     * @param in The input value
+     * @return The 2's power
+     */
+    public static int nextPowerOfTwo(int in) 
+    {
+        return (int) Math.pow(2.0, Math.ceil(Math.log(in) / Math.log(2.0)));
     }
 }

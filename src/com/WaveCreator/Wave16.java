@@ -245,17 +245,6 @@ public class Wave16 implements Serializable
     }
 
     /**
-     * Calculates next 2's power of input value
-     * Thus, 127 gives 128, 128 gives 128 and 129 gives 256
-     * @param in The input value
-     * @return The 2's power
-     */
-    public int nextPowerOfTwo(int in)
-    {
-        return (int) Math.pow(2.0, Math.ceil(Math.log(in) / Math.log(2.0)));
-    }
-
-    /**
      * Build a new SamplingData16 object from this one
      * All samples are copies of this object
      * @return The new object
@@ -312,168 +301,6 @@ public class Wave16 implements Serializable
         return (short) data[idx];
     }
 
-//    /**
-//     * Prints array as derive compatible vector
-//     * @param ps PrintStream that receives output
-//     */
-//    public void printAsVector(PrintStream ps)
-//    {
-//        ps.print('[');
-//        for (int s = 0; s < data.length; s++)
-//        {
-//            ps.printf("[%d,%f]", s, data[s]);
-//            if (s != data.length - 1)
-//            {
-//                ps.print(",");
-//            }
-//        }
-//        ps.println(']');
-//    }
-
-//    public void printIndexesAsDoubleCArray (PrintStream ps)
-//    {
-//        ps.print("double array[] = {");
-//        for (int s=0; s<data.length; s++)
-//        {
-//            ps.printf ("%d.0", s);
-//            if (s != data.length-1)
-//                ps.print(", ");
-//        }
-//        ps.println("};");
-//    }
-//
-//
-//    public void printAsDoubleCArray (PrintStream ps)
-//    {
-//        ps.print("double array[] = {");
-//        for (int s=0; s<data.length; s++)
-//        {
-//            ps.printf ("%f.0", data[s]);
-//            if (s != data.length-1)
-//                ps.print(", ");
-//        }
-//        ps.println("};");
-//    }
-
-
-
-//    /**
-//     * Cuts of samples that are over or below <b>absvalue</b>
-//     * @param absvalue Cut-off value
-//     * @return The new sampling data
-//     */
-//    public Wave16 cut (int absvalue)
-//    {
-//        Wave16 out = createEmptyCopy();
-//        for (int s=0; s<data.length; s++)
-//        {
-//            double sign = Math.signum(data[s]);
-//            double v = Math.abs(data[s]);
-//            if (v > absvalue)
-//                out.data[s] = sign*absvalue;
-//            else
-//                out.data[s] = data[s];
-//        }
-//        return out;
-//    }
-
-//    private double[] makeSplineConstants ()
-//    {
-//        int i,k;
-//        double p,qn,sig,un;
-//        double[] u = new double[data.length];
-//        double[] y2 = new double[data.length];
-//        y2[0]=0.0;
-//        u[0]=0.0;
-//        for (i=1;i<=(data.length-2);i++)
-//        {
-//            sig=((double)i-(double)(i-1))/((double)(i+1)-(double)(i-1));
-//            p=sig*y2[i-1]+2.0;
-//            y2[i]=(sig-1.0)/p;
-//            u[i] = (data[i + 1] - data[i]) / ((double) (i + 2) - (double) (i + 1)) - (data[i] - data[i - 1]) / ((double) (i + 1) - (double) i);
-//            u[i]=(6.0*u[i]/((double)(i+2)-(double)(i))-sig*u[i-1])/p;
-//        }
-//        qn=0.0;
-//        un=0.0;
-//        y2[data.length-1]=(un-qn*u[data.length-2])/(qn*y2[data.length-2]+1.0);
-//        for (k=data.length-2;k>=0;k--)
-//        {
-//            y2[k]=y2[k]*y2[k+1]+u[k];
-//        }
-//
-//        return y2;
-//    }
-
-//    private double splineFunc (double y2a[], double x)
-//    {
-//        int klo,khi,k;
-//        double h,b,a;
-//        klo=1;
-//        khi=data.length;
-//        while (khi-klo > 1)
-//        {
-//            k=(khi+klo) >>> 1;
-//            if ((double)(k) > x)
-//                khi=k;
-//            else
-//                klo=k;
-//        }
-//        h=(double)(khi)-(double)(klo);
-//        if (h == 0.0)
-//        {
-//            System.exit(0);
-//        }
-//        a=((double)(khi-1)-x)/h;
-//        b=(x-(double)(klo-1))/h;
-//        return (a * data[klo - 1]) + (b * data[khi - 1]) + ((((((a * a * a) - a) * y2a[klo - 1]) + (((b * b * b) - b) * y2a[khi - 1])) * h * h) / 6.0);
-//    }
-
-//    private short integrateSimpson (int a, int b)
-//    {
-//        double sum = 0;
-//        for (int s=a; s<b; s++)
-//        {
-//            int x1 = (s)%data.length;
-//            int x2 = (s+1)%data.length;
-//            int x3 = (s+2)%data.length;
-//            double f1 = data[x1];
-//            double f2 = data[x2];
-//            double f3 = data[x3];
-//            //sum = sum + ((f1+4.0*f2+f3)/6.0);
-//            sum = sum + (s*f1+(s+1)*f2+(s+2)*f3);
-//        }
-//        return (short)sum;
-//    }
-
-//    private double qgaus (double a, double b, double[] splineconst)
-//    {
-//        int j;
-//        double xr,xm,dx,s;
-//        final double x[]={0.0,0.1488743389,0.4333953941,
-//            0.6794095682,0.8650633666,0.9739065285};
-//        final double w[]={0.0,0.2955242247,0.2692667193,
-//            0.2190863625,0.1494513491,0.0666713443};
-//        xm=0.5*(b+a);
-//        xr=0.5*(b-a);
-//        s=0;
-//        for (j=1;j<=5;j++)
-//        {
-//            dx=xr*x[j];
-//            s += w[j]*(splineFunc(splineconst, xm+dx)+splineFunc(splineconst, xm-dx));
-//        }
-//        return s * xr;
-//    }
-
-//    public Wave16 getInterpolatedSampingData()
-//    {
-//        Wave16 out = createEmptyCopy();
-//        double[] splineconst = makeSplineConstants();
-//        for (int s=0; s<data.length; s++)
-//        {
-//            out.data[s] = (short)splineFunc (splineconst, s);
-//        }
-//        return out;
-//    }
 
     /**
      * Fit values into defined range
@@ -563,18 +390,6 @@ public class Wave16 implements Serializable
         return out;
     }
 
-//    public Wave16 curvePulse(int samplingrate, int frequency)
-//    {
-//        int len = samplingrate / frequency;
-//        Wave16 t = new Wave16(len, samplingrate);
-//        for (int x = 0; x < len; x++)
-//        {
-//            double v = Math.asin(Math.sin(x * PI / samplingrate * frequency)) / Math.asin(1);
-//            double w = MAX_VALUE * v * Math.pow(-1, 2 * x * frequency / samplingrate);
-//            t.data[x] = -w + w % (MAX_VALUE - (double) frequency / 1.46488845);
-//        }
-//        return t;
-//    }
 
     /**
      * Combines sampling arrays by calculating the average
