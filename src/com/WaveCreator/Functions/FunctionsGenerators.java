@@ -155,7 +155,7 @@ public final class FunctionsGenerators extends Functions
      * @return The new sampling array
      * @throws Exception thrown if somethinmg goes wrong
      */
-    public Wave16 curveExponential (@ParamDesc("Sampling rate") int samplingrate,
+    static public Wave16 curveExponential (@ParamDesc("Sampling rate") int samplingrate,
                                     @ParamDesc("Frequency") int frequency) throws Exception
     {
         int samples = samplingrate / frequency;
@@ -167,7 +167,7 @@ public final class FunctionsGenerators extends Functions
         w[1] = a.functionsReorder.reverse().functionsDeletions.deleteSamplesFromEnd(1);
         w[2] = a.functionsAmplitude.invert().functionsDeletions.deleteSamplesFromEnd(1);
         w[3] = a.functionsAmplitude.invert().functionsReorder.reverse().functionsDeletions.deleteSamplesFromEnd(1);
-        return m_base.combineAppend(w);
+        return Wave16.combineAppend(w);
     }
 
     static public Wave16 curveSquareFromValues(@ParamDesc("Sampling rate")int samplingrate,
@@ -413,8 +413,8 @@ public final class FunctionsGenerators extends Functions
      * @return A single wave
      */
     static public Wave16 curveSine(@ParamDesc("Sampling rate")int samplingrate,
-                            @ParamDesc("Array of frequencies")double[] freq,
-                            @ParamDesc("Number of samples")int samples)
+                            @ParamDesc("Number of samples")int samples,
+                            @ParamDesc("Array of frequencies")double... freq)
     {
         Wave16 out = new Wave16(samples, samplingrate);
 
@@ -443,7 +443,7 @@ public final class FunctionsGenerators extends Functions
                            @ParamDesc("Number of samples") int samples)
     {
         double[] freq = {startfreq, startfreq*Math.pow (2.0,4.0/12.0), startfreq*Math.pow (2.0,7.0/12.0)};
-        return curveSine (samplingrate, freq, samples);
+        return curveSine (samplingrate, samples, freq);
     }
 
     /**
@@ -458,7 +458,7 @@ public final class FunctionsGenerators extends Functions
                            @ParamDesc("Number of samples") int samples)
     {
         double[] freq = {startfreq, startfreq*Math.pow (2.0,3.0/12.0), startfreq*Math.pow (2.0,7.0/12.0)};
-        return curveSine (samplingrate, freq, samples);
+        return curveSine (samplingrate, samples, freq);
     }
 
     /**
@@ -472,7 +472,7 @@ public final class FunctionsGenerators extends Functions
     {
         double[] f = {frequency};
         int samples = (int)(samplingrate/frequency);
-        return curveSine (samplingrate, f, samples);
+        return curveSine (samplingrate, samples, f);
     }
 
     /**
@@ -488,7 +488,7 @@ public final class FunctionsGenerators extends Functions
     {
         double[] f = {frequency};
         double time = samplingrate / 1000 * msecs;
-        return curveSine (samplingrate, f, (int)time);
+        return curveSine (samplingrate, (int)time, f);
     }
    
     

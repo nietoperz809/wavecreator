@@ -1,7 +1,7 @@
 package com.WaveCreator;
 
 import java.util.HashMap;
-import com.WaveCreator.Functions.*;
+import static com.WaveCreator.Functions.FunctionsGenerators.*;
 /**
  * Creates DTMF samples
  */
@@ -31,25 +31,25 @@ public class DTMF
     private DTMF(int rate, int samples, int delaysamples)
     {
         samplingRate = rate;
-        Wave16 s1 = FunctionsGenerators.curveSine(samplingRate, new double[]{1209, 697}, samples);
-        Wave16 s2 = FunctionsGenerators.curveSine(samplingRate, new double[]{1336, 697}, samples);
-        Wave16 s3 = FunctionsGenerators.curveSine(samplingRate, new double[]{1477, 697}, samples);
-        Wave16 SA = FunctionsGenerators.curveSine(samplingRate, new double[]{1633, 697}, samples);
+        Wave16 s1 = curveSine(samplingRate, samples, 1209, 697);
+        Wave16 s2 = curveSine(samplingRate, samples, 1336, 697);
+        Wave16 s3 = curveSine(samplingRate, samples, 1477, 697);
+        Wave16 SA = curveSine(samplingRate, samples, 1633, 697);
 
-        Wave16 s4 = FunctionsGenerators.curveSine(samplingRate, new double[]{1209, 770}, samples);
-        Wave16 s5 = FunctionsGenerators.curveSine(samplingRate, new double[]{1336, 770}, samples);
-        Wave16 s6 = FunctionsGenerators.curveSine(samplingRate, new double[]{1477, 770}, samples);
-        Wave16 SB = FunctionsGenerators.curveSine(samplingRate, new double[]{1633, 770}, samples);
+        Wave16 s4 = curveSine(samplingRate, samples, 1209, 770);
+        Wave16 s5 = curveSine(samplingRate, samples, 1336, 770);
+        Wave16 s6 = curveSine(samplingRate, samples, 1477, 770);
+        Wave16 SB = curveSine(samplingRate, samples, 1633, 770);
 
-        Wave16 s7 = FunctionsGenerators.curveSine(samplingRate, new double[]{1209, 770}, samples);
-        Wave16 s8 = FunctionsGenerators.curveSine(samplingRate, new double[]{1336, 770}, samples);
-        Wave16 s9 = FunctionsGenerators.curveSine(samplingRate, new double[]{1477, 770}, samples);
-        Wave16 SC = FunctionsGenerators.curveSine(samplingRate, new double[]{1633, 770}, samples);
+        Wave16 s7 = curveSine(samplingRate, samples, 1209, 770);
+        Wave16 s8 = curveSine(samplingRate, samples, 1336, 770);
+        Wave16 s9 = curveSine(samplingRate, samples, 1477, 770);
+        Wave16 SC = curveSine(samplingRate, samples, 1633, 770);
 
-        Wave16 sstar = FunctionsGenerators.curveSine(samplingRate, new double[]{1209, 941}, samples);
-        Wave16 s0 = FunctionsGenerators.curveSine(samplingRate, new double[]{1336, 941}, samples);
-        Wave16 ssharp = FunctionsGenerators.curveSine(samplingRate, new double[]{1477, 941}, samples);
-        Wave16 SD = FunctionsGenerators.curveSine(samplingRate, new double[]{1633, 941}, samples);
+        Wave16 sstar = curveSine(samplingRate, samples, 1209, 941);
+        Wave16 s0 = curveSine(samplingRate, samples, 1336, 941);
+        Wave16 ssharp = curveSine(samplingRate, samples, 1477, 941);
+        Wave16 SD = curveSine(samplingRate, samples, 1633, 941);
 
         wavemap.put('1', s1);
         wavemap.put('2', s2);

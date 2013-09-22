@@ -636,7 +636,7 @@ public final class FunctionsTesting extends Functions
                     pitchr = (int) (normr * (minorScale.length - 1));
                     pitchi = (int) (normi * (minorScale.length - 1));
 
-                    Wave16 w1 = FunctionsGenerators.curveSine(SAMPLERATE, new double[]{minorScale[pitchr], minorScale[pitchi]}, SAMPLERATE);
+                    Wave16 w1 = FunctionsGenerators.curveSine(SAMPLERATE, SAMPLERATE, minorScale[pitchr], minorScale[pitchi]);
                     ret = Wave16.combineAppend(ret, w1, pause);
 
                     if (zold.equals(z) || modulus(z) > 2)
@@ -680,7 +680,7 @@ public final class FunctionsTesting extends Functions
                 pitchx = (int)(normx*(minorScale.length-1));
                 pitchy = (int)(normy*(minorScale.length-1));
                 
-                Wave16 w1 = FunctionsGenerators.curveSine(SAMPLERATE, new double[]{minorScale[pitchx], minorScale[pitchy]}, SAMPLERATE);
+                Wave16 w1 = FunctionsGenerators.curveSine(SAMPLERATE, SAMPLERATE, minorScale[pitchx], minorScale[pitchy]);
                 ret = Wave16.combineAppend(ret, w1, pause);
                 
                 //System.out.println ("("+minorScale[pitchx]+"/"+minorScale[pitchy]+")");
