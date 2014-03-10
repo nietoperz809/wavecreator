@@ -17,7 +17,7 @@ import java.util.ArrayList;
  */
 public class MethodInvoker extends JDialog implements ActionListener
 {
-	private JTable m_table;
+    private JTable m_table;
     private final Method m_method;
     private final Object m_object;
     private final MethodInvokerResult m_result = new MethodInvokerResult();
@@ -44,6 +44,23 @@ public class MethodInvoker extends JDialog implements ActionListener
         return res;
     }
 
+    private String[] readStringArray (String value)
+    {
+        ArrayList<String> li = new ArrayList<>();
+        String[] vals = value.split(",");
+        for (String val : vals)
+        {
+            val = val.trim();
+            li.add(val);
+        }
+        String[] res = new String[li.size()];
+        for (int s = 0; s < res.length; s++)
+        {
+            res[s] = li.get(s);
+        }
+        return res;
+    }
+    
     private short[] readShortArray(String value)
     {
         ArrayList<Short> li = new ArrayList<>();
@@ -121,6 +138,10 @@ public class MethodInvoker extends JDialog implements ActionListener
             if (typename.equals("String"))
             {
                 return value;
+            }
+            if (typename.equals("String[]"))
+            {
+                return readStringArray(value);
             }
             if (typename.equals("int[]"))
             {
@@ -264,6 +285,9 @@ public class MethodInvoker extends JDialog implements ActionListener
             String type = paramTypes[s].getName().replace("java.lang.", "");
             switch (type)
             {
+                case "[LString;":
+                    type = "String[]";
+                    break;
                 case "[I":
                     type = "int[]";
                     break;

@@ -10,6 +10,7 @@ import com.WaveCreator.Tools;
 import com.WaveCreator.Wave16;
 import java.util.Random;
 import com.WaveCreator.FFT.*;
+import java.util.Arrays;
 
 /**
  * New Class.
@@ -79,7 +80,7 @@ public final class FunctionsTesting extends Functions
     }
 
     /////////////////////////////////////////////////////////////////////////////
-
+    
     public Wave16 addX ()
     {
         Wave16 out = m_base.createEmptyCopy();
@@ -715,6 +716,16 @@ public final class FunctionsTesting extends Functions
     {
         MathMusic h = new MathMusic();
         return h.makeMandel(num);
+    }
+    
+    public Wave16 lindenMayer (@ParamDesc("Axiom")String axiom, 
+                               @ParamDesc("Rules")String[] rules,
+                               @ParamDesc("Recursions")int recursions,
+                               @ParamDesc("Final Rules")String[] endrules)
+    {
+        System.out.println (Arrays.toString(rules));
+        Wave16 out = m_base.createEmptyCopy();
+        return out;
     }
     
     /////////////////////////////////////////////////// END Test functions //////////////////////////////////////////////////
