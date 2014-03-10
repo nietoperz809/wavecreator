@@ -125,7 +125,7 @@ public class Wave16 implements Serializable
         for (int s=0; s<bytesInBuffer; s+=2)
         {
             int i = (in[s] & 0xff | in[s+1]<<8) & 0xffff;
-            d[s/2] = (short)i;
+            d[s/2] = (double)(short)i;
         }
         data = d;
         samplingRate = rate;
@@ -148,16 +148,6 @@ public class Wave16 implements Serializable
         samplingRate = rate;
     }
 
-    public Wave16(Double[] d, int rate)
-    {
-        double[] dd = new double[d.length];
-        for (int s = 0; s < d.length; s++)
-        {
-            dd[s] = d[s];
-        }
-        data = dd;
-        samplingRate = rate;
-    }
 
     public Wave16(Integer[] d, int rate)
     {
@@ -175,7 +165,7 @@ public class Wave16 implements Serializable
         double[] dd = new double[d.length];
         for (int s = 0; s < d.length; s++)
         {
-            dd[s] = d[s];
+            dd[s] = new Double(d[s]);
         }
         data = dd;
         samplingRate = rate;
@@ -276,7 +266,7 @@ public class Wave16 implements Serializable
         short[] res = new short[data.length];
         for (int s = 0; s < data.length; s++)
         {
-            res[s] = (short) data[s];
+            res[s] = (short)data[s];
         }
         return res;
     }
@@ -286,7 +276,7 @@ public class Wave16 implements Serializable
         int[] res = new int[data.length];
         for (int s = 0; s < data.length; s++)
         {
-            res[s] = (int) data[s];
+            res[s] = (int)data[s];
         }
         return res;
     }
@@ -298,7 +288,7 @@ public class Wave16 implements Serializable
      */
     public short getShortAt(int idx)
     {
-        return (short) data[idx];
+        return (short)data[idx];
     }
 
     /**
@@ -423,11 +413,11 @@ public class Wave16 implements Serializable
      */
     public int[] getIntegerOffsetPoints(int parts)
     {
-        ArrayList<Integer> list = new ArrayList<Integer>();
+        ArrayList<Integer> list = new ArrayList<>();
         double step = ((double) data.length - 1.0) / ((double) parts - 1.0) + (1.0 / (double) parts);
         for (double s = 0; s < data.length; s += step)
         {
-            list.add((int) data[(int) s]);
+            list.add((int) (double)data[(int) s]);
         }
         int[] arr = new int[list.size()];
         for (int s = 0; s < list.size(); s++)

@@ -25,6 +25,7 @@ class SubMenuFrames extends JMenu
             final ScopeWindow f = frames[s];
             add(new AbstractAction("("+s+") "+f.m_wave.name)
             {
+                @Override
                 public void actionPerformed(ActionEvent e)
                 {
                     f.toFront();

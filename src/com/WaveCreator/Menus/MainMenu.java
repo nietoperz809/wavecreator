@@ -4,14 +4,14 @@ package com.WaveCreator.Menus;
 import com.WaveCreator.DFilterAndFourierSeries.DFilterFrame;
 import com.WaveCreator.DFilterAndFourierSeries.FourierFrame;
 import com.WaveCreator.Dialogs;
+import com.WaveCreator.FrameManager;
 import com.WaveCreator.Monitor.MemoryMonitorFrame;
 import com.WaveCreator.ScopeWindow;
 import com.WaveCreator.Wave16;
-import com.WaveCreator.FrameManager;
-
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
+import javax.swing.AbstractAction;
+import javax.swing.JPopupMenu;
 
 /**
  * Class that implements the main context menu
@@ -29,6 +29,7 @@ public class MainMenu extends JPopupMenu
 
         add(new AbstractAction("Info")
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 Dialogs.waveInfo(scopeWindow);
@@ -37,6 +38,7 @@ public class MainMenu extends JPopupMenu
 
         add(new AbstractAction("Monitor")
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 MemoryMonitorFrame.go ();
@@ -47,6 +49,7 @@ public class MainMenu extends JPopupMenu
         {
             add(new AbstractAction("First Maximum")
             {
+                @Override
                 public void actionPerformed(ActionEvent e)
                 {
                     scopeWindow.moveToPosition(scopeWindow.m_wave.maxIndex());
@@ -55,6 +58,7 @@ public class MainMenu extends JPopupMenu
 
             add(new AbstractAction("First Minimum")
             {
+                @Override
                 public void actionPerformed(ActionEvent e)
                 {
                     scopeWindow.moveToPosition(scopeWindow.m_wave.minIndex());
@@ -65,6 +69,7 @@ public class MainMenu extends JPopupMenu
             {
                 add(new AbstractAction("Go to Marker 1")
                 {
+                    @Override
                     public void actionPerformed(ActionEvent e)
                     {
                         scopeWindow.moveToPosition(scopeWindow.m_oscilloscope.m_markers.m_marker_1);
@@ -73,6 +78,7 @@ public class MainMenu extends JPopupMenu
 
                 add(new AbstractAction("Go to Marker 2")
                 {
+                    @Override
                     public void actionPerformed(ActionEvent e)
                     {
                         scopeWindow.moveToPosition(scopeWindow.m_oscilloscope.m_markers.m_marker_2);
@@ -82,6 +88,7 @@ public class MainMenu extends JPopupMenu
         }
         add(new AbstractAction("Toggle draw mode")
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 scopeWindow.m_oscilloscope.toggleDrawMode();
@@ -90,6 +97,7 @@ public class MainMenu extends JPopupMenu
 
         add(new AbstractAction("Create drawable copy")
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 Wave16 w = scopeWindow.m_wave.copy();
@@ -102,6 +110,7 @@ public class MainMenu extends JPopupMenu
 
         add(new AbstractAction("Zoom in")
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 scopeWindow.changeShowWindow(scopeWindow.m_showWindow / 2);
@@ -110,6 +119,7 @@ public class MainMenu extends JPopupMenu
 
         add(new AbstractAction("Zoom out")
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 scopeWindow.changeShowWindow(scopeWindow.m_showWindow * 2);
@@ -118,6 +128,7 @@ public class MainMenu extends JPopupMenu
 
         add(new AbstractAction("Maximal zoom")
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 scopeWindow.changeShowWindow(0);
@@ -126,6 +137,7 @@ public class MainMenu extends JPopupMenu
 
         add(new AbstractAction("Minimal zoom")
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 scopeWindow.changeShowWindow(Integer.MAX_VALUE);
@@ -136,6 +148,7 @@ public class MainMenu extends JPopupMenu
 
         add(new AbstractAction("Play")
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 scopeWindow.m_player.play();
@@ -144,6 +157,7 @@ public class MainMenu extends JPopupMenu
 
         add(new AbstractAction("DirectPlay")
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 FrameManager.getInstance().startDirectPlay();
@@ -152,6 +166,7 @@ public class MainMenu extends JPopupMenu
 
         add(new AbstractAction("Stop")
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 scopeWindow.m_player.stop();
@@ -161,6 +176,7 @@ public class MainMenu extends JPopupMenu
 
         add(new AbstractAction("Rewind")
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 scopeWindow.m_player.setFramePosition(0);
@@ -172,6 +188,7 @@ public class MainMenu extends JPopupMenu
 
         add(new AbstractAction("Save")
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 Dialogs.saveWave(scopeWindow);
@@ -180,6 +197,7 @@ public class MainMenu extends JPopupMenu
 
         add(new AbstractAction("Load")
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 Dialogs.loadWave(scopeWindow);
@@ -219,6 +237,7 @@ public class MainMenu extends JPopupMenu
         addSeparator();
         add(new AbstractAction("Run DFilter Applet")
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 DFilterFrame ogf = new DFilterFrame(scopeWindow);
@@ -228,6 +247,7 @@ public class MainMenu extends JPopupMenu
 
         add(new AbstractAction("Run Fourier Series Applet")
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 FourierFrame ogf = new FourierFrame(scopeWindow);
@@ -238,6 +258,7 @@ public class MainMenu extends JPopupMenu
         addSeparator();
         add(new AbstractAction("Exit")
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 if (Dialogs.closeApplication(scopeWindow))

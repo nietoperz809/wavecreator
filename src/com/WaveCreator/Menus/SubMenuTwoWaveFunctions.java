@@ -1,15 +1,16 @@
 package com.WaveCreator.Menus;
 
+import com.WaveCreator.FrameManager;
 import com.WaveCreator.Functions.FunctionsTwoWaves;
+import com.WaveCreator.MethodInvoking.MethodComparator;
 import com.WaveCreator.ScopeWindow;
 import com.WaveCreator.Wave16;
-import com.WaveCreator.FrameManager;
-import com.WaveCreator.MethodInvoking.MethodComparator;
-
-import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import javax.swing.AbstractAction;
+import javax.swing.JMenu;
 
 /**
  * Menu class for wave combinations
@@ -19,65 +20,6 @@ import java.util.Arrays;
  */
 class SubMenuTwoWaveFunctions extends JMenu
 {
-    /**
-     * Sub menu class that executes actions on two waves
-     */
-    class ActionMenu extends JMenu
-    {
-        /**
-         * Constructor
-         * @param sc Corresponding frame, containing primary Wave16 object
-         * @param method The method to execute
-         */
-        ActionMenu (final ScopeWindow sc, final Method method)
-        {
-            /**
-             * Sub menu text is the name of the algorithm
-             */
-            super (method.getName());
-
-            /**
-             * Get a list of all open frames
-             */
-            ScopeWindow[] frames = FrameManager.getInstance().getAllFrames();
-
-            /**
-             * Traverse thru all frames, adding an action entry that is the name of the Wave16 object
-             */
-            for (final ScopeWindow frame : frames)
-            {
-                add(new AbstractAction(frame.m_wave.name)
-                {
-                    /**
-                     * User hits this menu entry
-                     * @param e SWING supplied action information
-                     */
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        try
-                        {
-                            /**
-                             * Invoke the method of the 'twoWaveFunctions' section with one of the existing Wave16s
-                             */
-                            Wave16 w = (Wave16)method.invoke(sc.m_wave.functionsTwoWaves, frame.m_wave);
-                            /**
-                             * Set the name of new Wave16 object to the algorithm name
-                             */
-                            w.setName(method.getName());
-                            /**
-                             * Create a new frame that immediately shows the new object
-                             */
-                            FrameManager.getInstance().createFrame(w, "from TwoWaveFunktions");
-                        }
-                        catch (Exception e1)
-                        {
-                            e1.printStackTrace();
-                        }
-                    }
-                });
-            }
-        }
-    }
 
     /**
      * Constructor for this JMenu
@@ -107,6 +49,64 @@ class SubMenuTwoWaveFunctions extends JMenu
                     menu.add(m1);
                     menu = m1;
                 }
+            }
+        }
+    }
+
+    /**
+     * Sub menu class that executes actions on two waves
+     */
+    class ActionMenu extends JMenu
+    {
+        /**
+         * Constructor
+         * @param sc Corresponding frame, containing primary Wave16 object
+         * @param method The method to execute
+         */
+        ActionMenu(final ScopeWindow sc, final Method method)
+        {
+            /**
+             * Sub menu text is the name of the algorithm
+             */
+            super (method.getName());
+            /**
+             * Get a list of all open frames
+             */
+            ScopeWindow[] frames = FrameManager.getInstance().getAllFrames();
+            /**
+             * Traverse thru all frames, adding an action entry that is the name of the Wave16 object
+             */
+            for (final ScopeWindow frame : frames)
+            {
+                add(new AbstractAction(frame.m_wave.name)
+                {
+                    /**
+                     * User hits this menu entry
+                     * @param e SWING supplied action information
+                     */
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        try
+                        {
+                            /**
+                             * Invoke the method of the 'twoWaveFunctions' section with one of the existing Wave16s
+                             */
+                            Wave16 w = (Wave16)method.invoke(sc.m_wave.functionsTwoWaves, frame.m_wave);
+                            /**
+                             * Set the name of new Wave16 object to the algorithm name
+                             */
+                            w.setName(method.getName());
+                            /**
+                             * Create a new frame that immediately shows the new object
+                             */
+                            FrameManager.getInstance().createFrame(w, "from TwoWaveFunktions");
+                        }
+                        catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e1)
+                        {
+                        }
+                    }
+                });
             }
         }
     }

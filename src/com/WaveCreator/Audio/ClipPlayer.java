@@ -8,9 +8,11 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import javax.sound.sampled.LineUnavailableException;
 
 /**
- * This is the asychronous clip player class
+ * This is the asychronuous clip player class
  */
 public class ClipPlayer
 {
@@ -53,7 +55,7 @@ public class ClipPlayer
             clip = AudioSystem.getClip();
             clip.open(ais);
         }
-        catch (Exception e)
+        catch (LineUnavailableException | IOException e)
         {
             e.printStackTrace();
         }

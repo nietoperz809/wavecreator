@@ -6,6 +6,7 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.LineUnavailableException;
 
 /**
  * Direct Player
@@ -30,7 +31,7 @@ public class DirectPlay implements Runnable
             m_dataline.open(playFormat, PLAYBUFFERSIZE);
             m_dataline.start();
         }
-        catch (Exception e)
+        catch (LineUnavailableException e)
         {
             return false;
         }
@@ -78,6 +79,7 @@ public class DirectPlay implements Runnable
         }
     }
 
+    @Override
     public void run()
     {
         byte[] buffer = new byte[PLAYBUFFERSIZE];

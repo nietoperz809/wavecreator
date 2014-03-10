@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
@@ -28,7 +29,7 @@ public class MethodInvoker extends JDialog implements ActionListener
      */
     private int[] readIntegerArray(String value)
     {
-        ArrayList<Integer> li = new ArrayList<Integer>();
+        ArrayList<Integer> li = new ArrayList<>();
         String[] vals = value.split(",");
         for (String val : vals)
         {
@@ -45,7 +46,7 @@ public class MethodInvoker extends JDialog implements ActionListener
 
     private short[] readShortArray(String value)
     {
-        ArrayList<Short> li = new ArrayList<Short>();
+        ArrayList<Short> li = new ArrayList<>();
         String[] vals = value.split(",");
         for (String val : vals)
         {
@@ -67,7 +68,7 @@ public class MethodInvoker extends JDialog implements ActionListener
      */
     private double[] readDoubleArray(String value)
     {
-        ArrayList<Double> li = new ArrayList<Double>();
+        ArrayList<Double> li = new ArrayList<>();
         String[] vals = value.split(",");
         for (String val : vals)
         {
@@ -135,7 +136,7 @@ public class MethodInvoker extends JDialog implements ActionListener
             }
         }
         // Make default values if something failed
-        catch (Exception ex)
+        catch (NumberFormatException ex)
         {
             if (typename.equals("boolean"))
             {
@@ -185,6 +186,7 @@ public class MethodInvoker extends JDialog implements ActionListener
      * User clicked OK button
      * @param e Swing Action event
      */
+        @Override
     public void actionPerformed(ActionEvent e)
     {
         // Possibly cancel cell editing
@@ -211,7 +213,7 @@ public class MethodInvoker extends JDialog implements ActionListener
             m_result.parameters = params;
             m_result.resultobject = m_method.invoke(m_object, args);
         }
-        catch (Exception e1)
+        catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e1)
         {
             e1.printStackTrace();
         }
@@ -243,7 +245,7 @@ public class MethodInvoker extends JDialog implements ActionListener
                 m_result.parameters = null;
                 m_result.resultobject = m_method.invoke(m_object);
             }
-            catch (Exception e)
+            catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
             {
                 e.printStackTrace();
             }
@@ -260,17 +262,17 @@ public class MethodInvoker extends JDialog implements ActionListener
         for (int s = 0; s < paramTypes.length; s++)
         {
             String type = paramTypes[s].getName().replace("java.lang.", "");
-            if (type.equals("[I")) // Integer array
+            switch (type)
             {
-                type = "int[]";
-            }
-            else if (type.equals("[D")) // double array
-            {
-                type = "double[]";
-            }
-            else if (type.equals("[S")) // short array
-            {
-                type = "short[]";
+                case "[I":
+                    type = "int[]";
+                    break;
+                case "[D":
+                    type = "double[]";
+                    break;
+                case "[S":
+                    type = "short[]";
+                    break;
             }
             String descr = "";
             if (ann != null)

@@ -23,6 +23,7 @@ public class SubMenuUndo extends JMenu
         {
             add(new AbstractAction(w.name)
             {
+                @Override
                 public void actionPerformed(ActionEvent e)
                 {
                     FrameManager.getInstance().createFrame(w, "Restored");

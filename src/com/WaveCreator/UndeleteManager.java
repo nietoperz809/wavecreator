@@ -10,7 +10,7 @@ import java.util.ArrayList;
  */
 public class UndeleteManager
 {
-    final ArrayList<Wave16> m_waves = new ArrayList<Wave16>();
+    final ArrayList<Wave16> m_waves = new ArrayList<>();
     private static UndeleteManager m_instance = null;
 
     private UndeleteManager()

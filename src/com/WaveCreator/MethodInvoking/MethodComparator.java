@@ -14,6 +14,7 @@ public class MethodComparator implements Comparator<Method>
      * @param o2 Method #2
      * @return Lexically comparison result
      */
+    @Override
     public int compare(Method o1, Method o2)
     {
         return o1.getName().compareTo(o2.getName());

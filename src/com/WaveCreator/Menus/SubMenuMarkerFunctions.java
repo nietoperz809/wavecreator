@@ -21,6 +21,7 @@ class SubMenuMarkerFunctions extends JMenu
 
         add(new AbstractAction("Extract")
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 int[] mark = scopeWindow.m_oscilloscope.m_markers.get();
@@ -31,13 +32,14 @@ class SubMenuMarkerFunctions extends JMenu
 
         add(new AbstractAction("Delete")
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 int[] mark = scopeWindow.m_oscilloscope.m_markers.get();
                 Wave16 left = scopeWindow.m_wave.functionsDeletions.extractSamples(0, mark[0]);
                 Wave16 right = scopeWindow.m_wave.functionsDeletions.extractSamples(mark[1], scopeWindow.m_wave.data.length);
                 Wave16[] arr = {left, right};
-                Wave16 w = scopeWindow.m_wave.combineAppend(arr);
+                Wave16 w = Wave16.combineAppend(arr);
                 FrameManager.getInstance().createFrame(w, "Marker deleted");
             }
         });

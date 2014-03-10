@@ -59,6 +59,7 @@ class SubMenuFunctions extends JMenu
                 currentMenu.add(new AbstractAction(name + MethodInvoker.getMethodParameterDescriptions(method))
                 {
                     // User clicked on menu entry
+                    @Override
                     public void actionPerformed(ActionEvent e)
                     {
                         // Invoke the method and get the result
@@ -78,7 +79,7 @@ class SubMenuFunctions extends JMenu
                                 Wave16 left = scopeWindow.m_wave.functionsDeletions.extractSamples(0, mark[0]);
                                 Wave16 right = scopeWindow.m_wave.functionsDeletions.extractSamples(mark[1], scopeWindow.m_wave.data.length);
                                 Wave16[] arr = {left, w, right};
-                                w = scopeWindow.m_wave.combineAppend(arr);
+                                w = Wave16.combineAppend(arr);
                             }
 
                             w.setName(scopeWindow.m_wave.name+"->"+name);

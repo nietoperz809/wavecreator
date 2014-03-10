@@ -1,5 +1,6 @@
 package com.WaveCreator.IO;
 
+import com.WaveCreator.Functions.FunctionsGenerators;
 import com.WaveCreator.Wave16;
 
 import javax.imageio.stream.FileImageInputStream;
@@ -144,12 +145,12 @@ public class Wave16IO
         {
             case 8:
                 dat = reverseInputStream.readByteArrayAsShort(data_length);
-                samp = new Wave16().functionsGenerators.fromShortArray(dat, samplingrate / 2);
+                samp = FunctionsGenerators.fromShortArray(dat, samplingrate / 2);
                 break;
 
             case 16:
                 dat = reverseInputStream.readShortArray(data_length);
-                samp = new Wave16().functionsGenerators.fromShortArray(dat, samplingrate);
+                samp = FunctionsGenerators.fromShortArray(dat, samplingrate);
                 break;
 
             default:

@@ -12,10 +12,10 @@ import java.awt.geom.GeneralPath;
 public class Oscilloscope extends JPanel
 {
     /**
-	 * Value used for serialization
-	 */
-	private static final long serialVersionUID = -4159385898572899800L;
-	/**
+     * Value used for serialization
+     */
+    private static final long serialVersionUID = -4159385898572899800L;
+    /**
      * Array of points
      */
     double[] m_points;
@@ -44,6 +44,7 @@ public class Oscilloscope extends JPanel
 
     /**
      * Constructor for any kind of double[] array
+     *
      * @param ysc Y scale factor
      * @param points Array of points to draw
      */
@@ -54,31 +55,48 @@ public class Oscilloscope extends JPanel
         setBackground(Color.BLACK);
     }
 
+    private Oscilloscope(int ysc, Double[] points)
+    {
+        double[] pts = new double[points.length];
+        for (int s = 0; s < points.length; s++)
+        {
+            pts[s] = points[s];
+        }
+        yscale = ysc;
+        m_points = pts;
+        setBackground(Color.BLACK);
+    }
+
     /**
      * Constructor for Wave16 objects
+     *
      * @param w Wave16 object to be used
      */
     public Oscilloscope(Wave16 w)
     {
-        this (65536, w.data);
+        this(65536, w.data);
     }
 
     /**
      * Draws part of array
+     *
      * @param x Starting position
      * @param length Number of pixels to draw
      */
-    public void drawNow (int x, int length)
+    public void drawNow(int x, int length)
     {
         if (m_points.length < 2)
         {
             x = 0;
-            m_points = new double[]{0,0};
+            m_points = new double[]
+            {
+                0, 0
+            };
             length = 2;
         }
-        else if ((x+length) >= m_points.length)
+        else if ((x + length) >= m_points.length)
         {
-            x = m_points.length-length;
+            x = m_points.length - length;
         }
         m_offset = x;
         m_length = length;
@@ -90,12 +108,13 @@ public class Oscilloscope extends JPanel
      */
     public void toggleDrawMode()
     {
-        m_drawmode = (m_drawmode+1)%4;
+        m_drawmode = (m_drawmode + 1) % 4;
         repaint();
     }
 
     /**
      * Paint method that actually draws the scope
+     *
      * @param gg Graphics context
      */
     @Override
@@ -105,7 +124,7 @@ public class Oscilloscope extends JPanel
         int xe = getWidth();
         int ye = getHeight();
         int y2 = ye / 2;
-        int x2 = xe * m_length / (2*m_length-2);
+        int x2 = xe * m_length / (2 * m_length - 2);
 
         g.setBackground(Color.BLACK);
         g.clearRect(0, 0, xe, ye);
@@ -122,10 +141,10 @@ public class Oscilloscope extends JPanel
         if (m_markers.hasMarkers())
         {
             g.setColor(Color.RED);
-            int m1 = (int)((m_markers.m_marker_1-m_offset)*xstep);
-            int m2 = (int)((m_markers.m_marker_2-m_offset)*xstep);
-            g.drawLine (m1, 0, m1, ye);
-            g.drawLine (m2, 0, m2, ye);
+            int m1 = (int) ((m_markers.m_marker_1 - m_offset) * xstep);
+            int m2 = (int) ((m_markers.m_marker_2 - m_offset) * xstep);
+            g.drawLine(m1, 0, m1, ye);
+            g.drawLine(m2, 0, m2, ye);
         }
 
         // draw lines
@@ -134,16 +153,16 @@ public class Oscilloscope extends JPanel
             m_path.moveTo(0, y2 - m_points[m_offset] * ystep);
             for (int s = 1; s < m_length; s++)
             {
-                m_path.lineTo(s * xstep, y2 - m_points[m_offset+s] * ystep);
+                m_path.lineTo(s * xstep, y2 - m_points[m_offset + s] * ystep);
             }
-         }
+        }
         // draw pixels
         else
         {
             setPoint(0, y2 - m_points[m_offset] * ystep);
             for (int s = 1; s < m_length; s++)
             {
-                setPoint(s * xstep, y2 - m_points[m_offset+s] * ystep);
+                setPoint(s * xstep, y2 - m_points[m_offset + s] * ystep);
             }
         }
 
@@ -154,6 +173,7 @@ public class Oscilloscope extends JPanel
 
     /**
      * Draws a point in pixel mode
+     *
      * @param x X coordinate
      * @param y Y coordinate
      */
@@ -162,22 +182,21 @@ public class Oscilloscope extends JPanel
         switch (m_drawmode)
         {
             case 1:
-            m_path.moveTo(x - 2, y);
-            m_path.lineTo(x + 2, y);
-            m_path.moveTo(x, y - 2);
-            m_path.lineTo(x, y + 2);
-            break;
+                m_path.moveTo(x - 2, y);
+                m_path.lineTo(x + 2, y);
+                m_path.moveTo(x, y - 2);
+                m_path.lineTo(x, y + 2);
+                break;
 
             case 2:
-            m_path.moveTo(x, y);
-            m_path.lineTo(x, y);
-            break;
+                m_path.moveTo(x, y);
+                m_path.lineTo(x, y);
+                break;
 
             case 3:
-            m_path.moveTo(x, y);
-            m_path.lineTo(x, getHeight()/2);
-            break;
+                m_path.moveTo(x, y);
+                m_path.lineTo(x, getHeight() / 2);
+                break;
         }
     }
 }
-

@@ -3,10 +3,7 @@ package com.WaveCreator.Math;
 import java.math.BigDecimal;
 
 /**
- * Created by IntelliJ IDEA.
- * User: Administrator
- * Date: 19.12.2009
- * Time: 22:41:12
+ * Created by IntelliJ IDEA. User: Administrator Date: 19.12.2009 Time: 22:41:12
  * To change this template use File | Settings | File Templates.
  */
 public class PiDigits
@@ -15,8 +12,8 @@ public class PiDigits
     {
         BigDecimal result, numer, term;
         BigDecimal invX = BigDecimal.valueOf(inverseX);
-        BigDecimal invX2 =
-                BigDecimal.valueOf(inverseX * inverseX);
+        BigDecimal invX2
+                = BigDecimal.valueOf(inverseX * inverseX);
 
         numer = BigDecimal.ONE.divide(invX,
                 scale, BigDecimal.ROUND_HALF_EVEN);
@@ -37,7 +34,8 @@ public class PiDigits
                 result = result.add(term);
             }
             i++;
-        } while (term.compareTo(BigDecimal.ZERO) != 0);
+        }
+        while (term.compareTo(BigDecimal.ZERO) != 0);
         return result;
     }
 
@@ -50,14 +48,14 @@ public class PiDigits
         return pi.setScale(digits, BigDecimal.ROUND_HALF_UP);
     }
 
-    public static String getPiString (int digits)
+    public static String getPiString(int digits)
     {
-        return computePi(digits).toString().replace(".","");
+        return computePi(digits).toString().replace(".", "");
     }
 
-    public static String getPiString (int start, int last)
+    public static String getPiString(int start, int last)
     {
-        String pi = getPiString (last);
+        String pi = getPiString(last);
         return pi.substring(start);
     }
 }
