@@ -3,12 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.WaveCreator.turtle;
+package com.WaveCreator.lindenmayerrule;
 
 import java.util.ArrayList;
 
 /**
  * Stores and applies Rules
+ *
  * @author Administrator
  */
 public final class RuleManager
@@ -24,7 +25,7 @@ public final class RuleManager
      */
     public RuleManager()
     {
-        
+
     }
 
     /**
@@ -37,9 +38,10 @@ public final class RuleManager
         finalrules.clear();
         axiom = "";
     }
-    
+
     /**
      * Constructor that sets the Axiom
+     *
      * @param a the Axiom string
      */
     public RuleManager(String a)
@@ -49,6 +51,7 @@ public final class RuleManager
 
     /**
      * Set number of Recursions e.g. how many times the Rule is applied
+     *
      * @param rec
      */
     public void setRecursions(int rec)
@@ -57,7 +60,8 @@ public final class RuleManager
     }
 
     /**
-     * Set the axiom (that is the starting point of Lindenmayer Systems 
+     * Set the axiom (that is the starting point of Lindenmayer Systems
+     *
      * @param a Axiom String
      */
     public void setAxiom(String a)
@@ -68,30 +72,48 @@ public final class RuleManager
 
     /**
      * Sets a Rule of the form key->replacement. -> is used to separate them
+     *
      * @param r the Rule as mentioned
      * @param probability Probability, 1.0 == apply always, 0.0 == apply never
      */
     public void setRule(String r, double probability)
     {
+        Rule x = makeRule (r, probability);
+        if (x != null)
+            rules.add(x);
+    }
+
+    private Rule makeRule(String r, double probability)
+    {
+        if (r == null)
+        {
+            return null;
+        }
         String[] two = r.split(SEPARATOR);
-        Rule rule = new Rule (two[0], two[1], probability);
-        rules.add(rule);
+        if (two.length != 2)
+        {
+            return null;
+        }
+        return new Rule(two[0], two[1], probability);
     }
     
     /**
-     * Sets final Rule that is: this rules are applied as the last step of the transformation 
+     * Sets final Rule that is: this rules are applied as the last step of the
+     * transformation
+     *
      * @param r the Rule as mentioned
      * @param probability Probability, 1.0 == apply always, 0.0 == apply never
      */
     public void setFinalRule(String r, double probability)
     {
-        String[] two = r.split(SEPARATOR);
-        Rule rule = new Rule (two[0], two[1], probability);
-        finalrules.add(rule);
+        Rule x = makeRule (r, probability);
+        if (x != null)
+            finalrules.add(x);
     }
 
     /**
      * Get the Axiom
+     *
      * @return the axiom
      */
     public String getAxiom()
@@ -101,6 +123,7 @@ public final class RuleManager
 
     /**
      * Apply all Rules in as List
+     *
      * @param list List containing the Rule
      * @param temp Target string
      * @return string with all rules applied
@@ -109,24 +132,29 @@ public final class RuleManager
     {
         for (Rule rule : list)
         {
-            temp = temp.replace (rule.getKey(), ""+ rule.hashCode());
+            temp = temp.replace(rule.getKey(), "" + rule.hashCode());
         }
         for (Rule rule : list)
         {
-            String hash = ""+rule.hashCode();
+            String hash = "" + rule.hashCode();
             while (temp.contains(hash))
             {
                 if (Math.random() < rule.getProbability())
+                {
                     temp = temp.replaceFirst(hash, rule.getReplacement());
+                }
                 else
+                {
                     temp = temp.replaceFirst(hash, rule.getKey());
+                }
             }
         }
         return temp;
     }
 
     /**
-     * Get the final result 
+     * Get the final result
+     *
      * @return Lindenmayer System after all Rules were applied
      */
     public String getResult()
@@ -136,20 +164,7 @@ public final class RuleManager
         {
             temp = applyRules(rules, temp);
         }
-        temp = applyRules (finalrules, temp);
+        temp = applyRules(finalrules, temp);
         return temp;
-    }
-
-    /**
-     *
-     */
-    public static void test()
-    {
-        RuleManager m = new RuleManager("ABC");
-        m.setRule("A->AB", 1.0);
-        m.setRule("B->BC", 1.0);
-        m.setRule("C->CD", 1.0);
-        m.setRecursions(8);
-        System.out.println(m.getResult());
     }
 }

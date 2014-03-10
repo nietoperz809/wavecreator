@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package com.WaveCreator.turtle;
+package com.WaveCreator.lindenmayerrule;
 
 /**
  *
