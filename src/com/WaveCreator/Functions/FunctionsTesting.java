@@ -720,10 +720,11 @@ public final class FunctionsTesting extends Functions
     
     public Wave16 lindenMayer (@ParamDesc("Axiom")String axiom, 
                                @ParamDesc("Rules")String[] rules,
-                               @ParamDesc("Recursions")int recursions,
+                               @ParamDesc("Recursions")int[] recursions,
                                @ParamDesc("Final Rules")String[] endrules)
     {
         System.out.println (Arrays.toString(rules));
+        System.out.println (Arrays.toString(recursions));
         Wave16 out = m_base.createEmptyCopy();
         return out;
     }

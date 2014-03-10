@@ -22,6 +22,26 @@ public class MethodInvoker extends JDialog implements ActionListener
     private final Object m_object;
     private final MethodInvokerResult m_result = new MethodInvokerResult();
 
+    
+    private <T> ArrayList<T> readArray(String value)
+    {
+        ArrayList<T> li = new ArrayList<>();
+        String[] vals = value.split(",");
+        for (String val : vals)
+        {
+            val = val.trim();
+            li.add((T) val);
+        }
+        return li;
+    }
+
+    private String[] readStringArray (String value)
+    {
+        ArrayList<String> a = readArray(value);
+        String[] b = new String[a.size()];
+        return a.toArray(b);
+    }
+
     /**
      * Reads comma-separated integer values and creates an integer array
      * @param value String containing all values
@@ -44,22 +64,6 @@ public class MethodInvoker extends JDialog implements ActionListener
         return res;
     }
 
-    private String[] readStringArray (String value)
-    {
-        ArrayList<String> li = new ArrayList<>();
-        String[] vals = value.split(",");
-        for (String val : vals)
-        {
-            val = val.trim();
-            li.add(val);
-        }
-        String[] res = new String[li.size()];
-        for (int s = 0; s < res.length; s++)
-        {
-            res[s] = li.get(s);
-        }
-        return res;
-    }
     
     private short[] readShortArray(String value)
     {
