@@ -11,7 +11,7 @@ public class Tester
     {
         //FunctionsTesting.testHenon();
         
-        Wave16 s1 = FunctionsGenerators.curveSine(22050, 1000);
+        Wave16 s1 = FunctionsGenerators.curveSine(22050, 2000);
         FrameManager.getInstance().createFrame(s1, "Starting frame");
     }
 }

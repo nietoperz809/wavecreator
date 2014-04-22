@@ -10,8 +10,11 @@ import com.WaveCreator.ParamDesc;
 import com.WaveCreator.Tools;
 import com.WaveCreator.Wave16;
 import com.WaveCreator.lindenmayerrule.RuleManager;
+import java.awt.Point;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.Stack;
 
 /**
  * New Class. User: Administrator Date: 31.12.2008 Time: 18:56:12
@@ -750,15 +753,18 @@ public final class FunctionsTesting extends Functions
     }
 
     public Wave16 lindenMayer(@ParamDesc("Axiom") String axiom,
+            @ParamDesc("Angle") double angle,
+            @ParamDesc("Stepsize") double stepsize,
             @ParamDesc("Rules") String rule1,
             @ParamDesc("Rules") String rule2,
             @ParamDesc("Rules") String rule3,
             @ParamDesc("Rules") String rule4,
             @ParamDesc("Recursions") int recursions,
-            @ParamDesc("Final Rules") String endrule)
+            @ParamDesc("Final Rules") String endrule) throws Exception
     {
-        Wave16 out = m_base.createEmptyCopy();
         RuleManager rule = new RuleManager();
+        fixangle = angle;
+        fixstep = stepsize;
         rule.setAxiom(axiom);
         rule.setRule(rule1, 1.0);
         rule.setRule(rule2, 1.0);
@@ -767,8 +773,166 @@ public final class FunctionsTesting extends Functions
         rule.setRecursions(recursions);
         rule.setFinalRule(endrule, 1.0);
         String s = rule.getResult();
+        WaveArray warr = new WaveArray();
+        drawTurtleSteps(s, warr);
         System.out.println(s);
-        return out;
+        return warr.getAll();
+    }
+
+    class StackElement
+    {
+        private final double angle;
+        private final Point point;
+
+        /**
+         * Constructor: supplies values to be stored
+         *
+         * @param d The angle
+         * @param p The point
+         */
+        public StackElement(double d, Point p)
+        {
+            angle = d;
+            point = new Point(p);
+        }
+
+        /**
+         * Get Angle
+         *
+         * @return the angle
+         */
+        public double getAngle()
+        {
+            return angle;
+        }
+
+        /**
+         * Get the point
+         *
+         * @return the Point
+         */
+        public Point getPoint()
+        {
+            return point;
+        }
+    }
+
+    static final double DEGFACTOR = (2 * Math.PI) / 360.0;
+
+    private int applyScaling(int in, int sc)
+    {
+        if (sc < 0)
+        {
+            return in / -sc;
+        }
+        else
+        {
+            return in * sc;
+        }
+    }
+
+    class WaveArray
+    {
+        ArrayList<Wave16> waves = new ArrayList<>();
+        static final int SAMPLERATE = 22000;
+
+        void newWave(Point p)
+        {
+            Wave16 w = FunctionsGenerators.curveSine(SAMPLERATE, SAMPLERATE / 4, (double) p.x, (double) p.y);
+            System.out.println("add");
+            waves.add(w);
+        }
+
+        Wave16 getAll()
+        {
+            Wave16 wres = new Wave16(0, SAMPLERATE);
+            for (Wave16 wave : waves)
+            {
+                wres = Wave16.combineAppend(wres, wave);
+            }
+            return wres;
+        }
+    }
+
+    private Point newPoint(Point in, double distance, double angle, Point mult, int reverse)
+    {
+        Point n = new Point();
+        angle *= DEGFACTOR;
+        n.x = in.x + reverse * applyScaling((int) (distance * Math.cos(angle)), mult.x);
+        n.y = in.y + reverse * applyScaling((int) (distance * Math.sin(angle)), mult.y);
+        return n;
+    }
+
+    private void doDraw(WaveArray out, Point pos, double angle,
+            Point mult, int pensize, double distance, char cmd)
+    {
+        Point p = newPoint(pos, distance, angle, mult, cmd == 'F' ? 1 : -1);
+
+        out.newWave(p);
+
+        pos.x = p.x;
+        pos.y = p.y;
+    }
+
+    double fixangle = 90.0;
+    double fixstep = 10.0;
+
+    void drawTurtleSteps(String in, WaveArray out) throws Exception
+    {
+        Point currentTurtlePosition = new Point(1000, 1000);
+        Point multiplicator = new Point(1, 1);
+        int x;
+        int y;
+        int linenumber = 0;
+        int pensize = 0;
+        double currentAngle = -90.0;
+        Stack<StackElement> stack = new Stack<>();
+        for (int s = 0; s < in.length(); s++)
+        {
+            char c = in.charAt(s);
+            switch (c)
+            {
+                case '/':
+                    fixstep /= 2;
+                    if (fixstep < 1)
+                    {
+                        fixstep = 1;
+                    }
+                    break;
+
+                case '*':
+                    fixstep *= 2;
+                    break;
+
+                case '[':
+                    stack.push(new StackElement(currentAngle, currentTurtlePosition));
+                    break;
+
+                case ']':
+                    StackElement e = stack.pop();
+                    currentAngle = e.getAngle();
+                    currentTurtlePosition = e.getPoint();
+                    break;
+
+                case 'F':
+                case 'R':
+                    doDraw(out, currentTurtlePosition, currentAngle, multiplicator, pensize, fixstep, c);
+                    break;
+
+                case 'f':
+                case 'r':
+                    currentTurtlePosition = newPoint(currentTurtlePosition, fixstep, currentAngle, multiplicator, c == 'f' ? 1 : -1);
+                    break;
+
+                case '+':
+                    currentAngle -= fixangle % 360;
+                    break;
+
+                case '-':
+                    currentAngle += fixangle % 360;
+                    break;
+            }
+        }
     }
 
     /////////////////////////////////////////////////// END Test functions //////////////////////////////////////////////////

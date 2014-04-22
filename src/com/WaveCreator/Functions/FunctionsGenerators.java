@@ -471,7 +471,8 @@ public final class FunctionsGenerators extends Functions
                              @ParamDesc("Frequency") double frequency)
     {
         double[] f = {frequency};
-        int samples = (int)(samplingrate/frequency);
+        int samples = (int)Math.round(0.5+samplingrate/frequency);
+        //samples *= 1000;
         return curveSine (samplingrate, samples, f);
     }
 
