@@ -1,6 +1,7 @@
 package com.WaveCreator;
 
 import java.util.HashMap;
+
 import static com.WaveCreator.Functions.FunctionsGenerators.*;
 /**
  * Creates DTMF samples
