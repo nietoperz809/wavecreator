@@ -62,7 +62,7 @@ public final class FunctionsDeletions extends Functions
     public Wave16 deleteSamplesBetween (@ParamDesc("Minimum value to delete") int min,
                                         @ParamDesc("Maximum value to delete") int max)
     {
-        ArrayList<Integer> al = new ArrayList<Integer>();
+        ArrayList<Integer> al = new ArrayList<>();
         for (double aData : m_base.data)
         {
             if (aData >= min && aData <= max)
@@ -87,7 +87,7 @@ public final class FunctionsDeletions extends Functions
                                       @ParamDesc("Number of samples to throw away")int miss,
                                       @ParamDesc ("TRUE if first samples should be kept") boolean mode)
     {
-        ArrayList<Integer> al = new ArrayList<Integer>();
+        ArrayList<Integer> al = new ArrayList<>();
         int cnt = 0;
         int kept = 0;
         for (double aData : m_base.data)
@@ -143,7 +143,7 @@ public final class FunctionsDeletions extends Functions
      */
     public Wave16 deleteConsecutiveSameSamples (@ParamDesc("Difference threshold") int difference)
     {
-        ArrayList<Integer> al = new ArrayList<Integer>();
+        ArrayList<Integer> al = new ArrayList<>();
         al.add((int) m_base.data[0]);
         for (int s = 1; s < m_base.data.length; s++)
         {

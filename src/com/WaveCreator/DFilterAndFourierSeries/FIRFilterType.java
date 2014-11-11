@@ -15,6 +15,7 @@ public abstract class FIRFilterType extends FilterType
         super (dFilterFrame);
     }
 
+    @Override
     void getResponse(double w, Complex c)
     {
         if (response == null)
@@ -42,7 +43,7 @@ public abstract class FIRFilterType extends FilterType
             return 1;
         }
         double x = 2 * DFilterFrame.pi * i / (n - 1);
-        double n2 = n / 2; // int
+        double n2 = (double)n / 2; // int
         switch (dFilterFrame.windowChooser.getSelectedIndex())
         {
             case 0:

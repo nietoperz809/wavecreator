@@ -9,7 +9,8 @@ package com.WaveCreator.DFilterAndFourierSeries;
 class BoxFilter extends FIRFilterType
 {
     double cw;
-    double r, norm;
+    double r;
+    //double norm;
     int n;
 
     public BoxFilter(DFilterFrame dFilterFrame)
@@ -17,6 +18,7 @@ class BoxFilter extends FIRFilterType
         super(dFilterFrame);
     }
 
+    @Override
     int select()
     {
         dFilterFrame.auxLabels[0].setText("Fundamental Freq");
@@ -31,10 +33,12 @@ class BoxFilter extends FIRFilterType
         return 4;
     }
 
+    @Override
     void setCutoff(double f)
     {
     }
 
+    @Override
     void setup()
     {
         cw = dFilterFrame.auxBars[0].getValue() * DFilterFrame.pi / 1000.;
@@ -46,6 +50,7 @@ class BoxFilter extends FIRFilterType
         n = dFilterFrame.auxBars[3].getValue();
     }
 
+    @Override
     Filter genFilter()
     {
         DirectFilter f = new DirectFilter(dFilterFrame);
@@ -91,6 +96,7 @@ class BoxFilter extends FIRFilterType
         return f;
     }
 
+    @Override
     void getInfo(String x[])
     {
         x[0] = "Order: " + n;

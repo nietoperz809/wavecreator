@@ -76,6 +76,10 @@ public class Dialogs
         dlg.setVisible(true);
     }
 
+    /**
+     *
+     * @param scopeWindow
+     */
     public static void loadWave (ScopeWindow scopeWindow)
     {
         JFileChooser chooser = new JFileChooser();
@@ -97,6 +101,10 @@ public class Dialogs
         }
     }
 
+    /**
+     *
+     * @param scopeWindow
+     */
     public static void saveWave (ScopeWindow scopeWindow)
     {
         JFileChooser chooser = new JFileChooser();

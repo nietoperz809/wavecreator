@@ -58,6 +58,7 @@ public class ClipPlayer
         catch (LineUnavailableException | IOException e)
         {
             e.printStackTrace();
+            return null;
         }
         clip.setFramePosition (framePos);
         clip.start();
@@ -213,7 +214,8 @@ public class ClipPlayer
          */
         if (isPlaying())
         {
-            m_clip.setFramePosition(v);
+            if (m_clip != null)
+                m_clip.setFramePosition(v);
         }
     }
 }

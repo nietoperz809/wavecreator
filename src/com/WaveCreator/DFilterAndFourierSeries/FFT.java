@@ -30,7 +30,7 @@ class FFT
         int i;
         for (i = 0; i != size; i += 2)
         {
-            double pi = 3.1415926535;
+            double pi = Math.PI;
             double th = pi * i / size;
             wtabf[i] = Math.cos(th);
             wtabf[i + 1] = Math.sin(th);

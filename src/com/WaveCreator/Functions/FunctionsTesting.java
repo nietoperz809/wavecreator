@@ -329,7 +329,7 @@ public final class FunctionsTesting extends Functions
         GaloisField256 gf = new GaloisField256();
         for (int s = 0; s < w.data.length; s++)
         {
-            w.data[s] = gf.Product((int) w.data[s], mult);
+            w.data[s] = gf.product((int) w.data[s], mult);
         }
         w.data = Tools.fitValues(w.data);
         return w;
@@ -341,7 +341,7 @@ public final class FunctionsTesting extends Functions
         GaloisField256 gf = new GaloisField256();
         for (int s = 0; s < w.data.length; s++)
         {
-            w.data[s] = gf.Quotient((int) w.data[s], mult);
+            w.data[s] = gf.quotient((int) w.data[s], mult);
         }
         w.data = Tools.fitValues(w.data);
         return w;
@@ -520,7 +520,7 @@ public final class FunctionsTesting extends Functions
             }
 
         }
-        return m_base.combineAppend(arr);
+        return Wave16.combineAppend(arr);
     }
 
     public Wave16 aaInverseTestTransform(@ParamDesc("Length of partitions") int step) // Test !!!
@@ -545,7 +545,7 @@ public final class FunctionsTesting extends Functions
                 }
             }
         }
-        return m_base.combineAppend(at);
+        return Wave16.combineAppend(at);
     }
 
     public Wave16 aalog()
@@ -609,7 +609,7 @@ public final class FunctionsTesting extends Functions
             int sh = (short) Math.abs(m_base.data[s]);
             if ((sh & 1) == 1)
             {
-                out.data[s] = (3 * sh + 1) / 2;
+                out.data[s] = (3 * (double)sh + 1) / 2;
             }
             else
             {
@@ -779,7 +779,7 @@ public final class FunctionsTesting extends Functions
         return warr.getAll();
     }
 
-    class StackElement
+    static class StackElement
     {
         private final double angle;
         private final Point point;
@@ -831,7 +831,7 @@ public final class FunctionsTesting extends Functions
         }
     }
 
-    class WaveArray
+    static class WaveArray
     {
         ArrayList<Wave16> waves = new ArrayList<>();
         static final int SAMPLERATE = 22000;

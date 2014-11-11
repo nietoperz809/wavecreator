@@ -55,6 +55,7 @@ public final class Wave16AmplitudeInfo
         span = max - min;
     }
 
+    @Override
     public String toString()
     {
         return "Min:"+ min + " Max:" + max + " Span:" + span;

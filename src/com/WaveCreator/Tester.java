@@ -7,6 +7,12 @@ import com.WaveCreator.Functions.*;
  */
 public class Tester
 {
+
+    /**
+     *
+     * @param args
+     * @throws Exception
+     */
     public static void main(String... args) throws Exception
     {
         //FunctionsTesting.testHenon();

@@ -13,7 +13,7 @@ public class PiDigits
         BigDecimal result, numer, term;
         BigDecimal invX = BigDecimal.valueOf(inverseX);
         BigDecimal invX2
-                = BigDecimal.valueOf(inverseX * inverseX);
+                = BigDecimal.valueOf((long)inverseX * inverseX);
 
         numer = BigDecimal.ONE.divide(invX,
                 scale, BigDecimal.ROUND_HALF_EVEN);

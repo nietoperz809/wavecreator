@@ -78,6 +78,7 @@ public class ScopeWindow extends JFrame implements Serializable
          * Scrollbar has changed value
          * @param e Scrollbar change event
          */
+        @Override
         public void adjustmentValueChanged(AdjustmentEvent e)
         {
             /**
@@ -227,6 +228,10 @@ public class ScopeWindow extends JFrame implements Serializable
         return m_scrollbar != null;
     }
 
+    /**
+     *
+     * @param x
+     */
     public void moveToPosition (int x)
     {
         if (x < 0)

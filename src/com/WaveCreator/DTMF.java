@@ -20,7 +20,7 @@ public class DTMF
     /**
      * Map of all samples
      */
-    private final HashMap<Character, Wave16> wavemap = new HashMap<Character, Wave16>();
+    private final HashMap<Character, Wave16> wavemap = new HashMap<>();
     
 
     /**
@@ -108,6 +108,6 @@ public class DTMF
                 inWave[s * 2 + 1] = delWave;
             }
         }
-        return new Wave16().combineAppend(inWave);
+        return Wave16.combineAppend(inWave);
     }
 }

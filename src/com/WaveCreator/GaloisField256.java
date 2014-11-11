@@ -6,15 +6,18 @@ package com.WaveCreator;
 public class GaloisField256
 {
     // define the Size & Prime Polynomial of this Galois field (2^8)
-    final int GF = 256;
+    final static int GF = 256;
     // the Galois field for 2^8, with a 'prime polynomial' of x^8 + x^5 + x^3 + x^2 + 1
     // whose equivalent value P is binary 100101101 or decimal 301.
-    final int PP = 301;
+    final static int PP = 301;
 
     // establish global Log and Antilog arrays
     private final int[] Log = new int[GF];
     private final int[] ALog = new int[GF];
 
+    /**
+     *
+     */
     public GaloisField256()
     {
         int i;
@@ -29,7 +32,13 @@ public class GaloisField256
         }
     }
 
-    public int Product (int A, int B)
+    /**
+     *
+     * @param A
+     * @param B
+     * @return
+     */
+    public int product (int A, int B)
     {
         if ((A == 0) || (B == 0))
             return (0);
@@ -38,7 +47,13 @@ public class GaloisField256
             return (ALog[(Log[A] + Log[B]) % (GF-1)]);
     }
 
-    public int Quotient (int A, int B)
+    /**
+     *
+     * @param A
+     * @param B
+     * @return
+     */
+    public int quotient (int A, int B)
     { // namely A divided by B
         if (B == 0)
             return (1-GF); // signifying an error!
@@ -48,12 +63,24 @@ public class GaloisField256
             return (ALog[(Log[A] - Log[B] + (GF-1)) % (GF-1)]);
     }
 
-    public int Sum (int A, int B)
+    /**
+     *
+     * @param A
+     * @param B
+     * @return
+     */
+    public int sum (int A, int B)
     {
         return (A ^ B);
     }
 
-    public int Difference (int A, int B)
+    /**
+     *
+     * @param A
+     * @param B
+     * @return
+     */
+    public int difference (int A, int B)
     {
         return (A ^ B);
     }

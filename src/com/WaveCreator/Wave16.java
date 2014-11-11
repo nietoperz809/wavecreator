@@ -165,7 +165,7 @@ public class Wave16 implements Serializable
         double[] dd = new double[d.length];
         for (int s = 0; s < d.length; s++)
         {
-            dd[s] = new Double(d[s]);
+            dd[s] = (double) d[s];
         }
         data = dd;
         samplingRate = rate;

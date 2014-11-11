@@ -18,6 +18,10 @@ public class UndeleteManager
         
     }
 
+    /**
+     *
+     * @return
+     */
     public static UndeleteManager getInstance()
     {
         if (m_instance == null)
@@ -25,6 +29,10 @@ public class UndeleteManager
         return m_instance;
     }
 
+    /**
+     *
+     * @param w
+     */
     public void add (Wave16 w)
     {
         m_waves.add(w);
@@ -35,6 +43,10 @@ public class UndeleteManager
         m_waves.remove(w);
     }
 
+    /**
+     *
+     * @return
+     */
     public Wave16[] getAllWaves()
     {
         Wave16[] wa = new Wave16[m_waves.size()];

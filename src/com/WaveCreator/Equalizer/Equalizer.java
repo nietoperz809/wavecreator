@@ -48,7 +48,7 @@ public class Equalizer implements EqualizerBase
      */
     private final float[] bands = new float[Equalizer.EQ_MAX_BANDS];
 
-    class XYData
+    static class XYData
     {
         /**
          * X data

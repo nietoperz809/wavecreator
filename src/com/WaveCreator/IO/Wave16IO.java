@@ -23,11 +23,12 @@ public class Wave16IO
      */
     public static void saveRaw (Wave16 dat, String filename) throws Exception
     {
-        FileImageOutputStream fileImageOutputStream = new FileImageOutputStream (new File(filename));
-        fileImageOutputStream.writeInt(dat.data.length);  // First write the length
-        fileImageOutputStream.writeInt(dat.samplingRate);  // Then the samplingrate
-        fileImageOutputStream.writeDoubles(dat.data, 0, dat.data.length);
-        fileImageOutputStream.close();
+        try (FileImageOutputStream fileImageOutputStream = new FileImageOutputStream (new File(filename)))
+        {
+            fileImageOutputStream.writeInt(dat.data.length);  // First write the length
+            fileImageOutputStream.writeInt(dat.samplingRate);  // Then the samplingrate
+            fileImageOutputStream.writeDoubles(dat.data, 0, dat.data.length);
+        } // First write the length
     }
 
     /**

@@ -19,12 +19,12 @@ public class FrameManager
     /**
      * List that holds all frames
      */
-    private final ArrayList<ScopeWindow> m_list = new ArrayList<ScopeWindow>();
+    private final ArrayList<ScopeWindow> m_list = new ArrayList<>();
 
     private final DirectPlay m_directPlay = new DirectPlay();
     private ScopeWindow m_lastActive = null;
 
-    private static FrameManager m_instance = null;
+    private static volatile FrameManager m_instance = null;
 
     /**
      * private Constructor (This is a singleton object)
@@ -36,7 +36,7 @@ public class FrameManager
         {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
         }
-        catch (Exception e)
+        catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e)
         {
             // Doesn't matter if that fails
         }
@@ -120,7 +120,7 @@ public class FrameManager
      */
     private void setFramePosition(Component c)
     {
-        if (m_list.size() == 0)
+        if (m_list.isEmpty())
         {
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
             Dimension frameSize = c.getSize();

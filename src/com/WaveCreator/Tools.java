@@ -37,6 +37,11 @@ public class Tools
         return a * b / LongMath.gcd(a, b);
     }
 
+    /**
+     *
+     * @param in
+     * @return
+     */
     public static long lcm(long[] in)
     {
         if (in.length == 1)

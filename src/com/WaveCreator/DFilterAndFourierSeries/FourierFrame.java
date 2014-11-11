@@ -22,7 +22,7 @@ public class FourierFrame extends Frame
                    MouseMotionListener, MouseListener, ItemListener
 {
 
-    PlayThread playThread;
+    transient PlayThread playThread;
 
     Dimension winSize;
     Image dbimage;
@@ -31,8 +31,8 @@ public class FourierFrame extends Frame
     public static final int sampleCount = 1024;
     public static final int halfSampleCount = sampleCount / 2;
     public static final double halfSampleCountFloat = sampleCount / 2;
-    final int rate = 22050;
-    final int playSampleCount = 16384;
+    final static int rate = 22050;
+    final static int playSampleCount = 16384;
     final ScopeWindow m_sourceWindow;
 
     public FourierFrame (ScopeWindow src)
@@ -68,7 +68,7 @@ public class FourierFrame extends Frame
     static final double pi = 3.14159265358979323846;
     static final double step = 2 * pi / sampleCount;
     double func[];
-    final int maxTerms = 160;
+    final static int maxTerms = 160;
     int selectedCoef;
     static final int SEL_NONE = 0;
     static final int SEL_FUNC = 1;
@@ -81,9 +81,9 @@ public class FourierFrame extends Frame
     int quantizeCount, resampleCount;
     boolean dragging, freqAdjusted;
     View viewFunc, viewMag, viewPhase, viewMutes, viewSolos;
-    FFT fft;
+    transient FFT fft;
 
-    class View extends Rectangle
+    static class View extends Rectangle
     {
         View(int x, int y, int w, int h)
         {

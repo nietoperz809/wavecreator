@@ -12,5 +12,10 @@ import java.lang.annotation.ElementType;
 @Target(ElementType.PARAMETER)
 public @interface ParamDesc
 {
+
+    /**
+     *
+     * @return
+     */
     public abstract String value();
 }
