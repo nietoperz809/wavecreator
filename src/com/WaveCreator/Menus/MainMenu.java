@@ -3,13 +3,19 @@ package com.WaveCreator.Menus;
 
 import com.WaveCreator.DFilterAndFourierSeries.DFilterFrame;
 import com.WaveCreator.DFilterAndFourierSeries.FourierFrame;
-import com.WaveCreator.Dialogs;
-import com.WaveCreator.FrameManager;
-import com.WaveCreator.Monitor.MemoryMonitorFrame;
+import static com.WaveCreator.Dialogs.closeApplication;
+import static com.WaveCreator.Dialogs.loadWave;
+import static com.WaveCreator.Dialogs.saveWave;
+import static com.WaveCreator.Dialogs.waveInfo;
+import static com.WaveCreator.FrameManager.getInstance;
+import static com.WaveCreator.Monitor.MemoryMonitorFrame.go;
 import com.WaveCreator.ScopeWindow;
 import com.WaveCreator.Wave16;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
+import static java.lang.Integer.MAX_VALUE;
+import static java.lang.Runtime.getRuntime;
+import static java.lang.System.exit;
 import javax.swing.AbstractAction;
 import javax.swing.JPopupMenu;
 
@@ -25,14 +31,14 @@ public class MainMenu extends JPopupMenu
      */
     public MainMenu(final ScopeWindow scopeWindow, MouseEvent ev)
     {
-        Runtime.getRuntime().gc();
+        getRuntime().gc();
 
         add(new AbstractAction("Info")
         {
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                Dialogs.waveInfo(scopeWindow);
+                waveInfo(scopeWindow);
             }
         });
 
@@ -41,7 +47,7 @@ public class MainMenu extends JPopupMenu
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                MemoryMonitorFrame.go ();
+                go ();
             }
         });
 
@@ -101,7 +107,7 @@ public class MainMenu extends JPopupMenu
             public void actionPerformed(ActionEvent e)
             {
                 Wave16 w = scopeWindow.m_wave.copy();
-                ScopeWindow sc = FrameManager.getInstance().createFrame(w, "drawable copy");
+                ScopeWindow sc = getInstance().createFrame(w, "drawable copy");
                 sc.m_drawing_allowed = true;
             }
         });
@@ -140,7 +146,7 @@ public class MainMenu extends JPopupMenu
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                scopeWindow.changeShowWindow(Integer.MAX_VALUE);
+                scopeWindow.changeShowWindow(MAX_VALUE);
             }
         });
 
@@ -160,7 +166,7 @@ public class MainMenu extends JPopupMenu
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                FrameManager.getInstance().startDirectPlay();
+                getInstance().startDirectPlay();
             }
         });
 
@@ -170,7 +176,7 @@ public class MainMenu extends JPopupMenu
             public void actionPerformed(ActionEvent e)
             {
                 scopeWindow.m_player.stop();
-                FrameManager.getInstance().stopDirectPlay();
+                getInstance().stopDirectPlay();
             }
         });
 
@@ -191,7 +197,7 @@ public class MainMenu extends JPopupMenu
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                Dialogs.saveWave(scopeWindow);
+                saveWave(scopeWindow);
             }
         });
 
@@ -200,7 +206,7 @@ public class MainMenu extends JPopupMenu
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                Dialogs.loadWave(scopeWindow);
+                loadWave(scopeWindow);
             }
         });
 
@@ -261,9 +267,9 @@ public class MainMenu extends JPopupMenu
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                if (Dialogs.closeApplication(scopeWindow))
+                if (closeApplication(scopeWindow))
                 {
-                    System.exit(0);
+                    exit(0);
                 }
             }
         });

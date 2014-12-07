@@ -68,7 +68,7 @@ public class Tools
      */
     public static int nextPowerOfTwo(int in)
     {
-        return (int) Math.pow(2.0, Math.ceil(Math.log(in) / Math.log(2.0)));
+        return (int) Math.pow(2.0, Math.ceil(Math.log(in) / Math.log(2.0))); 
     }
 
     /**

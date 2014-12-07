@@ -5,8 +5,17 @@ import com.WaveCreator.Functions.Functions;
 import javax.swing.*;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
+import static java.awt.BorderLayout.CENTER;
+import static java.awt.BorderLayout.NORTH;
+import static java.awt.BorderLayout.SOUTH;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import static java.lang.Boolean.parseBoolean;
+import static java.lang.Double.parseDouble;
+import static java.lang.Float.parseFloat;
+import static java.lang.Integer.parseInt;
+import static java.lang.Long.parseLong;
+import static java.lang.Short.parseShort;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -54,7 +63,7 @@ public class MethodInvoker extends JDialog implements ActionListener
         for (String val : vals)
         {
             val = val.trim();
-            li.add(Integer.parseInt(val));
+            li.add(parseInt(val));
         }
         int[] res = new int[li.size()];
         for (int s = 0; s < res.length; s++)
@@ -72,7 +81,7 @@ public class MethodInvoker extends JDialog implements ActionListener
         for (String val : vals)
         {
             val = val.trim();
-            li.add(Short.parseShort(val));
+            li.add(parseShort(val));
         }
         short[] res = new short[li.size()];
         for (int s = 0; s < res.length; s++)
@@ -94,7 +103,7 @@ public class MethodInvoker extends JDialog implements ActionListener
         for (String val : vals)
         {
             val = val.trim();
-            li.add(Double.parseDouble(val));
+            li.add(parseDouble(val));
         }
         double[] res = new double[li.size()];
         for (int s = 0; s < res.length; s++)
@@ -117,19 +126,19 @@ public class MethodInvoker extends JDialog implements ActionListener
         {
             if (typename.equals("boolean"))
             {
-                return Boolean.parseBoolean(value);
+                return parseBoolean(value);
             }
             if (typename.equals("int"))
             {
-                return Integer.parseInt(value);
+                return parseInt(value);
             }
             if (typename.equals("float"))
             {
-                return Float.parseFloat(value);
+                return parseFloat(value);
             }
             if (typename.equals("double"))
             {
-                return Double.parseDouble(value);
+                return parseDouble(value);
             }
             if (typename.equals("char"))
             {
@@ -137,7 +146,7 @@ public class MethodInvoker extends JDialog implements ActionListener
             }
             if (typename.equals("long"))
             {
-                return Long.parseLong(value);
+                return parseLong(value);
             }
             if (typename.equals("String"))
             {
@@ -327,9 +336,9 @@ public class MethodInvoker extends JDialog implements ActionListener
         button.addActionListener(this);
 
         // Add everything to the dialog
-        add(m_table.getTableHeader(), BorderLayout.NORTH);
-        add(m_table, BorderLayout.CENTER);
-        add(button, BorderLayout.SOUTH);
+        add(m_table.getTableHeader(), NORTH);
+        add(m_table, CENTER);
+        add(button, SOUTH);
 
         // Center the dialog window and show it
         pack();

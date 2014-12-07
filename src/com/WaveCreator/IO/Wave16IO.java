@@ -1,6 +1,6 @@
 package com.WaveCreator.IO;
 
-import com.WaveCreator.Functions.FunctionsGenerators;
+import static com.WaveCreator.Functions.FunctionsGenerators.fromShortArray;
 import com.WaveCreator.Wave16;
 
 import javax.imageio.stream.FileImageInputStream;
@@ -39,12 +39,15 @@ public class Wave16IO
      */
     public static Wave16 loadRaw (String filename) throws Exception
     {
-        FileImageInputStream fileImageInputStream = new FileImageInputStream(new File(filename));
-        int size = fileImageInputStream.readInt(); // First read the length
-        int samplingRate = fileImageInputStream.readInt(); // Then get the sampling rate
-        double[] arr = new double[size];
-        fileImageInputStream.readFully (arr, 0, size);
-        fileImageInputStream.close();
+        int samplingRate;
+        double[] arr; 
+        try (FileImageInputStream fileImageInputStream = new FileImageInputStream(new File(filename)))
+        {
+            int size = fileImageInputStream.readInt(); // First read the length
+            samplingRate = fileImageInputStream.readInt(); // Then get the sampling rate
+            arr = new double[size];
+            fileImageInputStream.readFully (arr, 0, size);
+        } // First read the length
         return new Wave16(arr, samplingRate);
     }
 
@@ -56,29 +59,30 @@ public class Wave16IO
      */
     public static void saveWave16(Wave16 dat, String filename) throws Exception
     {
-        FileOutputStream fo = new FileOutputStream(filename);
-        ReverseOutputStream reverseOutputStream = new ReverseOutputStream(fo);
-
-        // Write WAVE header
-        reverseOutputStream.write("RIFF".getBytes());
-        reverseOutputStream.writeReverseInt(2 * dat.data.length + 44 - 8);
-        reverseOutputStream.write("WAVE".getBytes());
-        reverseOutputStream.write("fmt ".getBytes());
-        reverseOutputStream.writeInt(0x10000000);
-        reverseOutputStream.writeShort(0x0100);
-        reverseOutputStream.writeReverseShort((short) 1);
-        reverseOutputStream.writeReverseInt(dat.samplingRate);
-        reverseOutputStream.writeReverseInt(16 / 8 * dat.samplingRate);
-        reverseOutputStream.writeReverseShort((short) (16 / 8));
-        reverseOutputStream.writeReverseShort((short) 16);
-        reverseOutputStream.write("data".getBytes());
-        reverseOutputStream.writeReverseInt(dat.data.length * 2);
-
-        // Write WAVE data
-        reverseOutputStream.writeReverseShortArray(dat.toShortArray());
-
-        fo.flush();
-        fo.close();
+        try (FileOutputStream fo = new FileOutputStream(filename))
+        {
+            ReverseOutputStream reverseOutputStream = new ReverseOutputStream(fo);
+            
+            // Write WAVE header
+            reverseOutputStream.write("RIFF".getBytes());
+            reverseOutputStream.writeReverseInt(2 * dat.data.length + 44 - 8);
+            reverseOutputStream.write("WAVE".getBytes());
+            reverseOutputStream.write("fmt ".getBytes());
+            reverseOutputStream.writeInt(0x10000000);
+            reverseOutputStream.writeShort(0x0100);
+            reverseOutputStream.writeReverseShort((short) 1);
+            reverseOutputStream.writeReverseInt(dat.samplingRate);
+            reverseOutputStream.writeReverseInt(16 / 8 * dat.samplingRate);
+            reverseOutputStream.writeReverseShort((short) (16 / 8));
+            reverseOutputStream.writeReverseShort((short) 16);
+            reverseOutputStream.write("data".getBytes());
+            reverseOutputStream.writeReverseInt(dat.data.length * 2);
+            
+            // Write WAVE data
+            reverseOutputStream.writeReverseShortArray(dat.toShortArray());
+            
+            fo.flush();
+        }
     }
 
     /**
@@ -89,76 +93,58 @@ public class Wave16IO
      */
     public static Wave16 loadWave16(String filename) throws Exception
     {
-        FileInputStream fi = new FileInputStream(filename);
-        ReverseInputStream reverseInputStream = new ReverseInputStream(fi);
-        byte[] tmp4 = new byte[4];
-
-        reverseInputStream.readByteArray(tmp4);
-        if (!Arrays.equals(tmp4, "RIFF".getBytes()))
+        Wave16 samp;
+        try (FileInputStream fi = new FileInputStream(filename))
         {
-            throw new Exception("Not a WAVE file (RIFF)");
-        }
-
-        // Length of file
-        int filelength = reverseInputStream.readReverseInt() - 8;
-
-        reverseInputStream.readByteArray(tmp4);
-        if (!Arrays.equals(tmp4, "WAVE".getBytes()))
+            ReverseInputStream reverseInputStream = new ReverseInputStream(fi);
+            byte[] tmp4 = new byte[4];
+            reverseInputStream.readByteArray(tmp4);
+            if (!Arrays.equals(tmp4, "RIFF".getBytes()))
+            {
+                throw new Exception("Not a WAVE file (RIFF)");
+            }   // Length of file
+            int filelength = reverseInputStream.readReverseInt() - 8;
+            reverseInputStream.readByteArray(tmp4);
+            if (!Arrays.equals(tmp4, "WAVE".getBytes()))
         {
             throw new Exception("Not a WAVE file (WAVE)");
-        }
-
-        reverseInputStream.readByteArray(tmp4);
+        }   reverseInputStream.readByteArray(tmp4);
         if (!Arrays.equals(tmp4, "fmt ".getBytes()))
         {
             throw new Exception("Not a WAVE file (fmt)");
-        }
-
-        int c1 = reverseInputStream.readReverseInt();  // Constant
+        }   int c1 = reverseInputStream.readReverseInt();  // Constant
         short c2 = reverseInputStream.readShort(); // Constant
-
         int channels = reverseInputStream.readReverseShort();
         if (channels != 1)
         {
             throw new Exception("Can't work with multiple channels");
-        }
-
-        int samplingrate = reverseInputStream.readReverseInt();
+        }   int samplingrate = reverseInputStream.readReverseInt();
         int average = reverseInputStream.readReverseInt();
         int bits_per_sample = reverseInputStream.readReverseShort() * 8;
-
         short c3 = reverseInputStream.readShort(); // Format specific stuff
-
         //System.out.println (c1+"/"+c2+"/"+c3+"/"+average+"/"+channels+"/"+samplingrate+"/"+bits_per_sample);
 
         reverseInputStream.readByteArray(tmp4);
         if (!Arrays.equals(tmp4, "data".getBytes()))
         {
             throw new Exception("Not a WAVE file (data)");
-        }
-
-        int data_length = reverseInputStream.readReverseInt();
-
-        // Read sampling data
+        }   int data_length = reverseInputStream.readReverseInt();
+            // Read sampling data
         short[] dat;
-        Wave16 samp;
         switch (bits_per_sample)
         {
             case 8:
                 dat = reverseInputStream.readByteArrayAsShort(data_length);
-                samp = FunctionsGenerators.fromShortArray(dat, samplingrate / 2);
+                samp = fromShortArray(dat, samplingrate / 2);
                 break;
-
             case 16:
                 dat = reverseInputStream.readShortArray(data_length);
-                samp = FunctionsGenerators.fromShortArray(dat, samplingrate);
+                samp = fromShortArray(dat, samplingrate);
                 break;
-
             default:
                 throw new Exception("Unsupported sample size: " + bits_per_sample);
+            }
         }
-
-        fi.close();
 
         return samp;
     }

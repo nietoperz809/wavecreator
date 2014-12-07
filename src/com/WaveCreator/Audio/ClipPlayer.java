@@ -6,9 +6,10 @@ import com.WaveCreator.Wave16;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import static java.lang.Thread.sleep;
+import static javax.sound.sampled.AudioSystem.getClip;
 import javax.sound.sampled.LineUnavailableException;
 
 /**
@@ -52,7 +53,7 @@ public class ClipPlayer
         Clip clip = null;
         try
         {
-            clip = AudioSystem.getClip();
+            clip = getClip();
             clip.open(ais);
         }
         catch (LineUnavailableException | IOException e)
@@ -77,7 +78,7 @@ public class ClipPlayer
         {
             try
             {
-                Thread.sleep(10);
+                sleep(10);
             }
             catch (InterruptedException e)
             {

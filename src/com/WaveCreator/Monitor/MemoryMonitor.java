@@ -82,34 +82,7 @@ public class MemoryMonitor extends JPanel
         controls.add(dateStampCB);
         dateStampCB.setFont(font);
 
-        addMouseListener(new MouseAdapter()
-        {
-            public void mouseClicked(MouseEvent e)
-            {
-                removeAll();
-                doControls = !doControls;
-                if (doControls)
-                {
-                    surf.stop();
-                    add(controls);
-                }
-                else
-                {
-                    try
-                    {
-                        surf.sleepAmount = Long.parseLong(tf.getText().trim());
-                    }
-                    catch (Exception ex)
-                    {
-                        ex.printStackTrace();
-                    }
-                    surf.start();
-                    add(surf);
-                }
-                revalidate();
-                repaint();
-            }
-        });
+        addMouseListener(new MouseAdapterImpl());
     }
 
     public class Surface extends JPanel implements Runnable
@@ -338,6 +311,40 @@ public class MemoryMonitor extends JPanel
                 }
             }
             //System.out.println ("stopped");
+        }
+    }
+
+    private class MouseAdapterImpl extends MouseAdapter
+    {
+        public MouseAdapterImpl()
+        {
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent e)
+        {
+            removeAll();
+            doControls = !doControls;
+            if (doControls)
+            {
+                surf.stop();
+                add(controls);
+            }
+            else
+            {
+                try
+                {
+                    surf.sleepAmount = Long.parseLong(tf.getText().trim());
+                }
+                catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+                surf.start();
+                add(surf);
+            }
+            revalidate();
+            repaint();
         }
     }
 }

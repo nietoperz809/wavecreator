@@ -1,7 +1,7 @@
 package com.WaveCreator.Menus;
 
 import com.WaveCreator.ScopeWindow;
-import com.WaveCreator.FrameManager;
+import static com.WaveCreator.FrameManager.getInstance;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -18,7 +18,7 @@ class SubMenuFrames extends JMenu
     {
         super("Go to frame ...");
 
-        ScopeWindow[] frames = FrameManager.getInstance().getAllFrames();
+        ScopeWindow[] frames = getInstance().getAllFrames();
 
         for (int s=0; s<frames.length; s++)
         {
