@@ -2,22 +2,22 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 02:08:40
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 02:08:40
+ */
 class CustomFIRFilter extends FIRFilterType
 {
-    CustomFIRFilter(DFilterFrame dFilterFrame)
+    CustomFIRFilter (DFilterFrame dFilterFrame)
     {
-        super (dFilterFrame);
+        super(dFilterFrame);
         if (dFilterFrame.uresp == null)
         {
             dFilterFrame.uresp = new double[1024];
         }
     }
 
-    int select()
+    int select ()
     {
         dFilterFrame.auxLabels[0].setText("Order");
         dFilterFrame.auxBars[0].setValue(120);
@@ -30,30 +30,11 @@ class CustomFIRFilter extends FIRFilterType
         return 1;
     }
 
-    void setup()
+    void setup ()
     {
     }
 
-    double getUserResponse(double w)
-    {
-        double q = dFilterFrame.uresp[(int) (w * dFilterFrame.uresp.length / DFilterFrame.pi)];
-        return q * q;
-    }
-
-    void edit(double x, double x2, double y)
-    {
-        int xi1 = (int) (x * dFilterFrame.uresp.length);
-        int xi2 = (int) (x2 * dFilterFrame.uresp.length);
-        for (; xi1 < xi2; xi1++)
-        {
-            if (xi1 >= 0 && xi1 < dFilterFrame.uresp.length)
-            {
-                dFilterFrame.uresp[xi1] = y;
-            }
-        }
-    }
-
-    Filter genFilter()
+    Filter genFilter ()
     {
         int n = dFilterFrame.auxBars[0].getValue();
         int nsz = dFilterFrame.uresp.length * 4;
@@ -85,14 +66,33 @@ class CustomFIRFilter extends FIRFilterType
         return f;
     }
 
-    void getInfo(String x[])
+    void getInfo (String x[])
     {
         int n = dFilterFrame.auxBars[0].getValue();
         x[0] = "Order: " + n;
     }
 
-    boolean needsWindow()
+    boolean needsWindow ()
     {
         return true;
+    }
+
+    double getUserResponse (double w)
+    {
+        double q = dFilterFrame.uresp[(int) (w * dFilterFrame.uresp.length / DFilterFrame.pi)];
+        return q * q;
+    }
+
+    void edit (double x, double x2, double y)
+    {
+        int xi1 = (int) (x * dFilterFrame.uresp.length);
+        int xi2 = (int) (x2 * dFilterFrame.uresp.length);
+        for (; xi1 < xi2; xi1++)
+        {
+            if (xi1 >= 0 && xi1 < dFilterFrame.uresp.length)
+            {
+                dFilterFrame.uresp[xi1] = y;
+            }
+        }
     }
 }

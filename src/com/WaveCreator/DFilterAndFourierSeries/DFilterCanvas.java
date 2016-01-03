@@ -12,22 +12,22 @@ class DFilterCanvas extends Canvas
 {
     final DFilterFrame pg;
 
-    DFilterCanvas(final DFilterFrame p)
+    DFilterCanvas (final DFilterFrame p)
     {
         pg = p;
     }
 
-    public Dimension getPreferredSize()
+    public Dimension getPreferredSize ()
     {
         return new Dimension(300, 400);
     }
 
-    public void update(final Graphics g)
+    public void paint (final Graphics g)
     {
         pg.updateDFilter(g);
     }
 
-    public void paint(final Graphics g)
+    public void update (final Graphics g)
     {
         pg.updateDFilter(g);
     }

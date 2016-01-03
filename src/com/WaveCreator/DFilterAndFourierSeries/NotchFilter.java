@@ -2,20 +2,20 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 02:18:11
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 02:18:11
+ */
 class NotchFilter extends IIRFilterType
 {
     double wc, a, b, bw;
 
-    public NotchFilter(DFilterFrame dFilterFrame)
+    public NotchFilter (DFilterFrame dFilterFrame)
     {
         super(dFilterFrame);
     }
 
-    int select()
+    int select ()
     {
         dFilterFrame.auxLabels[0].setText("Notch Frequency");
         dFilterFrame.auxBars[0].setValue(500);
@@ -24,7 +24,7 @@ class NotchFilter extends IIRFilterType
         return 2;
     }
 
-    void setup()
+    void setup ()
     {
         wc = dFilterFrame.auxBars[0].getValue() * DFilterFrame.pi / 1000.;
         bw = dFilterFrame.auxBars[1].getValue() * DFilterFrame.pi / 2000.;
@@ -32,7 +32,17 @@ class NotchFilter extends IIRFilterType
         b = Math.cos(wc);
     }
 
-    void getPole(int i, Complex c1)
+    int getPoleCount ()
+    {
+        return 2;
+    }
+
+    int getZeroCount ()
+    {
+        return 2;
+    }
+
+    void getPole (int i, Complex c1)
     {
         c1.set(-4 * a + (b + a * b) * (b + a * b));
         c1.sqrt();
@@ -44,24 +54,7 @@ class NotchFilter extends IIRFilterType
         c1.mult(.5);
     }
 
-    int getPoleCount()
-    {
-        return 2;
-    }
-
-    void getInfo(String x[])
-    {
-        x[0] = "Notch (IIR)";
-        x[1] = "Notch Frequency: " + dFilterFrame.getOmegaText(wc);
-        x[2] = "Bandwidth: " + dFilterFrame.getOmegaText(bw);
-    }
-
-    int getZeroCount()
-    {
-        return 2;
-    }
-
-    void getZero(int i, Complex c1)
+    void getZero (int i, Complex c1)
     {
         c1.set(b * b - 1);
         c1.sqrt();
@@ -70,5 +63,12 @@ class NotchFilter extends IIRFilterType
             c1.mult(-1);
         }
         c1.add(b);
+    }
+
+    void getInfo (String x[])
+    {
+        x[0] = "Notch (IIR)";
+        x[1] = "Notch Frequency: " + dFilterFrame.getOmegaText(wc);
+        x[2] = "Bandwidth: " + dFilterFrame.getOmegaText(bw);
     }
 }

@@ -12,22 +12,22 @@ class FourierCanvas extends Canvas
 {
     final FourierFrame pg;
 
-    FourierCanvas(FourierFrame p)
+    FourierCanvas (FourierFrame p)
     {
         pg = p;
     }
 
-    public Dimension getPreferredSize()
+    public Dimension getPreferredSize ()
     {
         return new Dimension(300, 400);
     }
 
-    public void update(Graphics g)
+    public void paint (Graphics g)
     {
         pg.updateFourier(g);
     }
 
-    public void paint(Graphics g)
+    public void update (Graphics g)
     {
         pg.updateFourier(g);
     }

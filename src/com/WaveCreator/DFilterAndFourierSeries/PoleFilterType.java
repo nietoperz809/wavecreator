@@ -2,30 +2,30 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 01:31:27
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 01:31:27
+ */
 abstract class PoleFilterType extends IIRFilterType
 {
     int n;
     double wc, wc2;
 
-    public PoleFilterType(DFilterFrame d)
+    public PoleFilterType (DFilterFrame d)
     {
-        super (d);
+        super(d);
     }
 
-    abstract void getSPole(int i, Complex c1, double wc);
-
     @Override
-    void getPole(int i, Complex c1)
+    void getPole (int i, Complex c1)
     {
         getSPole(i, c1, wc);
         bilinearXform(c1);
     }
 
-    void bilinearXform(Complex c1)
+    abstract void getSPole (int i, Complex c1, double wc);
+
+    void bilinearXform (Complex c1)
     {
         Complex c2 = new Complex(c1);
         c1.add(1);
@@ -34,7 +34,7 @@ abstract class PoleFilterType extends IIRFilterType
         c1.div(c2);
     }
 
-    int selectLowPass()
+    int selectLowPass ()
     {
         dFilterFrame.auxLabels[0].setText("Cutoff Frequency");
         dFilterFrame.auxLabels[1].setText("Number of Poles");
@@ -44,7 +44,7 @@ abstract class PoleFilterType extends IIRFilterType
         return 2;
     }
 
-    int selectBandPass()
+    int selectBandPass ()
     {
         dFilterFrame.auxLabels[0].setText("Center Frequency");
         dFilterFrame.auxLabels[1].setText("Passband Width");
@@ -56,17 +56,17 @@ abstract class PoleFilterType extends IIRFilterType
         return 3;
     }
 
-    void getBandPassPole(int i, Complex z)
+    void getBandPassPole (int i, Complex z)
     {
         getSPole(i / 2, z, DFilterFrame.pi * .5);
         bilinearXform(z);
         bandPassXform(i, z);
     }
 
-    void bandPassXform(int i, Complex z)
+    void bandPassXform (int i, Complex z)
     {
         double a = Math.cos((wc + wc2) * .5) /
-                   Math.cos((wc - wc2) * .5);
+                Math.cos((wc - wc2) * .5);
         double b = 1 / Math.tan(.5 * (wc - wc2));
         Complex c2 = new Complex();
         c2.addMult(4 * (b * b * (a * a - 1) + 1), z);
@@ -87,23 +87,17 @@ abstract class PoleFilterType extends IIRFilterType
         z.set(c2);
     }
 
-    void getBandStopPole(int i, Complex z)
+    void getBandStopPole (int i, Complex z)
     {
         getSPole(i / 2, z, DFilterFrame.pi * .5);
         bilinearXform(z);
         bandStopXform(i, z);
     }
 
-    void getBandStopZero(int i, Complex z)
-    {
-        z.set(-1, 0);
-        bandStopXform(i, z);
-    }
-
-    void bandStopXform(int i, Complex z)
+    void bandStopXform (int i, Complex z)
     {
         double a = Math.cos((wc + wc2) * .5) /
-                   Math.cos((wc - wc2) * .5);
+                Math.cos((wc - wc2) * .5);
         double b = Math.tan(.5 * (wc - wc2));
         Complex c2 = new Complex();
         c2.addMult(4 * (b * b + a * a - 1), z); // z^2 terms
@@ -120,7 +114,13 @@ abstract class PoleFilterType extends IIRFilterType
         z.set(c2);
     }
 
-    void getBandPassZero(int i, Complex c1)
+    void getBandStopZero (int i, Complex z)
+    {
+        z.set(-1, 0);
+        bandStopXform(i, z);
+    }
+
+    void getBandPassZero (int i, Complex c1)
     {
         if (i >= n)
         {
@@ -132,13 +132,13 @@ abstract class PoleFilterType extends IIRFilterType
         }
     }
 
-    void setupLowPass()
+    void setupLowPass ()
     {
         wc = dFilterFrame.auxBars[0].getValue() * DFilterFrame.pi / 1000.;
         n = dFilterFrame.auxBars[1].getValue();
     }
 
-    void setupBandPass()
+    void setupBandPass ()
     {
         double wcmid = dFilterFrame.auxBars[0].getValue() * DFilterFrame.pi / 1000.;
         double width = dFilterFrame.auxBars[1].getValue() * DFilterFrame.pi / 1000.;
@@ -155,14 +155,14 @@ abstract class PoleFilterType extends IIRFilterType
         n = dFilterFrame.auxBars[2].getValue();
     }
 
-    void getInfoLowPass(String x[])
+    void getInfoLowPass (String x[])
     {
         x[1] = "Cutoff freq: " + dFilterFrame.getOmegaText(wc);
     }
 
-    void getInfoBandPass(String x[], boolean stop)
+    void getInfoBandPass (String x[], boolean stop)
     {
         x[1] = (stop ? "Stopband: " : "Passband: ") +
-               dFilterFrame.getOmegaText(wc2) + " - " + dFilterFrame.getOmegaText(wc);
+                dFilterFrame.getOmegaText(wc2) + " - " + dFilterFrame.getOmegaText(wc);
     }
 }

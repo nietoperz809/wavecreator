@@ -2,35 +2,33 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 01:17:09
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 01:17:09
+ */
 public abstract class Filter
 {
     final DFilterFrame dFilterFrame;
 
-    public Filter(DFilterFrame dFilterFrame)
+    public Filter (DFilterFrame dFilterFrame)
     {
         this.dFilterFrame = dFilterFrame;
     }
 
-    abstract void run(double inBuf[], double outBuf[], int bp, int mask, int count, double x[]);
+    abstract void evalTransfer (Complex c);
 
-    abstract void evalTransfer(Complex c);
+    abstract int getImpulseOffset ();
 
-    abstract int getImpulseOffset();
+    abstract int getStepOffset ();
 
-    abstract int getStepOffset();
+    abstract int getLength ();
 
-    abstract int getLength();
-
-    boolean useConvolve()
+    boolean useConvolve ()
     {
         return false;
     }
 
-    double[] getImpulseResponse(int offset)
+    double[] getImpulseResponse (int offset)
     {
         int pts = 1000;
         double inbuf[] = new double[offset + pts];
@@ -41,7 +39,14 @@ public abstract class Filter
         return outbuf;
     }
 
-    double[] getStepResponse(int offset)
+    double[] createState ()
+    {
+        return null;
+    }
+
+    abstract void run (double inBuf[], double outBuf[], int bp, int mask, int count, double x[]);
+
+    double[] getStepResponse (int offset)
     {
         int pts = 1000;
         double inbuf[] = new double[offset + pts];
@@ -56,18 +61,13 @@ public abstract class Filter
         return outbuf;
     }
 
-    int getImpulseLen(int offset, double buf[])
+    int getImpulseLen (int offset, double buf[])
     {
         return dFilterFrame.countPoints(buf, offset);
     }
 
-    int getStepLen(int offset, double buf[])
+    int getStepLen (int offset, double buf[])
     {
         return dFilterFrame.countPoints(buf, offset);
-    }
-
-    double[] createState()
-    {
-        return null;
     }
 }

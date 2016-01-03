@@ -10,29 +10,29 @@ import java.awt.*;
  */
 class FourierLayout implements LayoutManager
 {
-    public FourierLayout()
+    public FourierLayout ()
     {
     }
 
-    public void addLayoutComponent(String name, Component c)
+    public void addLayoutComponent (String name, Component c)
     {
     }
 
-    public void removeLayoutComponent(Component c)
+    public void removeLayoutComponent (Component c)
     {
     }
 
-    public Dimension preferredLayoutSize(Container target)
+    public Dimension preferredLayoutSize (Container target)
     {
         return new Dimension(500, 500);
     }
 
-    public Dimension minimumLayoutSize(Container target)
+    public Dimension minimumLayoutSize (Container target)
     {
         return new Dimension(100, 100);
     }
 
-    public void layoutContainer(Container target)
+    public void layoutContainer (Container target)
     {
         int barwidth = 0;
         int i;

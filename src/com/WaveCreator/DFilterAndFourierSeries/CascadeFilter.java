@@ -2,15 +2,23 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 01:54:53
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 01:54:53
+ */
 public class CascadeFilter extends Filter
 {
-    CascadeFilter(DFilterFrame dFilterFrame, int s)
+    final double[] a1;
+    final double[] a2;
+    final double[] b0;
+    final double[] b1;
+    final double[] b2;
+    final int size;
+    Complex cm2, cm1, top, bottom;
+
+    CascadeFilter (DFilterFrame dFilterFrame, int s)
     {
-        super (dFilterFrame);
+        super(dFilterFrame);
         size = s;
         a1 = new double[s];
         a2 = new double[s];
@@ -24,19 +32,7 @@ public class CascadeFilter extends Filter
         }
     }
 
-    final double[] a1;
-    final double[] a2;
-    final double[] b0;
-    final double[] b1;
-    final double[] b2;
-    final int size;
-
-    double[] createState()
-    {
-        return new double[size * 3];
-    }
-
-    void setAStage(double x1, double x2)
+    void setAStage (double x1, double x2)
     {
         int i;
         for (i = 0; i != size; i++)
@@ -58,7 +54,7 @@ public class CascadeFilter extends Filter
         //System.out.println("setAStage failed");
     }
 
-    void setBStage(double x0, double x1, double x2)
+    void setBStage (double x0, double x1, double x2)
     {
         //System.out.println("setting b " + i + " "+ x0 + " "+ x1 + " "+ x2 + " " + size);
         int i;
@@ -85,31 +81,7 @@ public class CascadeFilter extends Filter
         //System.out.println("setBStage failed");
     }
 
-    void run(double inBuf[], double outBuf[], int bp, int mask, int count, double state[])
-    {
-        int fi2, i20;
-        int i2, j;
-        double in, d2, d1, d0;
-        for (i2 = 0; i2 != count; i2++)
-        {
-            fi2 = bp + i2;
-            i20 = fi2 & mask;
-            in = inBuf[i20];
-            for (j = 0; j != size; j++)
-            {
-                int j3 = j * 3;
-                d2 = state[j3 + 2] = state[j3 + 1];
-                d1 = state[j3 + 1] = state[j3];
-                d0 = state[j3] = in + a1[j] * d1 + a2[j] * d2;
-                in = b0[j] * d0 + b1[j] * d1 + b2[j] * d2;
-            }
-            outBuf[i20] = in;
-        }
-    }
-
-    Complex cm2, cm1, top, bottom;
-
-    void evalTransfer(Complex c)
+    void evalTransfer (Complex c)
     {
         if (cm1 == null)
         {
@@ -137,18 +109,45 @@ public class CascadeFilter extends Filter
         }
     }
 
-    int getImpulseOffset()
+    int getImpulseOffset ()
     {
         return 0;
     }
 
-    int getStepOffset()
+    int getStepOffset ()
     {
         return 0;
     }
 
-    int getLength()
+    int getLength ()
     {
         return 1;
+    }
+
+    double[] createState ()
+    {
+        return new double[size * 3];
+    }
+
+    void run (double inBuf[], double outBuf[], int bp, int mask, int count, double state[])
+    {
+        int fi2, i20;
+        int i2, j;
+        double in, d2, d1, d0;
+        for (i2 = 0; i2 != count; i2++)
+        {
+            fi2 = bp + i2;
+            i20 = fi2 & mask;
+            in = inBuf[i20];
+            for (j = 0; j != size; j++)
+            {
+                int j3 = j * 3;
+                d2 = state[j3 + 2] = state[j3 + 1];
+                d1 = state[j3 + 1] = state[j3];
+                d0 = state[j3] = in + a1[j] * d1 + a2[j] * d2;
+                in = b0[j] * d0 + b1[j] * d1 + b2[j] * d2;
+            }
+            outBuf[i20] = in;
+        }
     }
 }

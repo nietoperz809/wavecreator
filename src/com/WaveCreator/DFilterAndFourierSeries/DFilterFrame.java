@@ -28,14 +28,48 @@ import java.util.Random;
  */
 public class DFilterFrame extends Frame
         implements ComponentListener, ActionListener, AdjustmentListener,
-                   MouseMotionListener, MouseListener, ItemListener
+        MouseMotionListener, MouseListener, ItemListener
 {
+    //int maxSampleCount = 70; // was 50
+    //int sampleCountR, sampleCountTh;
+    //int modeCountR, modeCountTh;
+    //int maxDispRModes = 5, maxDispThModes = 5;
+    //public static final double epsilon = .00001;
+    //public static final double epsilon2 = .003;
+    public static final double log10 = 2.30258509299404568401;
+    static final double pi = 3.14159265358979323846;
+    private static final int WINDOW_KAISER = 4;
+    private static final int phaseColorCount = 50 * 8;
+    final ScopeWindow m_sourceWindow;
     /**
      * Filtered output buffer (in bytes!!!)
      */
     private final ByteBucket m_bucket = new ByteBucket(1000000);
-    private byte[] outputBuffer;
+    private final int SELECT_RESPONSE = 1;
+    private final int SELECT_SPECTRUM = 2;
+    private final int SELECT_POLES = 3;
+    Random random;
+    CheckboxMenuItem logFreqCheckItem;
+    Choice windowChooser;
+    Scrollbar auxBars[];
+    Label auxLabels[];
+    Scrollbar inputBar;
 
+//    public String getAppletInfo()
+//    {
+//        return "DFilterAndFourierSeries Series by Paul Falstad";
+//    }
+    Scrollbar kaiserBar;
+    //boolean editingFunc;
+    //boolean dragStop;
+    double inputW;
+    int sampleRate;
+    int selectedPole, selectedZero;
+    int lastPoleCount = 2;
+    NumberFormat showFormat;
+    double uresp[];
+    Complex customPoles[], customZeros[];
+    private byte[] outputBuffer;
     private Dimension winSize;
     private Image dbimage;
     private View respView;
@@ -46,22 +80,6 @@ public class DFilterFrame extends Frame
     private View waveformView;
     private View poleInfoView;
     private View polesView;
-
-    Random random;
-    //int maxSampleCount = 70; // was 50
-    //int sampleCountR, sampleCountTh;
-    //int modeCountR, modeCountTh;
-    //int maxDispRModes = 5, maxDispThModes = 5;
-    //public static final double epsilon = .00001;
-    //public static final double epsilon2 = .003;
-    public static final double log10 = 2.30258509299404568401;
-    private static final int WINDOW_KAISER = 4;
-
-//    public String getAppletInfo()
-//    {
-//        return "DFilterAndFourierSeries Series by Paul Falstad";
-//    }
-
     private Checkbox soundCheck;
     private Checkbox displayCheck;
     private Checkbox shiftSpectrumCheck;
@@ -72,7 +90,6 @@ public class DFilterFrame extends Frame
     private CheckboxMenuItem impulseCheckItem;
     private CheckboxMenuItem stepCheckItem;
     private CheckboxMenuItem waveformCheckItem;
-    CheckboxMenuItem logFreqCheckItem;
     private CheckboxMenuItem logAmpCheckItem;
     private CheckboxMenuItem allWaveformCheckItem;
     private CheckboxMenuItem ferrisCheckItem;
@@ -80,29 +97,16 @@ public class DFilterFrame extends Frame
     //    MenuItem exitItem;
     private Choice filterChooser;
     private int selection;
-    private final int SELECT_RESPONSE = 1;
-    private final int SELECT_SPECTRUM = 2;
-    private final int SELECT_POLES = 3;
     private int filterSelection;
     private Choice inputChooser;
-    Choice windowChooser;
     private Choice rateChooser;
-    Scrollbar auxBars[];
-    Label auxLabels[];
     private Label inputLabel;
-    Scrollbar inputBar;
     private Label shiftFreqLabel;
     private Scrollbar shiftFreqBar;
     private Label kaiserLabel;
-    Scrollbar kaiserBar;
-    //boolean editingFunc;
-    //boolean dragStop;
-    double inputW;
-    static final double pi = 3.14159265358979323846;
     //double step;
     private double waveGain = 1. / 65536;
     private double outputGain = 1;
-    int sampleRate;
     //int xpoints[] = new int[4];
     //int ypoints[] = new int[4];
     private int dragX;
@@ -110,8 +114,6 @@ public class DFilterFrame extends Frame
     //int dragStartX, dragStartY;
     private int mouseX;
     private int mouseY;
-    int selectedPole, selectedZero;
-    int lastPoleCount = 2;
     //boolean dragSet, dragClear;
     //boolean dragging;
     private boolean unstable;
@@ -127,35 +129,7 @@ public class DFilterFrame extends Frame
     private FFT spectrumFFT;
     private Waveform wformInfo;
     private PhaseColor[] phaseColors;
-    private static final int phaseColorCount = 50 * 8;
     private boolean filterChanged;
-    private DFilterCanvas cv;
-    NumberFormat showFormat;
-    final ScopeWindow m_sourceWindow;
-
-    class View extends Rectangle
-    {
-//        View(Dimension r)
-//        {
-//            super(r);
-//        }
-
-        View(int a, int b, int c, int d)
-        {
-            super(a, b, c, d);
-            right = a + c - 1;
-            bottom = b + d - 1;
-        }
-
-        final int right;
-        final int bottom;
-
-        void drawLabel(Graphics g, String str)
-        {
-            g.setColor(Color.white);
-            centerString(g, str, y - 5);
-        }
-    }
 
 //    int getrand(int x)
 //    {
@@ -166,14 +140,25 @@ public class DFilterFrame extends Frame
 //        }
 //        return q % x;
 //    }
+    private DFilterCanvas cv;
+    //long lastTime;
+    private double minlog;
+    private double logrange;
 
-    public DFilterFrame(ScopeWindow src)
+//    MenuItem getMenuItem()
+//    {
+//        MenuItem mi = new MenuItem("Exit");
+//        mi.addActionListener(this);
+//        return mi;
+//    }
+
+    public DFilterFrame (ScopeWindow src)
     {
         super("Digital Filters Applet v1.2");
         m_sourceWindow = src;
     }
 
-    public void init()
+    public void init ()
     {
         int j;
         int pc8 = phaseColorCount / 8;
@@ -385,42 +370,11 @@ public class DFilterFrame extends Frame
         Dimension x = getSize();
         Dimension screen = getToolkit().getScreenSize();
         setLocation((screen.width - x.width) / 2,
-                    (screen.height - x.height) / 2);
+                (screen.height - x.height) / 2);
         setVisible(true);
     }
 
-    void reinit()
-    {
-        setupFilter();
-        setInputW();
-    }
-
-//    MenuItem getMenuItem()
-//    {
-//        MenuItem mi = new MenuItem("Exit");
-//        mi.addActionListener(this);
-//        return mi;
-//    }
-
-    CheckboxMenuItem getCheckItem(String s, boolean b)
-    {
-        CheckboxMenuItem mi = new CheckboxMenuItem(s);
-        mi.setState(b);
-        mi.addItemListener(this);
-        return mi;
-    }
-
-    int getPower2(int n)
-    {
-        int o = 2;
-        while (o < n)
-        {
-            o *= 2;
-        }
-        return o;
-    }
-
-    PhaseColor genPhaseColor(int sec, double ang)
+    PhaseColor genPhaseColor (int sec, double ang)
     {
         // convert to 0 .. 2*pi angle
         ang += sec * pi / 4;
@@ -455,24 +409,42 @@ public class DFilterFrame extends Frame
         return c;
     }
 
-    class PhaseColor
+    CheckboxMenuItem getCheckItem (String s, boolean b)
     {
-        public final double r;
-        public final double g;
-        public final double b;
-
-        PhaseColor(double rr, double gg, double bb)
-        {
-            r = rr;
-            g = gg;
-            b = bb;
-        }
+        CheckboxMenuItem mi = new CheckboxMenuItem(s);
+        mi.setState(b);
+        mi.addItemListener(this);
+        return mi;
     }
 
-    void handleResize()
+    void setInputLabel ()
+    {
+        wformInfo = getWaveformObject();
+        String inText = wformInfo.getInputText();
+        if (inText == null)
+        {
+            inputLabel.setVisible(false);
+            inputBar.setVisible(false);
+        }
+        else
+        {
+            inputLabel.setText(inText);
+            inputLabel.setVisible(true);
+            inputBar.setVisible(true);
+        }
+        validate();
+    }
+
+    void reinit ()
+    {
+        setupFilter();
+        setInputW();
+    }
+
+    void handleResize ()
     {
         winSize = cv.getSize();
-        Dimension d = winSize; 
+        Dimension d = winSize;
         if (winSize.width == 0)
         {
             return;
@@ -544,11 +516,205 @@ public class DFilterFrame extends Frame
             poleInfoView.height = 200;
         }
         polesView = new View(poleInfoView.x, poleInfoView.y,
-                             poleInfoView.height, poleInfoView.height);
+                poleInfoView.height, poleInfoView.height);
         getPoleBuffer();
     }
 
-    View getView(int i, int ct)
+    Waveform getWaveformObject ()
+    {
+        Waveform wform;
+        int ic = inputChooser.getSelectedIndex();
+        switch (ic)
+        {
+            case 0:
+                wform = new NoiseWaveform(this);
+                break;
+            case 1:
+                wform = new SineWaveform(this);
+                break;
+            case 2:
+                wform = new SawtoothWaveform(this);
+                break;
+            case 3:
+                wform = new TriangleWaveform(this);
+                break;
+            case 4:
+                wform = new SquareWaveform(this);
+                break;
+            case 5:
+                wform = new PeriodicNoiseWaveform(this);
+                break;
+            case 6:
+                wform = new SweepWaveform(this);
+                break;
+            case 7:
+                wform = new ImpulseWaveform(this);
+                break;
+            default:
+                wform = new Wave16Waveform(this);
+                break;
+        }
+        return wform;
+    }
+
+    void setupFilter ()
+    {
+        int filt = filterChooser.getSelectedIndex();
+        switch (filt)
+        {
+            case 0:
+                filterType = new SincLowPassFilter(this);
+                break;
+            case 1:
+                filterType = new SincHighPassFilter(this);
+                break;
+            case 2:
+                filterType = new SincBandPassFilter(this);
+                break;
+            case 3:
+                filterType = new SincBandStopFilter(this);
+                break;
+            case 4:
+                filterType = new CustomFIRFilter(this);
+                break;
+            case 5:
+                filterType = new NoFilter(this);
+                break;
+            case 6:
+                filterType = new ButterLowPass(this);
+                break;
+            case 7:
+                filterType = new ButterHighPass(this);
+                break;
+            case 8:
+                filterType = new ButterBandPass(this);
+                break;
+            case 9:
+                filterType = new ButterBandStop(this);
+                break;
+            case 10:
+                filterType = new ChebyLowPass(this);
+                break;
+            case 11:
+                filterType = new ChebyHighPass(this);
+                break;
+            case 12:
+                filterType = new ChebyBandPass(this);
+                break;
+            case 13:
+                filterType = new ChebyBandStop(this);
+                break;
+            case 14:
+                filterType = new InvChebyLowPass(this);
+                break;
+            case 15:
+                filterType = new InvChebyHighPass(this);
+                break;
+            case 16:
+                filterType = new InvChebyBandPass(this);
+                break;
+            case 17:
+                filterType = new InvChebyBandStop(this);
+                break;
+            case 18:
+                filterType = new EllipticLowPass(this);
+                break;
+            case 19:
+                filterType = new EllipticHighPass(this);
+                break;
+            case 20:
+                filterType = new EllipticBandPass(this);
+                break;
+            case 21:
+                filterType = new EllipticBandStop(this);
+                break;
+            case 22:
+                filterType = new CombFilter(this, 1);
+                break;
+            case 23:
+                filterType = new CombFilter(this, -1);
+                break;
+            case 24:
+                filterType = new DelayFilter(this);
+                break;
+            case 25:
+                filterType = new PluckedStringFilter(this);
+                break;
+            case 26:
+                filterType = new InverseCombFilter(this);
+                break;
+            case 27:
+                filterType = new ResonatorFilter(this);
+                break;
+            case 28:
+                filterType = new ResonatorZeroFilter(this);
+                break;
+            case 29:
+                filterType = new NotchFilter(this);
+                break;
+            case 30:
+                filterType = new MovingAverageFilter(this);
+                break;
+            case 31:
+                filterType = new TriangleFilter(this);
+                break;
+            case 32:
+                filterType = new AllPassFilter(this);
+                break;
+            case 33:
+                filterType = new GaussianFilter(this);
+                break;
+            case 34:
+                filterType = new RandomFilter(this);
+                break;
+            case 35:
+                filterType = new CustomIIRFilter(this);
+                break;
+            case 36:
+                filterType = new BoxFilter(this);
+                break;
+        }
+        if (filterSelection != filt)
+        {
+            filterSelection = filt;
+            int i;
+            for (i = 0; i != auxBars.length; i++)
+            {
+                auxBars[i].setMaximum(999);
+            }
+            int ax = filterType.select();
+            for (i = 0; i != ax; i++)
+            {
+                auxLabels[i].setVisible(true);
+                auxBars[i].setVisible(true);
+            }
+            for (i = ax; i != auxBars.length; i++)
+            {
+                auxLabels[i].setVisible(false);
+                auxBars[i].setVisible(false);
+            }
+            if (filterType.needsWindow())
+            {
+                windowChooser.setVisible(true);
+                setWindow();
+            }
+            else
+            {
+                windowChooser.setVisible(false);
+                setWindow();
+            }
+            validate();
+        }
+        filterType.setup();
+        curFilter = null;
+    }
+
+    void setInputW ()
+    {
+        inputW = pi * inputBar.getValue() / 1000.;
+    }
+
+    View getView (int i, int ct)
     {
         int dh3 = winSize.height / ct;
         int bd = 5;
@@ -556,7 +722,7 @@ public class DFilterFrame extends Frame
         return new View(bd, bd + i * dh3 + tpad, winSize.width - bd * 2, dh3 - bd * 2 - tpad);
     }
 
-    void getPoleBuffer()
+    void getPoleBuffer ()
     {
         int i;
         pixels = null;
@@ -580,29 +746,49 @@ public class DFilterFrame extends Frame
                 pixels[i] = 0xFF000000;
             }
             imageSource = new MemoryImageSource(polesView.width, polesView.height,
-                                                pixels, 0, polesView.width);
+                    pixels, 0, polesView.width);
             imageSource.setAnimated(true);
             imageSource.setFullBufferUpdates(true);
             memimage = cv.createImage(imageSource);
         }
     }
 
-    void centerString(Graphics g, String s, int y)
+//    void setCutoff(double f)
+//    {
+//    }
+
+    void setWindow ()
     {
-        FontMetrics fm = g.getFontMetrics();
-        g.drawString(s, (winSize.width - fm.stringWidth(s)) / 2, y);
+        if (windowChooser.getSelectedIndex() == WINDOW_KAISER &&
+                filterType.needsWindow())
+        {
+            kaiserLabel.setVisible(true);
+            kaiserBar.setVisible(true);
+        }
+        else
+        {
+            kaiserLabel.setVisible(false);
+            kaiserBar.setVisible(false);
+        }
+        validate();
     }
 
-    public void paint(Graphics g)
+    int getPower2 (int n)
+    {
+        int o = 2;
+        while (o < n)
+        {
+            o *= 2;
+        }
+        return o;
+    }
+
+    public void paint (Graphics g)
     {
         cv.repaint();
     }
 
-    //long lastTime;
-    private double minlog;
-    private double logrange;
-
-    public void updateDFilter(Graphics realg)
+    public void updateDFilter (Graphics realg)
     {
         Graphics g = dbimage.getGraphics();
         if (winSize == null || winSize.width == 0 || dbimage == null)
@@ -872,7 +1058,7 @@ public class DFilterFrame extends Frame
                         for (ii = 0; ii != polesView.height; ii++)
                         {
                             c1.set((ri - pw) / (double) pw,
-                                   (ii - pw) / (double) pw);
+                                    (ii - pw) / (double) pw);
                             if (c1.re == 0 && c1.im == 0)
                             {
                                 c1.set(1e-30);
@@ -902,9 +1088,9 @@ public class DFilterFrame extends Frame
                             }
                             PhaseColor pc = phaseColors[(int) (p * phaseColorCount / (2 * pi))];
                             pixels[ri + ii * polesView.width] = 0xFF000000 +
-                                                                0x10000 * (int) (pc.r * cv_here + wv) +
-                                                                0x00100 * (int) (pc.g * cv_here + wv) +
-                                                                (int) (pc.b * cv_here + wv);
+                                    0x10000 * (int) (pc.r * cv_here + wv) +
+                                    0x00100 * (int) (pc.g * cv_here + wv) +
+                                    (int) (pc.b * cv_here + wv);
                         }
                     }
                 }
@@ -932,7 +1118,7 @@ public class DFilterFrame extends Frame
                 info[i++] = "Input Freq = " + (int) (inputW * sampleRate / (2 * pi));
             }
             info[i] = "Output adjust = " +
-                      showFormat.format(-10 * Math.log(outputGain) / Math.log(.1)) + " dB";
+                    showFormat.format(-10 * Math.log(outputGain) / Math.log(.1)) + " dB";
             for (i = 0; i != 10; i++)
             {
                 if (info[i] == null)
@@ -942,7 +1128,7 @@ public class DFilterFrame extends Frame
                 g.drawString(info[i], infoX, poleInfoView.y + 5 + 20 * i);
             }
             if ((respView != null && respView.contains(mouseX, mouseY)) ||
-                (spectrumView != null && spectrumView.contains(mouseX, mouseY)))
+                    (spectrumView != null && spectrumView.contains(mouseX, mouseY)))
             {
                 double f = getFreqFromX(mouseX, respView);
                 if (f >= 0)
@@ -982,8 +1168,8 @@ public class DFilterFrame extends Frame
             g.fillRect(impulseView.x, impulseView.y, impulseView.width, impulseView.height);
             g.setColor(Color.black);
             g.drawLine(impulseView.x, impulseView.y + impulseView.height / 2,
-                       impulseView.x + impulseView.width - 1,
-                       impulseView.y + impulseView.height / 2);
+                    impulseView.x + impulseView.width - 1,
+                    impulseView.y + impulseView.height / 2);
             g.setColor(Color.white);
             int offset = curFilter.getImpulseOffset();
             double impBuf[] = curFilter.getImpulseResponse(offset);
@@ -1026,8 +1212,8 @@ public class DFilterFrame extends Frame
             g.fillRect(stepView.x, stepView.y, stepView.width, stepView.height);
             g.setColor(Color.black);
             g.drawLine(stepView.x, stepView.y + stepView.height / 2,
-                       stepView.x + stepView.width - 1,
-                       stepView.y + stepView.height / 2);
+                    stepView.x + stepView.width - 1,
+                    stepView.y + stepView.height / 2);
             g.setColor(Color.white);
             int offset = curFilter.getStepOffset();
             double impBuf[] = curFilter.getStepResponse(offset);
@@ -1090,11 +1276,11 @@ public class DFilterFrame extends Frame
             waveformView.drawLabel(g, "Waveform");
             g.setColor(Color.darkGray);
             g.fillRect(waveformView.x, waveformView.y,
-                       waveformView.width, waveformView.height);
+                    waveformView.width, waveformView.height);
             g.setColor(Color.black);
             g.drawLine(waveformView.x, waveformView.y + waveformView.height / 2,
-                       waveformView.x + waveformView.width - 1,
-                       waveformView.y + waveformView.height / 2);
+                    waveformView.x + waveformView.width - 1,
+                    waveformView.y + waveformView.height / 2);
             g.setColor(Color.white);
             int ox = -1, oy = -1;
 
@@ -1153,7 +1339,7 @@ public class DFilterFrame extends Frame
             spectrumView.drawLabel(g, "Spectrum");
             g.setColor(Color.darkGray);
             g.fillRect(spectrumView.x, spectrumView.y,
-                       spectrumView.width, spectrumView.height);
+                    spectrumView.width, spectrumView.height);
             g.setColor(Color.black);
             double ym = .138;
             for (i = 0; ; i++)
@@ -1229,7 +1415,7 @@ public class DFilterFrame extends Frame
                         continue;
                     }
                     specArray[ix] += spectrumBuf[i] * spectrumBuf[i] +
-                                     spectrumBuf[i + 1] * spectrumBuf[i + 1];
+                            spectrumBuf[i + 1] * spectrumBuf[i + 1];
                 }
             }
             else
@@ -1238,7 +1424,7 @@ public class DFilterFrame extends Frame
                 {
                     int ix = specArray.length * i * 2 / spectrumBuf.length;
                     specArray[ix] += spectrumBuf[i] * spectrumBuf[i] +
-                                     spectrumBuf[i + 1] * spectrumBuf[i + 1];
+                            spectrumBuf[i + 1] * spectrumBuf[i + 1];
                 }
             }
 
@@ -1276,24 +1462,20 @@ public class DFilterFrame extends Frame
         {
             g.setColor(Color.yellow);
             g.drawLine(mouseX, respView.y,
-                       mouseX, respView.y + respView.height - 1);
+                    mouseX, respView.y + respView.height - 1);
         }
         if (spectrumView != null && spectrumView.contains(mouseX, mouseY))
         {
             g.setColor(Color.yellow);
             g.drawLine(mouseX, spectrumView.y,
-                       mouseX, spectrumView.y + spectrumView.height - 1);
+                    mouseX, spectrumView.y + spectrumView.height - 1);
         }
         filterChanged = false;
 
         realg.drawImage(dbimage, 0, 0, this);
     }
 
-//    void setCutoff(double f)
-//    {
-//    }
-
-    void setCustomPolesZeros()
+    void setCustomPolesZeros ()
     {
         if (filterType instanceof CustomIIRFilter)
         {
@@ -1333,7 +1515,43 @@ public class DFilterFrame extends Frame
         //int lastZeroCount = n;
     }
 
-    int countPoints(double buf[], int offset)
+    // get freq (from 0 to .5) given an x coordinate
+    double getFreqFromX (int x, View v)
+    {
+        double f = .5 * (x - v.x) / (double) v.width;
+        if (f <= 0 || f >= .5)
+        {
+            return -1;
+        }
+        if (logFreqCheckItem.getState())
+        {
+            return Math.exp(minlog + 2 * f * logrange);
+        }
+        return f;
+    }
+
+    double max (double buf[])
+    {
+        int i;
+        double max = 0;
+        for (i = 0; i != buf.length; i++)
+        {
+            double qa = Math.abs(buf[i]);
+            if (qa > max)
+            {
+                max = qa;
+            }
+        }
+        return max;
+    }
+
+    void centerString (Graphics g, String s, int y)
+    {
+        FontMetrics fm = g.getFontMetrics();
+        g.drawString(s, (winSize.width - fm.stringWidth(s)) / 2, y);
+    }
+
+    int countPoints (double buf[], int offset)
     {
         int len = buf.length;
         double max = 0;
@@ -1357,263 +1575,26 @@ public class DFilterFrame extends Frame
         return result;
     }
 
-    double max(double buf[])
-    {
-        int i;
-        double max = 0;
-        for (i = 0; i != buf.length; i++)
-        {
-            double qa = Math.abs(buf[i]);
-            if (qa > max)
-            {
-                max = qa;
-            }
-        }
-        return max;
-    }
-
-    // get freq (from 0 to .5) given an x coordinate
-    double getFreqFromX(int x, View v)
-    {
-        double f = .5 * (x - v.x) / (double) v.width;
-        if (f <= 0 || f >= .5)
-        {
-            return -1;
-        }
-        if (logFreqCheckItem.getState())
-        {
-            return Math.exp(minlog + 2 * f * logrange);
-        }
-        return f;
-    }
-
-    void setupFilter()
-    {
-        int filt = filterChooser.getSelectedIndex();
-        switch (filt)
-        {
-            case 0:
-                filterType = new SincLowPassFilter(this);
-                break;
-            case 1:
-                filterType = new SincHighPassFilter(this);
-                break;
-            case 2:
-                filterType = new SincBandPassFilter(this);
-                break;
-            case 3:
-                filterType = new SincBandStopFilter(this);
-                break;
-            case 4:
-                filterType = new CustomFIRFilter(this);
-                break;
-            case 5:
-                filterType = new NoFilter(this);
-                break;
-            case 6:
-                filterType = new ButterLowPass(this);
-                break;
-            case 7:
-                filterType = new ButterHighPass(this);
-                break;
-            case 8:
-                filterType = new ButterBandPass(this);
-                break;
-            case 9:
-                filterType = new ButterBandStop(this);
-                break;
-            case 10:
-                filterType = new ChebyLowPass(this);
-                break;
-            case 11:
-                filterType = new ChebyHighPass(this);
-                break;
-            case 12:
-                filterType = new ChebyBandPass(this);
-                break;
-            case 13:
-                filterType = new ChebyBandStop(this);
-                break;
-            case 14:
-                filterType = new InvChebyLowPass(this);
-                break;
-            case 15:
-                filterType = new InvChebyHighPass(this);
-                break;
-            case 16:
-                filterType = new InvChebyBandPass(this);
-                break;
-            case 17:
-                filterType = new InvChebyBandStop(this);
-                break;
-            case 18:
-                filterType = new EllipticLowPass(this);
-                break;
-            case 19:
-                filterType = new EllipticHighPass(this);
-                break;
-            case 20:
-                filterType = new EllipticBandPass(this);
-                break;
-            case 21:
-                filterType = new EllipticBandStop(this);
-                break;
-            case 22:
-                filterType = new CombFilter(this, 1);
-                break;
-            case 23:
-                filterType = new CombFilter(this, -1);
-                break;
-            case 24:
-                filterType = new DelayFilter(this);
-                break;
-            case 25:
-                filterType = new PluckedStringFilter(this);
-                break;
-            case 26:
-                filterType = new InverseCombFilter(this);
-                break;
-            case 27:
-                filterType = new ResonatorFilter(this);
-                break;
-            case 28:
-                filterType = new ResonatorZeroFilter(this);
-                break;
-            case 29:
-                filterType = new NotchFilter(this);
-                break;
-            case 30:
-                filterType = new MovingAverageFilter(this);
-                break;
-            case 31:
-                filterType = new TriangleFilter(this);
-                break;
-            case 32:
-                filterType = new AllPassFilter(this);
-                break;
-            case 33:
-                filterType = new GaussianFilter(this);
-                break;
-            case 34:
-                filterType = new RandomFilter(this);
-                break;
-            case 35:
-                filterType = new CustomIIRFilter(this);
-                break;
-            case 36:
-                filterType = new BoxFilter(this);
-                break;
-        }
-        if (filterSelection != filt)
-        {
-            filterSelection = filt;
-            int i;
-            for (i = 0; i != auxBars.length; i++)
-            {
-                auxBars[i].setMaximum(999);
-            }
-            int ax = filterType.select();
-            for (i = 0; i != ax; i++)
-            {
-                auxLabels[i].setVisible(true);
-                auxBars[i].setVisible(true);
-            }
-            for (i = ax; i != auxBars.length; i++)
-            {
-                auxLabels[i].setVisible(false);
-                auxBars[i].setVisible(false);
-            }
-            if (filterType.needsWindow())
-            {
-                windowChooser.setVisible(true);
-                setWindow();
-            }
-            else
-            {
-                windowChooser.setVisible(false);
-                setWindow();
-            }
-            validate();
-        }
-        filterType.setup();
-        curFilter = null;
-    }
-
-    void setInputLabel()
-    {
-        wformInfo = getWaveformObject();
-        String inText = wformInfo.getInputText();
-        if (inText == null)
-        {
-            inputLabel.setVisible(false);
-            inputBar.setVisible(false);
-        }
-        else
-        {
-            inputLabel.setText(inText);
-            inputLabel.setVisible(true);
-            inputBar.setVisible(true);
-        }
-        validate();
-    }
-
-    Waveform getWaveformObject()
-    {
-        Waveform wform;
-        int ic = inputChooser.getSelectedIndex();
-        switch (ic)
-        {
-            case 0:
-                wform = new NoiseWaveform(this);
-                break;
-            case 1:
-                wform = new SineWaveform(this);
-                break;
-            case 2:
-                wform = new SawtoothWaveform(this);
-                break;
-            case 3:
-                wform = new TriangleWaveform(this);
-                break;
-            case 4:
-                wform = new SquareWaveform(this);
-                break;
-            case 5:
-                wform = new PeriodicNoiseWaveform(this);
-                break;
-            case 6:
-                wform = new SweepWaveform(this);
-                break;
-            case 7:
-                wform = new ImpulseWaveform(this);
-                break;
-            default:
-                wform = new Wave16Waveform(this);
-                break;
-        }
-        return wform;
-    }
-
-    public void componentHidden(ComponentEvent e)
-    {
-    }
-
-    public void componentMoved(ComponentEvent e)
-    {
-    }
-
-    public void componentShown(ComponentEvent e)
-    {
-        cv.repaint();
-    }
-
-    public void componentResized(ComponentEvent e)
+    public void componentResized (ComponentEvent e)
     {
         handleResize();
         cv.repaint();
     }
 
-    public void actionPerformed(ActionEvent e)
+    public void componentMoved (ComponentEvent e)
+    {
+    }
+
+    public void componentShown (ComponentEvent e)
+    {
+        cv.repaint();
+    }
+
+    public void componentHidden (ComponentEvent e)
+    {
+    }
+
+    public void actionPerformed (ActionEvent e)
     {
         if (e.getSource() == snapShot)
         {
@@ -1634,7 +1615,7 @@ public class DFilterFrame extends Frame
         }
     }
 
-    public void adjustmentValueChanged(AdjustmentEvent e)
+    public void adjustmentValueChanged (AdjustmentEvent e)
     {
         setupFilter();
         //System.out.print(((Scrollbar) e.getSource()).getValue() + "\n");
@@ -1645,13 +1626,8 @@ public class DFilterFrame extends Frame
         cv.repaint();
     }
 
-    void setInputW()
-    {
-        inputW = pi * inputBar.getValue() / 1000.;
-    }
-
     @Override
-    public boolean handleEvent(Event ev)
+    public boolean handleEvent (Event ev)
     {
         if (ev.id == Event.WINDOW_DESTROY)
         {
@@ -1666,7 +1642,7 @@ public class DFilterFrame extends Frame
         return super.handleEvent(ev);
     }
 
-    public void mouseDragged(MouseEvent e)
+    public void mouseDragged (MouseEvent e)
     {
         mouseX = e.getX();
         mouseY = e.getY();
@@ -1674,7 +1650,7 @@ public class DFilterFrame extends Frame
         cv.repaint();
     }
 
-    public void mouseMoved(MouseEvent e)
+    public void mouseMoved (MouseEvent e)
     {
         mouseX = e.getX();
         dragX = mouseX;
@@ -1690,14 +1666,14 @@ public class DFilterFrame extends Frame
             selection = SELECT_SPECTRUM;
         }
         if (polesView != null && polesView.contains(e.getX(), e.getY()) &&
-            !ferrisCheckItem.getState())
+                !ferrisCheckItem.getState())
         {
             selection = SELECT_POLES;
             selectPoleZero(e.getX(), e.getY());
         }
     }
 
-    void selectPoleZero(int x, int y)
+    void selectPoleZero (int x, int y)
     {
         selectedPole = -1;
         selectedZero = -1;
@@ -1737,34 +1713,34 @@ public class DFilterFrame extends Frame
         }
     }
 
-    int distanceSq(int x1, int y1, int x2, int y2)
+    int distanceSq (int x1, int y1, int x2, int y2)
     {
         return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
     }
 
-    public void mouseClicked(MouseEvent e)
+    public void mouseClicked (MouseEvent e)
     {
     }
 
-    public void mouseEntered(MouseEvent e)
-    {
-    }
-
-    public void mouseExited(MouseEvent e)
-    {
-    }
-
-    public void mousePressed(MouseEvent e)
+    public void mousePressed (MouseEvent e)
     {
         mouseMoved(e);
         edit(e);
     }
 
-    public void mouseReleased(MouseEvent e)
+    public void mouseReleased (MouseEvent e)
     {
     }
 
-    void edit(MouseEvent e)
+    public void mouseEntered (MouseEvent e)
+    {
+    }
+
+    public void mouseExited (MouseEvent e)
+    {
+    }
+
+    void edit (MouseEvent e)
     {
         if (selection == SELECT_RESPONSE)
         {
@@ -1801,7 +1777,7 @@ public class DFilterFrame extends Frame
         }
     }
 
-    void editCustomFIRFilter(MouseEvent e)
+    void editCustomFIRFilter (MouseEvent e)
     {
         int x = e.getX();
         int y = e.getY();
@@ -1829,7 +1805,7 @@ public class DFilterFrame extends Frame
         setupFilter();
     }
 
-    void editCustomFIRFilterPoint(int x, int y)
+    void editCustomFIRFilterPoint (int x, int y)
     {
         double xx1 = getFreqFromX(x, respView) * 2;
         double xx2 = getFreqFromX(x + 1, respView) * 2;
@@ -1843,7 +1819,7 @@ public class DFilterFrame extends Frame
         ((CustomFIRFilter) filterType).edit(xx1, xx2, yy);
     }
 
-    void editCustomIIRFilter(MouseEvent e)
+    void editCustomIIRFilter (MouseEvent e)
     {
         if (ferrisCheckItem.getState())
         {
@@ -1860,7 +1836,7 @@ public class DFilterFrame extends Frame
         setupFilter();
     }
 
-    public void itemStateChanged(ItemEvent e)
+    public void itemStateChanged (ItemEvent e)
     {
         filterChanged = true;
         if (e.getSource() == displayCheck)
@@ -1935,22 +1911,6 @@ public class DFilterFrame extends Frame
         cv.repaint();
     }
 
-    void setWindow()
-    {
-        if (windowChooser.getSelectedIndex() == WINDOW_KAISER &&
-            filterType.needsWindow())
-        {
-            kaiserLabel.setVisible(true);
-            kaiserBar.setVisible(true);
-        }
-        else
-        {
-            kaiserLabel.setVisible(false);
-            kaiserBar.setVisible(false);
-        }
-        validate();
-    }
-
 //    void setSampleRate(int r)
 //    {
 //        int x = 0;
@@ -1979,6 +1939,141 @@ public class DFilterFrame extends Frame
 //        sampleRate = r;
 //    }
 
+    String getOmegaText (double wc)
+    {
+        return ((int) (wc * sampleRate / (2 * pi))) + " Hz";
+    }
+
+    double cosh (double x)
+    {
+        return .5 * (Math.exp(x) + Math.exp(-x));
+    }
+
+    double acosh (double x)
+    {
+        return Math.log(x + Math.sqrt(x * x - 1));
+    }
+
+//    double sinh(double x)
+//    {
+//        return .5 * (Math.exp(x) - Math.exp(-x));
+//    }
+
+    String getUnitText (double v, String u)
+    {
+        double va = Math.abs(v);
+        if (va < 1e-17)
+        {
+            return "0 " + u;
+        }
+        if (va < 1e-12)
+        {
+            return showFormat.format(v * 1e15) + " f" + u;
+        }
+        if (va < 1e-9)
+        {
+            return showFormat.format(v * 1e12) + " p" + u;
+        }
+        if (va < 1e-6)
+        {
+            return showFormat.format(v * 1e9) + " n" + u;
+        }
+        if (va < 1e-3)
+        {
+            return showFormat.format(v * 1e6) + " \u03bc" + u;
+        }
+        if (va < 1e-2 || (u.compareTo("m") != 0 && va < 1))
+        {
+            return showFormat.format(v * 1e3) + " m" + u;
+        }
+        if (va < 1)
+        {
+            return showFormat.format(v * 1e2) + " c" + u;
+        }
+        if (va < 1e3)
+        {
+            return showFormat.format(v) + " " + u;
+        }
+        if (va < 1e6)
+        {
+            return showFormat.format(v * 1e-3) + " k" + u;
+        }
+        if (va < 1e9)
+        {
+            return showFormat.format(v * 1e-6) + " M" + u;
+        }
+        if (va < 1e12)
+        {
+            return showFormat.format(v * 1e-9) + " G" + u;
+        }
+        if (va < 1e15)
+        {
+            return showFormat.format(v * 1e-12) + " T" + u;
+        }
+        return v + " " + u;
+    }
+
+    double bessi0 (double x)
+    {
+        double ax, ans;
+        double y;
+
+        ax = Math.abs(x);
+        if (ax < 3.75)
+        {
+            y = x / 3.75;
+            y *= y;
+            ans = 1.0 + y * (3.5156229 + y * (3.0899424 + y * (1.2067492
+                    + y * (0.2659732 + y * (0.360768e-1 + y * 0.45813e-2)))));
+        }
+        else
+        {
+            y = 3.75 / ax;
+            ans = (Math.exp(ax) / Math.sqrt(ax)) * (0.39894228 + y * (0.1328592e-1
+                    + y * (0.225319e-2 + y * (-0.157565e-2 + y * (0.916281e-2
+                    + y * (-0.2057706e-1 + y * (0.2635537e-1 + y * (-0.1647633e-1
+                    + y * 0.392377e-2))))))));
+        }
+        return ans;
+    }
+
+    class View extends Rectangle
+    {
+//        View(Dimension r)
+//        {
+//            super(r);
+//        }
+
+        final int right;
+        final int bottom;
+        View (int a, int b, int c, int d)
+        {
+            super(a, b, c, d);
+            right = a + c - 1;
+            bottom = b + d - 1;
+        }
+
+        void drawLabel (Graphics g, String str)
+        {
+            g.setColor(Color.white);
+            centerString(g, str, y - 5);
+        }
+    }
+
+    class PhaseColor
+    {
+        public final double r;
+        public final double g;
+        public final double b;
+
+        PhaseColor (double rr, double gg, double bb)
+        {
+            r = rr;
+            g = gg;
+            b = bb;
+        }
+    }
+
     class PlayThread extends Thread
     {
         SourceDataLine line;
@@ -1992,52 +2087,27 @@ public class DFilterFrame extends Frame
         double stateL[];
         int fbufmask, fbufsize;
         int spectrumOffset, spectrumLen;
-
-        PlayThread()
+        int inbp, outbp;
+        int spectCt;
+        double impulseBuf[], convolveBuf[];
+        int convBufPtr;
+        FFT convFFT;
+        PlayThread ()
         {
             shutdownRequested = false;
         }
 
-        void requestShutdown()
+        void requestShutdown ()
         {
             shutdownRequested = true;
         }
 
-        void setFilter(Filter f)
+        void setFilter (Filter f)
         {
             newFilter = f;
         }
 
-        SourceDataLine openLine()
-        {
-            SourceDataLine lin = null;
-            try
-            {
-                AudioFormat playFormat =
-                        new AudioFormat(sampleRate, 16, 1, true, false);
-                DataLine.Info info = new DataLine.Info(SourceDataLine.class,
-                                                       playFormat);
-
-//                if (!AudioSystem.isLineSupported(info))
-//                {
-//                    throw new LineUnavailableException(
-//                            "sorry, the sound format cannot be played");
-//                }
-                lin = (SourceDataLine) AudioSystem.getLine(info);
-                lin.open(playFormat, getPower2(sampleRate / 4));
-                lin.start();
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-            return lin;
-        }
-
-        int inbp, outbp;
-        int spectCt;
-
-        public void run()
+        public void run ()
         {
             try
             {
@@ -2050,7 +2120,7 @@ public class DFilterFrame extends Frame
             playThread = null;
         }
 
-        void doRun()
+        void doRun ()
         {
             rateChooser.setEnabled(true);
             wform = getWaveformObject();
@@ -2093,7 +2163,7 @@ public class DFilterFrame extends Frame
                 {
                     gainCounter = 0;
                     maxGain = !(wform instanceof SweepWaveform ||
-                                wform instanceof SineWaveform);
+                            wform instanceof SineWaveform);
                     outputGain = 1;
                     // we avoid doing this unless necessary because it sounds bad
                     if (filt == null || filt.getLength() != newFilter.getLength())
@@ -2185,22 +2255,33 @@ public class DFilterFrame extends Frame
             cv.repaint();
         }
 
-        void doFilter(int sampleCount)
+        SourceDataLine openLine ()
         {
-            filt.run(fbufLi, fbufLo, inbp, fbufmask, sampleCount, stateL);
-            inbp = (inbp + sampleCount) & fbufmask;
-            double q = fbufLo[(inbp - 1) & fbufmask];
-            if (Double.isNaN(q) || Double.isInfinite(q))
+            SourceDataLine lin = null;
+            try
             {
-                unstable = true;
+                AudioFormat playFormat =
+                        new AudioFormat(sampleRate, 16, 1, true, false);
+                DataLine.Info info = new DataLine.Info(SourceDataLine.class,
+                        playFormat);
+
+//                if (!AudioSystem.isLineSupported(info))
+//                {
+//                    throw new LineUnavailableException(
+//                            "sorry, the sound format cannot be played");
+//                }
+                lin = (SourceDataLine) AudioSystem.getLine(info);
+                lin.open(playFormat, getPower2(sampleRate / 4));
+                lin.start();
             }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+            return lin;
         }
 
-        double impulseBuf[], convolveBuf[];
-        int convBufPtr;
-        FFT convFFT;
-
-        void doConvolveFilter(int sampleCount, boolean maxGain)
+        void doConvolveFilter (int sampleCount, boolean maxGain)
         {
             int i;
             int fi2 = inbp, i20;
@@ -2242,9 +2323,9 @@ public class DFilterFrame extends Frame
                     for (j = 0; j != cblen; j += 2)
                     {
                         double a = convolveBuf[j] * impulseBuf[j] -
-                                   convolveBuf[j + 1] * impulseBuf[j + 1];
+                                convolveBuf[j + 1] * impulseBuf[j + 1];
                         double b = convolveBuf[j] * impulseBuf[j + 1] +
-                                   convolveBuf[j + 1] * impulseBuf[j];
+                                convolveBuf[j + 1] * impulseBuf[j];
                         convolveBuf[j] = a * mult;
                         convolveBuf[j + 1] = b * mult;
                     }
@@ -2281,7 +2362,18 @@ public class DFilterFrame extends Frame
             convBufPtr = cbptr;
         }
 
-        void doOutput(int outlen, boolean maxGain)
+        void doFilter (int sampleCount)
+        {
+            filt.run(fbufLi, fbufLo, inbp, fbufmask, sampleCount, stateL);
+            inbp = (inbp + sampleCount) & fbufmask;
+            double q = fbufLo[(inbp - 1) & fbufmask];
+            if (Double.isNaN(q) || Double.isInfinite(q))
+            {
+                unstable = true;
+            }
+        }
+
+        void doOutput (int outlen, boolean maxGain)
         {
             if (outputBuffer.length < outlen)
             {
@@ -2350,107 +2442,5 @@ public class DFilterFrame extends Frame
             spectCt += outlen / 2;
         }
     }
-
-    String getOmegaText(double wc)
-    {
-        return ((int) (wc * sampleRate / (2 * pi))) + " Hz";
-    }
-
-    double cosh(double x)
-    {
-        return .5 * (Math.exp(x) + Math.exp(-x));
-    }
-
-//    double sinh(double x)
-//    {
-//        return .5 * (Math.exp(x) - Math.exp(-x));
-//    }
-
-    double acosh(double x)
-    {
-        return Math.log(x + Math.sqrt(x * x - 1));
-    }
-
-    String getUnitText(double v, String u)
-    {
-        double va = Math.abs(v);
-        if (va < 1e-17)
-        {
-            return "0 " + u;
-        }
-        if (va < 1e-12)
-        {
-            return showFormat.format(v * 1e15) + " f" + u;
-        }
-        if (va < 1e-9)
-        {
-            return showFormat.format(v * 1e12) + " p" + u;
-        }
-        if (va < 1e-6)
-        {
-            return showFormat.format(v * 1e9) + " n" + u;
-        }
-        if (va < 1e-3)
-        {
-            return showFormat.format(v * 1e6) + " \u03bc" + u;
-        }
-        if (va < 1e-2 || (u.compareTo("m") != 0 && va < 1))
-        {
-            return showFormat.format(v * 1e3) + " m" + u;
-        }
-        if (va < 1)
-        {
-            return showFormat.format(v * 1e2) + " c" + u;
-        }
-        if (va < 1e3)
-        {
-            return showFormat.format(v) + " " + u;
-        }
-        if (va < 1e6)
-        {
-            return showFormat.format(v * 1e-3) + " k" + u;
-        }
-        if (va < 1e9)
-        {
-            return showFormat.format(v * 1e-6) + " M" + u;
-        }
-        if (va < 1e12)
-        {
-            return showFormat.format(v * 1e-9) + " G" + u;
-        }
-        if (va < 1e15)
-        {
-            return showFormat.format(v * 1e-12) + " T" + u;
-        }
-        return v + " " + u;
-    }
-
-    double bessi0(double x)
-    {
-        double ax, ans;
-        double y;
-
-        ax = Math.abs(x);
-        if (ax < 3.75)
-        {
-            y = x / 3.75;
-            y *= y;
-            ans = 1.0 + y * (3.5156229 + y * (3.0899424 + y * (1.2067492
-                                                               + y * (0.2659732 + y * (0.360768e-1 + y * 0.45813e-2)))));
-        }
-        else
-        {
-            y = 3.75 / ax;
-            ans = (Math.exp(ax) / Math.sqrt(ax)) * (0.39894228 + y * (0.1328592e-1
-                                                                      + y * (0.225319e-2 + y * (-0.157565e-2 + y * (0.916281e-2
-                                                                                                                    + y * (-0.2057706e-1 + y * (0.2635537e-1 + y * (-0.1647633e-1
-                                                                                                                                                                    + y * 0.392377e-2))))))));
-        }
-        return ans;
-    }
-
-    double uresp[];
-
-    Complex customPoles[], customZeros[];
 
 }

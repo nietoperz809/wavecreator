@@ -223,6 +223,7 @@ public class MainMenu extends JPopupMenu
             w = scopeWindow.m_wave;
         }
         add(new SubMenuFunctions(scopeWindow, w.functionsGenerators, "Generator Functions"));
+        
         add(new SubMenuFunctions(scopeWindow, w.functionsFFT, "FFT Functions"));
         add(new SubMenuFunctions(scopeWindow, w.functionsDeletions, "Sample deleting Functions"));
         add(new SubMenuFunctions(scopeWindow, w.functionsBinary, "Binary Functions"));

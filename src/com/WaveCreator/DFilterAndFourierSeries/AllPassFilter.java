@@ -2,21 +2,21 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 01:56:50
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 01:56:50
+ */
 public class AllPassFilter extends IIRFilterType
 {
     double a;
 
-    public AllPassFilter(DFilterFrame d)
+    public AllPassFilter (DFilterFrame d)
     {
         super(d);
     }
 
     @Override
-    int select()
+    int select ()
     {
         dFilterFrame.auxLabels[0].setText("Phase Delay");
         dFilterFrame.auxBars[0].setValue(500);
@@ -24,26 +24,32 @@ public class AllPassFilter extends IIRFilterType
     }
 
     @Override
-    void setup()
+    void setup ()
     {
         double delta = dFilterFrame.auxBars[0].getValue() / 1000.;
         a = (1 - delta) / (1 + delta);
     }
 
     @Override
-    void getPole(int i, Complex c1)
-    {
-        c1.set(-a);
-    }
-
-    @Override
-    int getPoleCount()
+    int getPoleCount ()
     {
         return 1;
     }
 
     @Override
-    Filter genFilter()
+    void getPole (int i, Complex c1)
+    {
+        c1.set(-a);
+    }
+
+    @Override
+    void getInfo (String x[])
+    {
+        x[0] = "Allpass Fractional Delay (IIR)";
+    }
+
+    @Override
+    Filter genFilter ()
     {
         DirectFilter f = new DirectFilter(dFilterFrame);
         f.aList = new double[2];
@@ -55,11 +61,5 @@ public class AllPassFilter extends IIRFilterType
         f.bList[1] = a;
         setResponse(f);
         return f;
-    }
-
-    @Override
-    void getInfo(String x[])
-    {
-        x[0] = "Allpass Fractional Delay (IIR)";
     }
 }

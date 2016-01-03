@@ -2,34 +2,25 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 01:25:47
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 01:25:47
+ */
 public class DirectFilter extends Filter
 {
     double aList[], bList[];
     int nList[];
+    Complex czn, top, bottom;
 
-    DirectFilter(DFilterFrame dFilterFrame)
+    DirectFilter (DFilterFrame dFilterFrame)
     {
-        super (dFilterFrame);
+        super(dFilterFrame);
         aList = new double[]{1};
         bList = null;
         nList = new int[]{0};
     }
 
-    int getLength()
-    {
-        return aList.length;
-    }
-
-    boolean useConvolve()
-    {
-        return bList == null && aList.length > 25;
-    }
-
-    void dump()
+    void dump ()
     {
         System.out.print("a ");
         dump(aList);
@@ -40,7 +31,7 @@ public class DirectFilter extends Filter
         }
     }
 
-    void dump(double x[])
+    void dump (double x[])
     {
         int i;
         for (i = 0; i != x.length; i++)
@@ -50,9 +41,7 @@ public class DirectFilter extends Filter
         System.out.println("");
     }
 
-    Complex czn, top, bottom;
-
-    void evalTransfer(Complex c)
+    void evalTransfer (Complex c)
     {
         if (czn == null)
         {
@@ -93,7 +82,54 @@ public class DirectFilter extends Filter
         c.set(top);
     }
 
-    void run(double inBuf[], double outBuf[], int bp, int mask, int count, double state[])
+    int getImpulseOffset ()
+    {
+        if (isSimpleAList())
+        {
+            return 0;
+        }
+        return getStepOffset();
+    }
+
+    boolean isSimpleAList ()
+    {
+        return bList == null && nList[nList.length - 1] == nList.length - 1;
+    }
+
+    int getStepOffset ()
+    {
+        int i;
+        int offset = 0;
+        for (i = 0; i != aList.length; i++)
+        {
+            if (nList[i] > offset)
+            {
+                offset = nList[i];
+            }
+        }
+        return offset;
+    }
+
+    int getLength ()
+    {
+        return aList.length;
+    }
+
+    boolean useConvolve ()
+    {
+        return bList == null && aList.length > 25;
+    }
+
+    double[] getImpulseResponse (int offset)
+    {
+        if (isSimpleAList())
+        {
+            return aList;
+        }
+        return super.getImpulseResponse(offset);
+    }
+
+    void run (double inBuf[], double outBuf[], int bp, int mask, int count, double state[])
     {
         int j;
         int fi2, i20;
@@ -120,51 +156,14 @@ public class DirectFilter extends Filter
                 {
                     int ji = (fi2 - nList[j]) & mask;
                     q += inBuf[ji] * aList[j] -
-                         outBuf[ji] * bList[j];
+                            outBuf[ji] * bList[j];
                 }
             }
             outBuf[i20] = q;
         }
     }
 
-    boolean isSimpleAList()
-    {
-        return bList == null && nList[nList.length - 1] == nList.length - 1;
-    }
-
-    int getImpulseOffset()
-    {
-        if (isSimpleAList())
-        {
-            return 0;
-        }
-        return getStepOffset();
-    }
-
-    int getStepOffset()
-    {
-        int i;
-        int offset = 0;
-        for (i = 0; i != aList.length; i++)
-        {
-            if (nList[i] > offset)
-            {
-                offset = nList[i];
-            }
-        }
-        return offset;
-    }
-
-    double[] getImpulseResponse(int offset)
-    {
-        if (isSimpleAList())
-        {
-            return aList;
-        }
-        return super.getImpulseResponse(offset);
-    }
-
-    int getImpulseLen(int offset, double buf[])
+    int getImpulseLen (int offset, double buf[])
     {
         if (isSimpleAList())
         {

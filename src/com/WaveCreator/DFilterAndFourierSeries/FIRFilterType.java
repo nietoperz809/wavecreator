@@ -2,21 +2,21 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 01:43:47
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 01:43:47
+ */
 public abstract class FIRFilterType extends FilterType
 {
     double response[];
 
-    public FIRFilterType(DFilterFrame dFilterFrame)
+    public FIRFilterType (DFilterFrame dFilterFrame)
     {
-        super (dFilterFrame);
+        super(dFilterFrame);
     }
 
     @Override
-    void getResponse(double w, Complex c)
+    void getResponse (double w, Complex c)
     {
         if (response == null)
         {
@@ -36,14 +36,14 @@ public abstract class FIRFilterType extends FilterType
         c.set(response[off], response[off + 1]);
     }
 
-    double getWindow(int i, int n)
+    double getWindow (int i, int n)
     {
         if (n == 1)
         {
             return 1;
         }
         double x = 2 * DFilterFrame.pi * i / (n - 1);
-        double n2 = (double)n / 2; // int
+        double n2 = (double) n / 2; // int
         switch (dFilterFrame.windowChooser.getSelectedIndex())
         {
             case 0:
@@ -71,7 +71,7 @@ public abstract class FIRFilterType extends FilterType
         return 0;
     }
 
-    void setResponse(DirectFilter f)
+    void setResponse (DirectFilter f)
     {
         response = new double[8192];
         int i;

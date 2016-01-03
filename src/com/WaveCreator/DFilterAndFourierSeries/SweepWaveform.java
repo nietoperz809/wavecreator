@@ -2,21 +2,21 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 02:32:35
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 02:32:35
+ */
 class SweepWaveform extends Waveform
 {
     int ix;
     double omega, nextOmega, t, startOmega;
 
-    public SweepWaveform(DFilterFrame dFilterFrame)
+    public SweepWaveform (DFilterFrame dFilterFrame)
     {
         super(dFilterFrame);
     }
 
-    boolean start()
+    boolean start ()
     {
         createBuffer();
         ix = 0;
@@ -25,7 +25,7 @@ class SweepWaveform extends Waveform
         return true;
     }
 
-    int getData()
+    int getData ()
     {
         int i;
         double nmul = 1;
@@ -35,12 +35,12 @@ class SweepWaveform extends Waveform
         if (dFilterFrame.logFreqCheckItem.getState())
         {
             nmul = Math.pow(2 * DFilterFrame.pi / startOmega,
-                            2 * (minspeed + (maxspeed - minspeed) * dFilterFrame.inputBar.getValue() / 1000.));
+                    2 * (minspeed + (maxspeed - minspeed) * dFilterFrame.inputBar.getValue() / 1000.));
         }
         else
         {
             nadd = (2 * DFilterFrame.pi - startOmega) *
-                   (minspeed + (maxspeed - minspeed) * dFilterFrame.inputBar.getValue() / 1000.);
+                    (minspeed + (maxspeed - minspeed) * dFilterFrame.inputBar.getValue() / 1000.);
         }
         for (i = 0; i != buffer.length; i++)
         {
@@ -61,12 +61,12 @@ class SweepWaveform extends Waveform
         return buffer.length;
     }
 
-    String getInputText()
+    String getInputText ()
     {
         return "Sweep Speed";
     }
 
-    boolean needsFrequency()
+    boolean needsFrequency ()
     {
         return false;
     }

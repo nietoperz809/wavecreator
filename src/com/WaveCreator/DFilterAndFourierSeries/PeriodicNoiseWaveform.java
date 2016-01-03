@@ -2,21 +2,21 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 02:27:27
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 02:27:27
+ */
 class PeriodicNoiseWaveform extends Waveform
 {
     short smbuf[];
     int ix;
 
-    public PeriodicNoiseWaveform(DFilterFrame dFilterFrame)
+    public PeriodicNoiseWaveform (DFilterFrame dFilterFrame)
     {
         super(dFilterFrame);
     }
 
-    boolean start()
+    boolean start ()
     {
         createBuffer();
         smbuf = new short[1];
@@ -24,7 +24,7 @@ class PeriodicNoiseWaveform extends Waveform
         return true;
     }
 
-    int getData()
+    int getData ()
     {
         int period = (int) (2 * DFilterFrame.pi / dFilterFrame.inputW);
         if (period != smbuf.length)

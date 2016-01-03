@@ -2,10 +2,10 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 02:23:40
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 02:23:40
+ */
 class SincBandStopFilter extends FIRFilterType
 {
     int n;
@@ -13,12 +13,12 @@ class SincBandStopFilter extends FIRFilterType
     double resp[];
     boolean invert;
 
-    public SincBandStopFilter(DFilterFrame dFilterFrame)
+    public SincBandStopFilter (DFilterFrame dFilterFrame)
     {
         super(dFilterFrame);
     }
 
-    int select()
+    int select ()
     {
         dFilterFrame.auxLabels[0].setText("Center Frequency");
         dFilterFrame.auxLabels[1].setText(invert ? "Passband Width" : "Stopband Width");
@@ -30,7 +30,7 @@ class SincBandStopFilter extends FIRFilterType
         return 3;
     }
 
-    void setup()
+    void setup ()
     {
         double wcmid = dFilterFrame.auxBars[0].getValue() * DFilterFrame.pi / 1000.;
         double width = dFilterFrame.auxBars[1].getValue() * DFilterFrame.pi / 1000.;
@@ -47,16 +47,16 @@ class SincBandStopFilter extends FIRFilterType
         n = dFilterFrame.auxBars[2].getValue();
     }
 
-    int getPoleCount()
+    int getPoleCount ()
     {
         return 0;
     }
 
-    void getPole(int i, Complex c1)
+    void getPole (int i, Complex c1)
     {
     }
 
-    Filter genFilter()
+    Filter genFilter ()
     {
         DirectFilter f = new DirectFilter(dFilterFrame);
         f.aList = new double[n + 1];
@@ -70,7 +70,7 @@ class SincBandStopFilter extends FIRFilterType
         {
             int ii = i - n2;
             f.aList[i] = ((ii == 0) ? wc1 : Math.sin(wc1 * ii) / ii) *
-                         getWindow(i, n);
+                    getWindow(i, n);
             sum += f.aList[i];
         }
         if (sum > 0)
@@ -88,7 +88,7 @@ class SincBandStopFilter extends FIRFilterType
         {
             int ii = i - n2;
             xlist[i] = ((ii == 0) ? wc2 : Math.sin(wc2 * ii) / ii) *
-                       getWindow(i, n);
+                    getWindow(i, n);
             sum += xlist[i];
         }
         // normalize
@@ -118,14 +118,14 @@ class SincBandStopFilter extends FIRFilterType
         return f;
     }
 
-    void getInfo(String x[])
+    void getInfo (String x[])
     {
         x[0] = (invert) ? "Passband: " : "Stopband: ";
         x[0] += dFilterFrame.getOmegaText(wc1) + " - " + dFilterFrame.getOmegaText(wc2);
         x[1] = "Order: " + n;
     }
 
-    boolean needsWindow()
+    boolean needsWindow ()
     {
         return true;
     }

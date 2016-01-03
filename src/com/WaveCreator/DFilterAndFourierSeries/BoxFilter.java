@@ -2,10 +2,10 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 02:00:53
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 02:00:53
+ */
 class BoxFilter extends FIRFilterType
 {
     double cw;
@@ -13,13 +13,13 @@ class BoxFilter extends FIRFilterType
     //double norm;
     int n;
 
-    public BoxFilter(DFilterFrame dFilterFrame)
+    public BoxFilter (DFilterFrame dFilterFrame)
     {
         super(dFilterFrame);
     }
 
     @Override
-    int select()
+    int select ()
     {
         dFilterFrame.auxLabels[0].setText("Fundamental Freq");
         dFilterFrame.auxBars[0].setValue(500);
@@ -34,12 +34,7 @@ class BoxFilter extends FIRFilterType
     }
 
     @Override
-    void setCutoff(double f)
-    {
-    }
-
-    @Override
-    void setup()
+    void setup ()
     {
         cw = dFilterFrame.auxBars[0].getValue() * DFilterFrame.pi / 1000.;
         if (cw < .147)
@@ -51,7 +46,7 @@ class BoxFilter extends FIRFilterType
     }
 
     @Override
-    Filter genFilter()
+    Filter genFilter ()
     {
         DirectFilter f = new DirectFilter(dFilterFrame);
         int nn = 20;
@@ -97,8 +92,13 @@ class BoxFilter extends FIRFilterType
     }
 
     @Override
-    void getInfo(String x[])
+    void getInfo (String x[])
     {
         x[0] = "Order: " + n;
+    }
+
+    @Override
+    void setCutoff (double f)
+    {
     }
 }

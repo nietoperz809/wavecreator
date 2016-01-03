@@ -11,68 +11,67 @@ import java.util.ArrayList;
 public class Wave16 implements Serializable
 {
     /**
+     * Upper level constant
+     */
+    public static final double MAX_VALUE = Short.MAX_VALUE;
+    /**
+     * Lower level constant
+     */
+    public static final double MIN_VALUE = Short.MIN_VALUE;
+    /**
+     * Circle constant PI
+     */
+    public static final double PI = Math.PI;
+    /**
      *
      */
     private static final long serialVersionUID = 3070090589210322951L;
-
     /**
      * Separated generator functions
      */
     public final FunctionsGenerators functionsGenerators = new FunctionsGenerators(this);
-
     /**
      * Separated two-wave modification functions
      */
     public final FunctionsTwoWaves functionsTwoWaves = new FunctionsTwoWaves(this);
-
     /**
      * Separated FFT functions: These will be listed in FFT functions menu
      */
     public final FunctionsFFT functionsFFT = new FunctionsFFT(this);
-
     /**
      * Separated coder functions: These will be listed in wave functions menu
      */
     public final FunctionsBinary functionsBinary = new FunctionsBinary(this);
-
     /**
      * Separated sample deletion functions: These will be listed in wave
      * functions menu
      */
     public final FunctionsDeletions functionsDeletions = new FunctionsDeletions(this);
-
     /*
      * Separated single-wave modification functions: These will be listed in wave functions menu
      */
     public final FunctionsSpecialEffects functionsSpecialEffects = new FunctionsSpecialEffects(this);
-
     /**
      * Math related functions
      */
     public final FunctionsMathematical functionsMathematical = new FunctionsMathematical(this);
-
     /**
      * Filter functions
      */
     public final FunctionsFilters functionsFilters = new FunctionsFilters(this);
-
     /**
      * Amplitude manipulating functions
      */
     public final FunctionsAmplitude functionsAmplitude = new FunctionsAmplitude(this);
-
     /**
      * Sample length manipulating functions
      */
     public final FunctionsLength functionsLength = new FunctionsLength(this);
-
     /**
      * Test candidates
      */
     public final FunctionsTesting functionsTesting = new FunctionsTesting(this);
-
     public final FunctionsReorder functionsReorder = new FunctionsReorder(this);
-
     /**
      * Data array that holds sampling data
      */
@@ -81,26 +80,10 @@ public class Wave16 implements Serializable
      * Sampling rate
      */
     public int samplingRate;
-
     /**
      * Optional name of this wave
      */
     public String name = "unnamed";
-
-    /**
-     * Upper level constant
-     */
-    public static final double MAX_VALUE = Short.MAX_VALUE;
-
-    /**
-     * Lower level constant
-     */
-    public static final double MIN_VALUE = Short.MIN_VALUE;
-
-    /**
-     * Circle constant PI
-     */
-    public static final double PI = Math.PI;
 
     /**
      * Builds a new Wave16 object
@@ -108,20 +91,20 @@ public class Wave16 implements Serializable
      * @param size Size of array
      * @param rate Sampling rate
      */
-    public Wave16(int size, int rate)
+    public Wave16 (int size, int rate)
     {
         data = new double[size];
         samplingRate = rate;
         //name = Thread.currentThread().getStackTrace()[2].getMethodName();
     }
 
-    public Wave16()
+    public Wave16 ()
     {
         data = null;
         samplingRate = 0;
     }
 
-    public Wave16(byte[] in, int rate, int bytesInBuffer)
+    public Wave16 (byte[] in, int rate, int bytesInBuffer)
     {
         double[] d = new double[bytesInBuffer / 2];
         for (int s = 0; s < bytesInBuffer; s += 2)
@@ -133,13 +116,13 @@ public class Wave16 implements Serializable
         samplingRate = rate;
     }
 
-    public Wave16(double[] d, int rate)
+    public Wave16 (double[] d, int rate)
     {
         data = d;
         samplingRate = rate;
     }
 
-    public Wave16(short[] sh, int rate)
+    public Wave16 (short[] sh, int rate)
     {
         double[] dd = new double[sh.length];
         for (int s = 0; s < dd.length; s++)
@@ -150,7 +133,7 @@ public class Wave16 implements Serializable
         samplingRate = rate;
     }
 
-    public Wave16(Integer[] d, int rate)
+    public Wave16 (Integer[] d, int rate)
     {
         double[] dd = new double[d.length];
         for (int s = 0; s < d.length; s++)
@@ -161,7 +144,7 @@ public class Wave16 implements Serializable
         samplingRate = rate;
     }
 
-    public Wave16(int[] d, int rate)
+    public Wave16 (int[] d, int rate)
     {
         double[] dd = new double[d.length];
         for (int s = 0; s < d.length; s++)
@@ -172,7 +155,30 @@ public class Wave16 implements Serializable
         samplingRate = rate;
     }
 
-    public int maxIndex()
+    /**
+     * Puts sampling objects together First object determines sampling rate
+     *
+     * @param in Array of sampling objects
+     * @return Concatenated sampling object
+     */
+    static public Wave16 combineAppend (Wave16... in)
+    {
+        int total = 0;
+        for (Wave16 anIn : in)
+        {
+            total = total + anIn.data.length;
+        }
+        Wave16 out = new Wave16(total, in[0].samplingRate);
+        int pos = 0;
+        for (Wave16 anIn : in)
+        {
+            System.arraycopy(anIn.data, 0, out.data, pos, anIn.data.length);
+            pos += anIn.data.length;
+        }
+        return out;
+    }
+
+    public int maxIndex ()
     {
         double d = Double.MIN_VALUE;
         int res = 0;
@@ -187,7 +193,7 @@ public class Wave16 implements Serializable
         return res;
     }
 
-    public int minIndex()
+    public int minIndex ()
     {
         double d = Double.MAX_VALUE;
         int res = 0;
@@ -202,7 +208,7 @@ public class Wave16 implements Serializable
         return res;
     }
 
-    public double[][] createQuaraticMatrix()
+    public double[][] createQuaraticMatrix ()
     {
         Wave16 w1 = functionsLength.stretchToQuadratic();
         int sqr = (int) Math.sqrt(w1.data.length);
@@ -211,10 +217,11 @@ public class Wave16 implements Serializable
         {
             System.arraycopy(w1.data, i * sqr, ret[i], 0, sqr);
         }
+
         return ret;
     }
 
-    public Wave16 fromMatrix(double[][] mat)
+    public Wave16 fromMatrix (double[][] mat)
     {
         double[] d = new double[mat.length * mat.length];
         for (int i = 0; i < mat.length; i++)
@@ -225,28 +232,28 @@ public class Wave16 implements Serializable
     }
 
     /**
-     * Local factory function that builds a new SamplingData16 object from this
-     * one All samples are empty
-     *
-     * @return The new object
-     */
-    public Wave16 createEmptyCopy()
-    {
-        return new Wave16(data.length, samplingRate);
-        //out.setName(Thread.currentThread().getStackTrace()[2].getMethodName());
-    }
-
-    /**
      * Build a new SamplingData16 object from this one All samples are copies of
      * this object
      *
      * @return The new object
      */
-    public Wave16 copy()
+    public Wave16 copy ()
     {
         Wave16 out = createEmptyCopy();
         System.arraycopy(data, 0, out.data, 0, data.length);
         return out;
+    }
+
+    /**
+     * Local factory function that builds a new SamplingData16 object from this
+     * one All samples are empty
+     *
+     * @return The new object
+     */
+    public Wave16 createEmptyCopy ()
+    {
+        return new Wave16(data.length, samplingRate);
+        //out.setName(Thread.currentThread().getStackTrace()[2].getMethodName());
     }
 
     /**
@@ -255,7 +262,7 @@ public class Wave16 implements Serializable
      * @param n The name
      * @return This Wave16 object
      */
-    public Wave16 setName(String n)
+    public Wave16 setName (String n)
     {
         name = n;
         return this;
@@ -266,7 +273,7 @@ public class Wave16 implements Serializable
      *
      * @return The new 'short' array
      */
-    public short[] toShortArray()
+    public short[] toShortArray ()
     {
         short[] res = new short[data.length];
         for (int s = 0; s < data.length; s++)
@@ -276,7 +283,7 @@ public class Wave16 implements Serializable
         return res;
     }
 
-    public int[] toIntArray()
+    public int[] toIntArray ()
     {
         int[] res = new int[data.length];
         for (int s = 0; s < data.length; s++)
@@ -292,7 +299,7 @@ public class Wave16 implements Serializable
      * @param idx array index
      * @return Short value
      */
-    public short getShortAt(int idx)
+    public short getShortAt (int idx)
     {
         return (short) data[idx];
     }
@@ -301,11 +308,11 @@ public class Wave16 implements Serializable
      * Inserts Wave16 <b>in</b> at position <b>pos</b>
      * Increases number of samples
      *
-     * @param in Sampling object to insert
+     * @param in  Sampling object to insert
      * @param pos Position to insert
      * @return The new (bigger) sampling object
      */
-    public Wave16 combineInsert(Wave16 in, int pos)
+    public Wave16 combineInsert (Wave16 in, int pos)
     {
         int total = data.length + in.data.length;
         Wave16 out = new Wave16(total, samplingRate);
@@ -324,7 +331,7 @@ public class Wave16 implements Serializable
      * @param arr array of sampling objects
      * @return The combination
      */
-    public Wave16 combineArithmeticAverage(Wave16[] arr)
+    public Wave16 combineArithmeticAverage (Wave16[] arr)
     {
         Wave16 res = new Wave16(arr[0].data.length, arr[0].samplingRate);
 
@@ -347,7 +354,7 @@ public class Wave16 implements Serializable
      * @param arr array of sampling objects
      * @return The combination
      */
-    public Wave16 combineMix(Wave16[] arr)
+    public Wave16 combineMix (Wave16[] arr)
     {
         Wave16 res = new Wave16(arr[0].data.length * arr.length, arr[0].samplingRate);
         int ctr = 0;
@@ -363,35 +370,12 @@ public class Wave16 implements Serializable
     }
 
     /**
-     * Puts sampling objects together First object determines sampling rate
-     *
-     * @param in Array of sampling objects
-     * @return Concatenated sampling object
-     */
-    static public Wave16 combineAppend(Wave16... in)
-    {
-        int total = 0;
-        for (Wave16 anIn : in)
-        {
-            total = total + anIn.data.length;
-        }
-        Wave16 out = new Wave16(total, in[0].samplingRate);
-        int pos = 0;
-        for (Wave16 anIn : in)
-        {
-            System.arraycopy(anIn.data, 0, out.data, pos, anIn.data.length);
-            pos += anIn.data.length;
-        }
-        return out;
-    }
-
-    /**
      * Implements the standard toString
      *
      * @return A string describing this object
      */
     @Override
-    public String toString()
+    public String toString ()
     {
         Wave16AmplitudeInfo inf = getAmplitude();
         return new StringBuilder()
@@ -410,7 +394,7 @@ public class Wave16 implements Serializable
     }
 
     // Gets information about amplitudes of this Wave16
-    public Wave16AmplitudeInfo getAmplitude()
+    public Wave16AmplitudeInfo getAmplitude ()
     {
         return new Wave16AmplitudeInfo(this);
     }
@@ -421,7 +405,7 @@ public class Wave16 implements Serializable
      * @param parts partition parameter
      * @return An array of integers
      */
-    public int[] getIntegerOffsetPoints(int parts)
+    public int[] getIntegerOffsetPoints (int parts)
     {
         ArrayList<Integer> list = new ArrayList<>();
         double step = ((double) data.length - 1.0) / ((double) parts - 1.0) + (1.0 / (double) parts);

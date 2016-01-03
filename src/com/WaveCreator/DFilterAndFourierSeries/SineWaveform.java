@@ -2,27 +2,27 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 02:32:13
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 02:32:13
+ */
 class SineWaveform extends Waveform
 {
     int ix;
 
-    public SineWaveform(DFilterFrame dFilterFrame)
+    public SineWaveform (DFilterFrame dFilterFrame)
     {
         super(dFilterFrame);
     }
 
-    boolean start()
+    boolean start ()
     {
         createBuffer();
         ix = 0;
         return true;
     }
 
-    int getData()
+    int getData ()
     {
         int i;
         for (i = 0; i != buffer.length; i++)

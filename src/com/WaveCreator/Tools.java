@@ -1,6 +1,6 @@
 package com.WaveCreator;
 
-import com.google.common.math.LongMath;
+//import com.google.common.math.LongMath;
 
 /**
  */
@@ -14,27 +14,27 @@ public class Tools
      * @param b Input b
      * @return The GCD
      */
-//    public static long gcd(long a, long b)
-//    {
-//        // a must be > b
-//        if (a <= b)
-//        {
-//            long x = a;
-//            a = b;
-//            b = x;
-//        }
-//        while (b != 0)
-//        {
-//            long r = a % b;
-//            a = b;
-//            b = r;
-//        }
-//        return a;
-//    }
+    public static long gcd(long a, long b)
+    {
+        // a must be > b
+        if (a <= b)
+        {
+            long x = a;
+            a = b;
+            b = x;
+        }
+        while (b != 0)
+        {
+            long r = a % b;
+            a = b;
+            b = r;
+        }
+        return a;
+    }
 
     public static long lcm(long a, long b)
     {
-        return a * b / LongMath.gcd(a, b);
+        return a * b / gcd(a, b);
     }
 
     /**

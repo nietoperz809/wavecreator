@@ -4,12 +4,12 @@ import com.WaveCreator.ScopeWindow;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Random;
-import java.util.Hashtable;
-import java.text.NumberFormat;
-import java.text.DecimalFormat;
-import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Hashtable;
+import java.util.Random;
 
 /**
  * New Class.
@@ -19,28 +19,28 @@ import java.lang.reflect.Constructor;
  */
 public class FourierFrame extends Frame
         implements ComponentListener, ActionListener, AdjustmentListener,
-                   MouseMotionListener, MouseListener, ItemListener
+        MouseMotionListener, MouseListener, ItemListener
 {
 
-    transient PlayThread playThread;
-
-    Dimension winSize;
-    Image dbimage;
-
-    Random random;
     public static final int sampleCount = 1024;
     public static final int halfSampleCount = sampleCount / 2;
     public static final double halfSampleCountFloat = sampleCount / 2;
     final static int rate = 22050;
     final static int playSampleCount = 16384;
+    static final double pi = 3.14159265358979323846;
+    static final double step = 2 * pi / sampleCount;
+    final static int maxTerms = 160;
+    static final int SEL_NONE = 0;
+    static final int SEL_FUNC = 1;
+    static final int SEL_MAG = 2;
+    static final int SEL_PHASE = 3;
+    static final int SEL_MUTES = 4;
+    static final int SEL_SOLOS = 5;
     final ScopeWindow m_sourceWindow;
-
-    public FourierFrame (ScopeWindow src)
-    {
-        super("Fourier Series Applet");
-        m_sourceWindow = src;
-    }
-
+    transient PlayThread playThread;
+    Dimension winSize;
+    Image dbimage;
+    Random random;
     NumberFormat showFormat;
     Container main;
     Button sineButton;
@@ -65,42 +65,27 @@ public class FourierFrame extends Frame
     double magcoef[];
     double phasecoef[];
     boolean mutes[], solos[], hasSolo;
-    static final double pi = 3.14159265358979323846;
-    static final double step = 2 * pi / sampleCount;
     double func[];
-    final static int maxTerms = 160;
     int selectedCoef;
-    static final int SEL_NONE = 0;
-    static final int SEL_FUNC = 1;
-    static final int SEL_MAG = 2;
-    static final int SEL_PHASE = 3;
-    static final int SEL_MUTES = 4;
-    static final int SEL_SOLOS = 5;
     int selection;
     int dragX, dragY;
     int quantizeCount, resampleCount;
     boolean dragging, freqAdjusted;
     View viewFunc, viewMag, viewPhase, viewMutes, viewSolos;
     transient FFT fft;
+    FourierCanvas cv;
+    Hashtable showTable;
+    boolean shown = false;
+    double origFunc[];
+    int dfreq0;
 
-    static class View extends Rectangle
+    public FourierFrame (ScopeWindow src)
     {
-        View(int x, int y, int w, int h)
-        {
-            super(x, y, w, h);
-            midy = y + h / 2;
-            ymult = .6 * h / 2;
-            periodWidth = w / 3;
-            labely = midy - 5 - h * 3 / 8;
-        }
-
-        int midy;
-        final int labely;
-        double ymult;
-        final int periodWidth;
+        super("Fourier Series Applet");
+        m_sourceWindow = src;
     }
 
-    int getrand(int x)
+    int getrand (int x)
     {
         int q = random.nextInt();
         if (q < 0)
@@ -110,15 +95,12 @@ public class FourierFrame extends Frame
         return q % x;
     }
 
-    FourierCanvas cv;
-    Hashtable showTable;
-
-    boolean mustShow(String s)
+    boolean mustShow (String s)
     {
         return showTable == null || showTable.containsKey(s);
     }
 
-    Button doButton(String s)
+    Button doButton (String s)
     {
         Button b = new Button(s);
         if (mustShow(s))
@@ -129,7 +111,7 @@ public class FourierFrame extends Frame
         return b;
     }
 
-    Checkbox doCheckbox(String s)
+    Checkbox doCheckbox (String s)
     {
         Checkbox b = new Checkbox(s);
         if (mustShow(s))
@@ -152,7 +134,7 @@ public class FourierFrame extends Frame
         return b;
     }
 
-    public void init()
+    public void init ()
     {
 //        String jv = System.getProperty("java.class.version");
 //        double jvf = new Double(jv).doubleValue();
@@ -232,7 +214,7 @@ public class FourierFrame extends Frame
             main.add(new Label("Number of Terms", Label.CENTER));
         }
         termBar = new Scrollbar(Scrollbar.HORIZONTAL, 50,
-                                1, 1, maxTerms);
+                1, 1, maxTerms);
         termBar.addAdjustmentListener(this);
         if (mustShow("Terms"))
         {
@@ -312,49 +294,12 @@ public class FourierFrame extends Frame
         Dimension x = getSize();
         Dimension screen = getToolkit().getScreenSize();
         setLocation((screen.width - x.width) / 2,
-                    (screen.height - x.height) / 2);
+                (screen.height - x.height) / 2);
         setVisible(true);
         main.requestFocus();
     }
 
-    void handleResize()
-    {
-        winSize = cv.getSize();
-        Dimension d = winSize;
-        if (winSize.width == 0)
-        {
-            return;
-        }
-        dbimage = cv.createImage(d.width, d.height);
-        int margin = 20;
-        int pheight = (d.height - margin * 2) / 3;
-        viewFunc = new View(0, 0, d.width, pheight);
-        int y = pheight + margin * 2;
-        viewMag = new View(0, y, d.width, pheight);
-        if (magPhaseCheck.getState())
-        {
-            viewMag.ymult *= 1.6;
-            viewMag.midy += (int) viewMag.ymult / 2;
-            logCheck.setEnabled(true);
-        }
-        else
-        {
-            logCheck.setEnabled(false);
-            logCheck.setState(false);
-        }
-        y += pheight;
-        viewPhase = new View(0, y, d.width, pheight);
-        int pmy = viewPhase.midy + (int) viewPhase.ymult + 10;
-        int h = (d.height - pmy) / 2;
-        //System.out.println("height " + h);
-        viewMutes = new View(0, pmy, d.width, h);
-        viewSolos = new View(0, pmy + h, d.width, h);
-        //System.out.println(viewMutes + " " + viewSolos + " " +d.height);
-    }
-
-    boolean shown = false;
-
-    public void triggerShow()
+    public void triggerShow ()
     {
         if (!shown)
         {
@@ -363,7 +308,7 @@ public class FourierFrame extends Frame
         shown = true;
     }
 
-    void doBeats()
+    void doBeats ()
     {
         int x;
         for (x = 0; x != sampleCount; x++)
@@ -376,7 +321,7 @@ public class FourierFrame extends Frame
         freqBar.setValue(-100);
     }
 
-    void doLoudSoft()
+    void doLoudSoft ()
     {
         int x;
         for (x = 0; x != sampleCount; x++)
@@ -388,7 +333,7 @@ public class FourierFrame extends Frame
         transform();
     }
 
-    void doSawtooth()
+    void doSawtooth ()
     {
         int x;
         for (x = 0; x != sampleCount; x++)
@@ -399,7 +344,7 @@ public class FourierFrame extends Frame
         transform();
     }
 
-    void doTriangle()
+    void doTriangle ()
     {
         int x;
         for (x = 0; x != halfSampleCount; x++)
@@ -412,7 +357,7 @@ public class FourierFrame extends Frame
         transform();
     }
 
-    void doSine()
+    void doSine ()
     {
         int x;
         for (x = 0; x != sampleCount; x++)
@@ -423,7 +368,7 @@ public class FourierFrame extends Frame
         transform();
     }
 
-    void doCosine()
+    void doCosine ()
     {
         int x;
         for (x = 0; x != sampleCount; x++)
@@ -434,7 +379,7 @@ public class FourierFrame extends Frame
         transform();
     }
 
-    void doRect()
+    void doRect ()
     {
         int x;
         for (x = 0; x != sampleCount; x++)
@@ -448,7 +393,7 @@ public class FourierFrame extends Frame
         transform();
     }
 
-    void doFullRect()
+    void doFullRect ()
     {
         int x;
         for (x = 0; x != sampleCount; x++)
@@ -462,7 +407,7 @@ public class FourierFrame extends Frame
         transform();
     }
 
-    void doHighPass()
+    void doHighPass ()
     {
         int i;
         int terms = termBar.getValue();
@@ -477,7 +422,7 @@ public class FourierFrame extends Frame
         doSetFunc();
     }
 
-    void doSquare()
+    void doSquare ()
     {
         int x;
         for (x = 0; x != halfSampleCount; x++)
@@ -489,7 +434,7 @@ public class FourierFrame extends Frame
         transform();
     }
 
-    void doNoise()
+    void doNoise ()
     {
         int x;
         int blockSize = 3;
@@ -506,7 +451,7 @@ public class FourierFrame extends Frame
         transform();
     }
 
-    void doPhaseShift()
+    void doPhaseShift ()
     {
         int i;
         int sh = sampleCount / 20;
@@ -527,7 +472,7 @@ public class FourierFrame extends Frame
         transform();
     }
 
-    void doBlank()
+    void doBlank ()
     {
         int x;
         for (x = 0; x <= sampleCount; x++)
@@ -542,35 +487,7 @@ public class FourierFrame extends Frame
         transform();
     }
 
-    void doSetFunc()
-    {
-        int i;
-        double data[] = new double[sampleCount * 2];
-        int terms = termBar.getValue();
-        for (i = 0; i != terms; i++)
-        {
-            int sgn = (i & 1) == 1 ? -1 : 1;
-            data[i * 2] = sgn * magcoef[i] * Math.cos(phasecoef[i]);
-            data[i * 2 + 1] = -sgn * magcoef[i] * Math.sin(phasecoef[i]);
-        }
-        fft.transform(data, true);
-        for (i = 0; i != sampleCount; i++)
-        {
-            func[i] = data[i * 2];
-        }
-        func[sampleCount] = func[0];
-        updateSound();
-    }
-
-    void updateSound()
-    {
-        if (playThread != null)
-        {
-            playThread.soundChanged();
-        }
-    }
-
-    void doClip()
+    void doClip ()
     {
         int x;
         double mult = 1.2;
@@ -590,7 +507,7 @@ public class FourierFrame extends Frame
         transform();
     }
 
-    void doResample()
+    void doResample ()
     {
         int x, i;
         if (resampleCount == 0)
@@ -613,9 +530,7 @@ public class FourierFrame extends Frame
         resampleCount *= 2;
     }
 
-    double origFunc[];
-
-    void doQuantize()
+    void doQuantize ()
     {
         int x;
         if (quantizeCount == 0)
@@ -627,87 +542,19 @@ public class FourierFrame extends Frame
         for (x = 0; x != sampleCount; x++)
         {
             func[x] = Math.round(origFunc[x] * quantizeCount) /
-                      (double) quantizeCount;
+                    (double) quantizeCount;
         }
         func[sampleCount] = func[0];
         transform();
         quantizeCount /= 2;
     }
 
-    int dfreq0;
-
-    double getFreq()
-    {
-        // get approximate freq from slider (log scale)
-        double freq = 27.5 * Math.exp(freqBar.getValue() * .004158883084 * 2);
-        // get offset into FourierApplet.FFT array for frequency selected (as close as possible;
-        // it can't be exact because we use an FourierApplet.FFT to generate the wave, and so the
-        // frequency choices must be integer multiples of a base frequency)
-        dfreq0 = ((int) (freq * (double) playSampleCount / rate)) * 2;
-        // get exact frequency being played
-        return rate * dfreq0 / (playSampleCount * 2.);
-    }
-
-    void transform()
-    {
-        int y;
-        double data[] = new double[sampleCount * 2];
-        int i;
-        for (i = 0; i != sampleCount; i++)
-        {
-            data[i * 2] = func[i];
-        }
-        fft.transform(data, false);
-        double epsilon = .00001;
-        double mult = 2. / sampleCount;
-        for (y = 0; y != maxTerms; y++)
-        {
-            double acoef = data[y * 2] * mult;
-            double bcoef = -data[y * 2 + 1] * mult;
-            if ((y & 1) == 1)
-            {
-                acoef = -acoef;
-            }
-            else
-            {
-                bcoef = -bcoef;
-            }
-            //System.out.println(y + " " + acoef + " " + bcoef);
-            if (acoef < epsilon && acoef > -epsilon)
-            {
-                acoef = 0;
-            }
-            if (bcoef < epsilon && bcoef > -epsilon)
-            {
-                bcoef = 0;
-            }
-            if (y == 0)
-            {
-                magcoef[0] = acoef / 2;
-                phasecoef[0] = 0;
-            }
-            else
-            {
-                magcoef[y] = Math.sqrt(acoef * acoef + bcoef * bcoef);
-                phasecoef[y] = Math.atan2(-bcoef, acoef);
-            }
-            // System.out.print("phasecoef " + phasecoef[y] + "\n");
-        }
-        updateSound();
-    }
-
-    void centerString(Graphics g, String s, int y)
-    {
-        FontMetrics fm = g.getFontMetrics();
-        g.drawString(s, (winSize.width - fm.stringWidth(s)) / 2, y);
-    }
-
-    public void paint(Graphics g)
+    public void paint (Graphics g)
     {
         cv.repaint();
     }
 
-    public void updateFourier(Graphics realg)
+    public void updateFourier (Graphics realg)
     {
         if (winSize == null || winSize.width == 0 || dbimage == null)
         {
@@ -728,13 +575,13 @@ public class FourierFrame extends Frame
         {
             g.setColor((i == 0) ? gray2 : gray1);
             g.drawLine(0, midy + (i * (int) ymult),
-                       winSize.width, midy + (i * (int) ymult));
+                    winSize.width, midy + (i * (int) ymult));
         }
         for (i = 2; i <= 4; i++)
         {
             g.setColor((i == 3) ? gray2 : gray1);
             g.drawLine(periodWidth * i / 2, midy - (int) ymult,
-                       periodWidth * i / 2, midy + (int) ymult);
+                    periodWidth * i / 2, midy + (int) ymult);
         }
         g.setColor(Color.white);
         if (!(dragging && selection != SEL_FUNC))
@@ -824,7 +671,7 @@ public class FourierFrame extends Frame
                 int f = (int) (getFreq() * selectedCoef);
                 centerString(g, f +
                                 ((f > rate / 2) ? " Hz (filtered)" : " Hz"),
-                             texty);
+                        texty);
             }
             if (selectedCoef != -1)
             {
@@ -847,7 +694,7 @@ public class FourierFrame extends Frame
                     else
                     {
                         harm = showFormat.format(mag) +
-                               " " + func + "(" + selectedCoef + "x";
+                                " " + func + "(" + selectedCoef + "x";
                     }
                     if (!magPhaseCheck.getState() || phase == 0)
                     {
@@ -906,7 +753,7 @@ public class FourierFrame extends Frame
             {
                 g.setColor((i == 0) ? gray2 : gray1);
                 g.drawLine(0, midy + (i * (int) ymult) / 2,
-                           winSize.width, midy + (i * (int) ymult) / 2);
+                        winSize.width, midy + (i * (int) ymult) / 2);
             }
             ymult /= pi;
             for (i = 0; i != terms; i++)
@@ -943,7 +790,7 @@ public class FourierFrame extends Frame
             {
                 g.setColor((i == 0) ? gray2 : gray1);
                 g.drawLine(0, midy + (i * (int) ymult) / 2,
-                           winSize.width, midy + (i * (int) ymult) / 2);
+                        winSize.width, midy + (i * (int) ymult) / 2);
             }
             for (i = 0; i != terms; i++)
             {
@@ -993,32 +840,25 @@ public class FourierFrame extends Frame
         realg.drawImage(dbimage, 0, 0, this);
     }
 
-    double showMag(int n)
+    double getFreq ()
     {
-        double m = magcoef[n];
-        if (!logCheck.getState() || n == 0)
-        {
-            return m;
-        }
-        m = Math.log(m) / 6. + 1;
-        //System.out.println(magcoef[i] + " " + m);
-        return (m < 0) ? 0 : m;
+        // get approximate freq from slider (log scale)
+        double freq = 27.5 * Math.exp(freqBar.getValue() * .004158883084 * 2);
+        // get offset into FourierApplet.FFT array for frequency selected (as close as possible;
+        // it can't be exact because we use an FourierApplet.FFT to generate the wave, and so the
+        // frequency choices must be integer multiples of a base frequency)
+        dfreq0 = ((int) (freq * (double) playSampleCount / rate)) * 2;
+        // get exact frequency being played
+        return rate * dfreq0 / (playSampleCount * 2.);
     }
 
-    double getMagValue(double m)
+    void centerString (Graphics g, String s, int y)
     {
-        if (!logCheck.getState())
-        {
-            return m;
-        }
-        if (m == 0)
-        {
-            return 0;
-        }
-        return Math.exp(6 * (m - 1));
+        FontMetrics fm = g.getFontMetrics();
+        g.drawString(s, (winSize.width - fm.stringWidth(s)) / 2, y);
     }
 
-    int getTermWidth()
+    int getTermWidth ()
     {
         int terms = termBar.getValue();
         int termWidth = winSize.width / terms;
@@ -1035,252 +875,78 @@ public class FourierFrame extends Frame
         return termWidth;
     }
 
-    void edit(MouseEvent e)
+    double showMag (int n)
     {
-        if (selection == SEL_NONE)
+        double m = magcoef[n];
+        if (!logCheck.getState() || n == 0)
         {
-            return;
+            return m;
         }
-        int x = e.getX();
-        int y = e.getY();
-        switch (selection)
-        {
-            case SEL_MAG:
-                editMag(y);
-                break;
-            case SEL_FUNC:
-                editFunc(x, y);
-                break;
-            case SEL_PHASE:
-                editPhase(y);
-                break;
-            case SEL_MUTES:
-                editMutes(e);
-                break;
-            case SEL_SOLOS:
-                editSolos(e);
-                break;
-        }
-        quantizeCount = 0;
-        resampleCount = 0;
+        m = Math.log(m) / 6. + 1;
+        //System.out.println(magcoef[i] + " " + m);
+        return (m < 0) ? 0 : m;
     }
 
-    void editMag(int y)
-    {
-        if (selectedCoef == -1)
-        {
-            return;
-        }
-        double ymult = viewMag.ymult;
-        double midy = viewMag.midy;
-        double coef = -(y - midy) / ymult;
-        if (magPhaseCheck.getState())
-        {
-            if (selectedCoef > 0)
-            {
-                if (coef < 0)
-                {
-                    coef = 0;
-                }
-                coef = getMagValue(coef);
-            }
-            else if (coef < -1)
-            {
-                coef = -1;
-            }
-            if (coef > 1)
-            {
-                coef = 1;
-            }
-            if (magcoef[selectedCoef] == coef)
-            {
-                return;
-            }
-            magcoef[selectedCoef] = coef;
-        }
-        else
-        {
-            int c = selectedCoef;
-            if (c == 0)
-            {
-                return;
-            }
-            double m2 = magcoef[c] * Math.cos(phasecoef[c]);
-            if (coef > 1)
-            {
-                coef = 1;
-            }
-            if (coef < -1)
-            {
-                coef = -1;
-            }
-            double m1 = coef;
-            magcoef[c] = Math.sqrt(m1 * m1 + m2 * m2);
-            phasecoef[c] = Math.atan2(-m1, m2);
-        }
-        updateSound();
-        cv.repaint();
-    }
-
-    void editFunc(int x, int y)
-    {
-        if (dragX == x)
-        {
-            editFuncPoint(x, y);
-            dragY = y;
-        }
-        else
-        {
-            // need to draw a line from old x,y to new x,y and
-            // call editFuncPoint for each point on that line.  yuck.
-            int x1 = (x < dragX) ? x : dragX;
-            int y1 = (x < dragX) ? y : dragY;
-            int x2 = (x > dragX) ? x : dragX;
-            int y2 = (x > dragX) ? y : dragY;
-            dragX = x;
-            dragY = y;
-            for (x = x1; x <= x2; x++)
-            {
-                y = y1 + (y2 - y1) * (x - x1) / (x2 - x1);
-                editFuncPoint(x, y);
-            }
-        }
-    }
-
-    void editFuncPoint(int x, int y)
-    {
-        int midy = viewFunc.midy;
-        int periodWidth = viewFunc.periodWidth;
-        double ymult = viewFunc.ymult;
-        int lox = (x % periodWidth) * sampleCount / periodWidth;
-        int hix = (((x % periodWidth) + 1) * sampleCount / periodWidth) - 1;
-        double val = (midy - y) / ymult;
-        if (val > 1)
-        {
-            val = 1;
-        }
-        if (val < -1)
-        {
-            val = -1;
-        }
-        for (; lox <= hix; lox++)
-        {
-            func[lox] = val;
-        }
-        func[sampleCount] = func[0];
-        cv.repaint();
-    }
-
-    void editPhase(int y)
-    {
-        if (selectedCoef == -1)
-        {
-            return;
-        }
-        double ymult = viewPhase.ymult;
-        double midy = viewPhase.midy;
-        double coef = -(y - midy) / ymult;
-        if (magPhaseCheck.getState())
-        {
-            coef *= pi;
-            if (coef < -pi)
-            {
-                coef = -pi;
-            }
-            if (coef > pi)
-            {
-                coef = pi;
-            }
-            if (phasecoef[selectedCoef] == coef)
-            {
-                return;
-            }
-            phasecoef[selectedCoef] = coef;
-        }
-        else
-        {
-            int c = selectedCoef;
-            double m1 = -magcoef[c] * Math.sin(phasecoef[c]);
-            if (coef > 1)
-            {
-                coef = 1;
-            }
-            if (coef < -1)
-            {
-                coef = -1;
-            }
-            double m2 = coef;
-            magcoef[c] = Math.sqrt(m1 * m1 + m2 * m2);
-            phasecoef[c] = Math.atan2(-m1, m2);
-            updateSound();
-        }
-        cv.repaint();
-    }
-
-    void editMutes(MouseEvent e)
-    {
-        if (e.getID() != MouseEvent.MOUSE_PRESSED)
-        {
-            return;
-        }
-        if (selectedCoef == -1)
-        {
-            return;
-        }
-        mutes[selectedCoef] = !mutes[selectedCoef];
-        cv.repaint();
-    }
-
-    void editSolos(MouseEvent e)
-    {
-        if (e.getID() != MouseEvent.MOUSE_PRESSED)
-        {
-            return;
-        }
-        if (selectedCoef == -1)
-        {
-            return;
-        }
-        solos[selectedCoef] = !solos[selectedCoef];
-        int terms = termBar.getValue();
-        hasSolo = false;
-        int i;
-        for (i = 0; i != terms; i++)
-        {
-            if (solos[i])
-            {
-                hasSolo = true;
-                break;
-            }
-        }
-        cv.repaint();
-    }
-
-    public void componentHidden(ComponentEvent e)
-    {
-    }
-
-    public void componentMoved(ComponentEvent e)
-    {
-    }
-
-    public void componentShown(ComponentEvent e)
-    {
-        cv.repaint();
-    }
-
-    public void componentResized(ComponentEvent e)
+    public void componentResized (ComponentEvent e)
     {
         handleResize();
         cv.repaint(100);
     }
 
-    public void actionPerformed(ActionEvent e)
+    void handleResize ()
+    {
+        winSize = cv.getSize();
+        Dimension d = winSize;
+        if (winSize.width == 0)
+        {
+            return;
+        }
+        dbimage = cv.createImage(d.width, d.height);
+        int margin = 20;
+        int pheight = (d.height - margin * 2) / 3;
+        viewFunc = new View(0, 0, d.width, pheight);
+        int y = pheight + margin * 2;
+        viewMag = new View(0, y, d.width, pheight);
+        if (magPhaseCheck.getState())
+        {
+            viewMag.ymult *= 1.6;
+            viewMag.midy += (int) viewMag.ymult / 2;
+            logCheck.setEnabled(true);
+        }
+        else
+        {
+            logCheck.setEnabled(false);
+            logCheck.setState(false);
+        }
+        y += pheight;
+        viewPhase = new View(0, y, d.width, pheight);
+        int pmy = viewPhase.midy + (int) viewPhase.ymult + 10;
+        int h = (d.height - pmy) / 2;
+        //System.out.println("height " + h);
+        viewMutes = new View(0, pmy, d.width, h);
+        viewSolos = new View(0, pmy + h, d.width, h);
+        //System.out.println(viewMutes + " " + viewSolos + " " +d.height);
+    }
+
+    public void componentMoved (ComponentEvent e)
+    {
+    }
+
+    public void componentShown (ComponentEvent e)
+    {
+        cv.repaint();
+    }
+
+    public void componentHidden (ComponentEvent e)
+    {
+    }
+
+    public void actionPerformed (ActionEvent e)
     {
         pressButton(e.getSource());
     }
 
-    void pressButton(Object b)
+    void pressButton (Object b)
     {
         if (b == triangleButton)
         {
@@ -1362,10 +1028,10 @@ public class FourierFrame extends Frame
         }
     }
 
-    public void itemStateChanged(ItemEvent e)
+    public void itemStateChanged (ItemEvent e)
     {
         if (e.getSource() == soundCheck && soundCheck.getState() &&
-            playThread == null)
+                playThread == null)
         {
             playThread = new PlayThread();
             playThread.start();
@@ -1377,7 +1043,7 @@ public class FourierFrame extends Frame
         cv.repaint();
     }
 
-    public void adjustmentValueChanged(AdjustmentEvent e)
+    public void adjustmentValueChanged (AdjustmentEvent e)
     {
         System.out.print(((Scrollbar) e.getSource()).getValue() + "\n");
         if (e.getSource() == termBar)
@@ -1393,13 +1059,255 @@ public class FourierFrame extends Frame
         }
     }
 
-    public void mouseDragged(MouseEvent e)
+    void updateSound ()
+    {
+        if (playThread != null)
+        {
+            playThread.soundChanged();
+        }
+    }
+
+    public void mouseDragged (MouseEvent e)
     {
         dragging = true;
         edit(e);
     }
 
-    public void mouseMoved(MouseEvent e)
+    void edit (MouseEvent e)
+    {
+        if (selection == SEL_NONE)
+        {
+            return;
+        }
+        int x = e.getX();
+        int y = e.getY();
+        switch (selection)
+        {
+            case SEL_MAG:
+                editMag(y);
+                break;
+            case SEL_FUNC:
+                editFunc(x, y);
+                break;
+            case SEL_PHASE:
+                editPhase(y);
+                break;
+            case SEL_MUTES:
+                editMutes(e);
+                break;
+            case SEL_SOLOS:
+                editSolos(e);
+                break;
+        }
+        quantizeCount = 0;
+        resampleCount = 0;
+    }
+
+    void editMag (int y)
+    {
+        if (selectedCoef == -1)
+        {
+            return;
+        }
+        double ymult = viewMag.ymult;
+        double midy = viewMag.midy;
+        double coef = -(y - midy) / ymult;
+        if (magPhaseCheck.getState())
+        {
+            if (selectedCoef > 0)
+            {
+                if (coef < 0)
+                {
+                    coef = 0;
+                }
+                coef = getMagValue(coef);
+            }
+            else if (coef < -1)
+            {
+                coef = -1;
+            }
+            if (coef > 1)
+            {
+                coef = 1;
+            }
+            if (magcoef[selectedCoef] == coef)
+            {
+                return;
+            }
+            magcoef[selectedCoef] = coef;
+        }
+        else
+        {
+            int c = selectedCoef;
+            if (c == 0)
+            {
+                return;
+            }
+            double m2 = magcoef[c] * Math.cos(phasecoef[c]);
+            if (coef > 1)
+            {
+                coef = 1;
+            }
+            if (coef < -1)
+            {
+                coef = -1;
+            }
+            double m1 = coef;
+            magcoef[c] = Math.sqrt(m1 * m1 + m2 * m2);
+            phasecoef[c] = Math.atan2(-m1, m2);
+        }
+        updateSound();
+        cv.repaint();
+    }
+
+    void editFunc (int x, int y)
+    {
+        if (dragX == x)
+        {
+            editFuncPoint(x, y);
+            dragY = y;
+        }
+        else
+        {
+            // need to draw a line from old x,y to new x,y and
+            // call editFuncPoint for each point on that line.  yuck.
+            int x1 = (x < dragX) ? x : dragX;
+            int y1 = (x < dragX) ? y : dragY;
+            int x2 = (x > dragX) ? x : dragX;
+            int y2 = (x > dragX) ? y : dragY;
+            dragX = x;
+            dragY = y;
+            for (x = x1; x <= x2; x++)
+            {
+                y = y1 + (y2 - y1) * (x - x1) / (x2 - x1);
+                editFuncPoint(x, y);
+            }
+        }
+    }
+
+    void editPhase (int y)
+    {
+        if (selectedCoef == -1)
+        {
+            return;
+        }
+        double ymult = viewPhase.ymult;
+        double midy = viewPhase.midy;
+        double coef = -(y - midy) / ymult;
+        if (magPhaseCheck.getState())
+        {
+            coef *= pi;
+            if (coef < -pi)
+            {
+                coef = -pi;
+            }
+            if (coef > pi)
+            {
+                coef = pi;
+            }
+            if (phasecoef[selectedCoef] == coef)
+            {
+                return;
+            }
+            phasecoef[selectedCoef] = coef;
+        }
+        else
+        {
+            int c = selectedCoef;
+            double m1 = -magcoef[c] * Math.sin(phasecoef[c]);
+            if (coef > 1)
+            {
+                coef = 1;
+            }
+            if (coef < -1)
+            {
+                coef = -1;
+            }
+            double m2 = coef;
+            magcoef[c] = Math.sqrt(m1 * m1 + m2 * m2);
+            phasecoef[c] = Math.atan2(-m1, m2);
+            updateSound();
+        }
+        cv.repaint();
+    }
+
+    void editMutes (MouseEvent e)
+    {
+        if (e.getID() != MouseEvent.MOUSE_PRESSED)
+        {
+            return;
+        }
+        if (selectedCoef == -1)
+        {
+            return;
+        }
+        mutes[selectedCoef] = !mutes[selectedCoef];
+        cv.repaint();
+    }
+
+    void editSolos (MouseEvent e)
+    {
+        if (e.getID() != MouseEvent.MOUSE_PRESSED)
+        {
+            return;
+        }
+        if (selectedCoef == -1)
+        {
+            return;
+        }
+        solos[selectedCoef] = !solos[selectedCoef];
+        int terms = termBar.getValue();
+        hasSolo = false;
+        int i;
+        for (i = 0; i != terms; i++)
+        {
+            if (solos[i])
+            {
+                hasSolo = true;
+                break;
+            }
+        }
+        cv.repaint();
+    }
+
+    double getMagValue (double m)
+    {
+        if (!logCheck.getState())
+        {
+            return m;
+        }
+        if (m == 0)
+        {
+            return 0;
+        }
+        return Math.exp(6 * (m - 1));
+    }
+
+    void editFuncPoint (int x, int y)
+    {
+        int midy = viewFunc.midy;
+        int periodWidth = viewFunc.periodWidth;
+        double ymult = viewFunc.ymult;
+        int lox = (x % periodWidth) * sampleCount / periodWidth;
+        int hix = (((x % periodWidth) + 1) * sampleCount / periodWidth) - 1;
+        double val = (midy - y) / ymult;
+        if (val > 1)
+        {
+            val = 1;
+        }
+        if (val < -1)
+        {
+            val = -1;
+        }
+        for (; lox <= hix; lox++)
+        {
+            func[lox] = val;
+        }
+        func[sampleCount] = func[0];
+        cv.repaint();
+    }
+
+    public void mouseMoved (MouseEvent e)
     {
         int x = e.getX();
         int y = e.getY();
@@ -1447,10 +1355,10 @@ public class FourierFrame extends Frame
         }
     }
 
-    public void mouseClicked(MouseEvent e)
+    public void mouseClicked (MouseEvent e)
     {
         if (e.getClickCount() == 2 && selectedCoef != -1 &&
-            selection != SEL_MUTES && selection != SEL_SOLOS)
+                selection != SEL_MUTES && selection != SEL_SOLOS)
         {
             int i;
             for (i = 0; i != termBar.getValue(); i++)
@@ -1471,19 +1379,31 @@ public class FourierFrame extends Frame
         }
     }
 
-    public void mouseEntered(MouseEvent e)
+    void doSetFunc ()
     {
+        int i;
+        double data[] = new double[sampleCount * 2];
+        int terms = termBar.getValue();
+        for (i = 0; i != terms; i++)
+        {
+            int sgn = (i & 1) == 1 ? -1 : 1;
+            data[i * 2] = sgn * magcoef[i] * Math.cos(phasecoef[i]);
+            data[i * 2 + 1] = -sgn * magcoef[i] * Math.sin(phasecoef[i]);
+        }
+        fft.transform(data, true);
+        for (i = 0; i != sampleCount; i++)
+        {
+            func[i] = data[i * 2];
+        }
+        func[sampleCount] = func[0];
+        updateSound();
     }
 
-    public void mouseExited(MouseEvent e)
-    {
-    }
-
-    public void mousePressed(MouseEvent e)
+    public void mousePressed (MouseEvent e)
     {
         mouseMoved(e);
         if ((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0 &&
-            selectedCoef != -1)
+                selectedCoef != -1)
         {
             termBar.setValue(selectedCoef + 1);
             cv.repaint();
@@ -1496,7 +1416,7 @@ public class FourierFrame extends Frame
         edit(e);
     }
 
-    public void mouseReleased(MouseEvent e)
+    public void mouseReleased (MouseEvent e)
     {
         if ((e.getModifiers() & MouseEvent.BUTTON1_MASK) == 0)
         {
@@ -1514,55 +1434,126 @@ public class FourierFrame extends Frame
         cv.repaint();
     }
 
-/*
-    public boolean handleEvent(Event ev)
+    void transform ()
+    {
+        int y;
+        double data[] = new double[sampleCount * 2];
+        int i;
+        for (i = 0; i != sampleCount; i++)
+        {
+            data[i * 2] = func[i];
+        }
+        fft.transform(data, false);
+        double epsilon = .00001;
+        double mult = 2. / sampleCount;
+        for (y = 0; y != maxTerms; y++)
+        {
+            double acoef = data[y * 2] * mult;
+            double bcoef = -data[y * 2 + 1] * mult;
+            if ((y & 1) == 1)
+            {
+                acoef = -acoef;
+            }
+            else
+            {
+                bcoef = -bcoef;
+            }
+            //System.out.println(y + " " + acoef + " " + bcoef);
+            if (acoef < epsilon && acoef > -epsilon)
+            {
+                acoef = 0;
+            }
+            if (bcoef < epsilon && bcoef > -epsilon)
+            {
+                bcoef = 0;
+            }
+            if (y == 0)
+            {
+                magcoef[0] = acoef / 2;
+                phasecoef[0] = 0;
+            }
+            else
+            {
+                magcoef[y] = Math.sqrt(acoef * acoef + bcoef * bcoef);
+                phasecoef[y] = Math.atan2(-bcoef, acoef);
+            }
+            // System.out.print("phasecoef " + phasecoef[y] + "\n");
+        }
+        updateSound();
+    }
+
+    public void mouseEntered (MouseEvent e)
+    {
+    }
+
+    public void mouseExited (MouseEvent e)
+    {
+    }
+
+    /*
+        public boolean handleEvent(Event ev)
+        {
+            if (ev.id == Event.WINDOW_DESTROY)
+            {
+                applet.destroyFrame();
+                return true;
+            }
+            return super.handleEvent(ev);
+        }
+    */
+    @Override
+    public boolean handleEvent (Event ev)
     {
         if (ev.id == Event.WINDOW_DESTROY)
         {
-            applet.destroyFrame();
+            if (playThread != null)
+            {
+                playThread.requestShutdown();
+            }
+            dispose();
+            //applet.destroyFrame();
             return true;
         }
         return super.handleEvent(ev);
     }
-*/
-@Override
-public boolean handleEvent(Event ev)
-{
-    if (ev.id == Event.WINDOW_DESTROY)
+
+    static class View extends Rectangle
     {
-        if (playThread != null)
+        final int labely;
+        final int periodWidth;
+        int midy;
+        double ymult;
+        View (int x, int y, int w, int h)
         {
-            playThread.requestShutdown();
+            super(x, y, w, h);
+            midy = y + h / 2;
+            ymult = .6 * h / 2;
+            periodWidth = w / 3;
+            labely = midy - 5 - h * 3 / 8;
         }
-        dispose();
-        //applet.destroyFrame();
-        return true;
     }
-    return super.handleEvent(ev);
-}
 
     class PlayThread extends Thread
     {
-        PlayThread()
+        boolean shutdownRequested;
+        boolean changed;
+
+        PlayThread ()
         {
             shutdownRequested = false;
         }
 
-        boolean shutdownRequested;
-
-        void requestShutdown()
+        void requestShutdown ()
         {
             shutdownRequested = true;
         }
 
-        public void soundChanged()
+        public void soundChanged ()
         {
             changed = true;
         }
 
-        boolean changed;
-
-        public void run()
+        public void run ()
         {
 
             // this lovely code is a translation of the following, using
@@ -1583,9 +1574,10 @@ public boolean handleEvent(Event ev)
                 Class afclass = Class.forName("javax.sound.sampled.AudioFormat");
                 Constructor cstr = afclass.getConstructor(
                         new Class[]{float.class, int.class, int.class,
-                                    boolean.class, boolean.class});
+                                boolean.class, boolean.class
+                        });
                 Object format = cstr.newInstance((float) rate, 16, 1,
-                                                 true, true);
+                        true, true);
                 Class ifclass = Class.forName("javax.sound.sampled.DataLine$Info");
                 Class sdlclass =
                         Class.forName("javax.sound.sampled.SourceDataLine");
@@ -1595,17 +1587,17 @@ public boolean handleEvent(Event ev)
                 Class asclass = Class.forName("javax.sound.sampled.AudioSystem");
                 Class liclass = Class.forName("javax.sound.sampled.Line$Info");
                 Method glmeth = asclass.getMethod("getLine",
-                                                  new Class[]{liclass});
+                        new Class[]{liclass});
                 line = glmeth.invoke(null, info);
                 Method opmeth = sdlclass.getMethod("open",
-                                                   new Class[]{afclass, int.class});
+                        new Class[]{afclass, int.class});
                 opmeth.invoke(line, format,
-                              4096);
+                        4096);
                 Method stmeth = sdlclass.getMethod("start", (Class) null);
                 stmeth.invoke(line, (Object) null);
                 byte b[] = new byte[1];
                 wrmeth = sdlclass.getMethod("write",
-                                            new Class[]{b.getClass(), int.class, int.class});
+                        new Class[]{b.getClass(), int.class, int.class});
             }
             catch (Exception e)
             {
@@ -1680,7 +1672,7 @@ public boolean handleEvent(Event ev)
                         offset = 0;
                     }
                     wrmeth.invoke(line, b, offset,
-                                  ss);
+                            ss);
                     offset += ss;
                 }
                 catch (Exception e)

@@ -2,27 +2,27 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 01:59:33
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 01:59:33
+ */
 abstract class ChebyFilterType extends PoleFilterType
 {
     double epsilon;
     int sign;
 
-    public ChebyFilterType(DFilterFrame dFilterFrame)
+    public ChebyFilterType (DFilterFrame dFilterFrame)
     {
         super(dFilterFrame);
     }
 
-    void selectCheby(int s)
+    void selectCheby (int s)
     {
         dFilterFrame.auxLabels[s].setText("Passband Ripple");
         dFilterFrame.auxBars[s].setValue(60);
     }
 
-    void setupCheby(int a)
+    void setupCheby (int a)
     {
         int val = dFilterFrame.auxBars[a].getValue();
         double ripdb;
@@ -38,7 +38,7 @@ abstract class ChebyFilterType extends PoleFilterType
         epsilon = Math.sqrt(1 / ripval - 1);
     }
 
-    void getSPole(int i, Complex c1, double wc)
+    void getSPole (int i, Complex c1, double wc)
     {
         //Complex c2 = new Complex();
         double alpha = 1 / epsilon + Math.sqrt(1 + 1 / (epsilon * epsilon));
@@ -55,10 +55,10 @@ abstract class ChebyFilterType extends PoleFilterType
         c1.setMagPhase();
     }
 
-    void getInfoCheby(String x[])
+    void getInfoCheby (String x[])
     {
         x[2] = "Ripple: " +
-               dFilterFrame.showFormat.format(-10 * Math.log(1 / (1 + epsilon * epsilon)) /
-                                 DFilterFrame.log10) + " dB";
+                dFilterFrame.showFormat.format(-10 * Math.log(1 / (1 + epsilon * epsilon)) /
+                        DFilterFrame.log10) + " dB";
     }
 }

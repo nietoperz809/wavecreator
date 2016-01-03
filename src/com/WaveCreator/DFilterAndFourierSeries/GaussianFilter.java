@@ -2,21 +2,21 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 02:14:27
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 02:14:27
+ */
 class GaussianFilter extends FIRFilterType
 {
     int n;
     double cw;
 
-    public GaussianFilter(DFilterFrame dFilterFrame)
+    public GaussianFilter (DFilterFrame dFilterFrame)
     {
         super(dFilterFrame);
     }
 
-    int select()
+    int select ()
     {
         dFilterFrame.auxLabels[0].setText("Offset");
         dFilterFrame.auxBars[0].setMaximum(1000);
@@ -30,13 +30,13 @@ class GaussianFilter extends FIRFilterType
         return 3;
     }
 
-    void setup()
+    void setup ()
     {
         n = dFilterFrame.auxBars[2].getValue();
         cw = dFilterFrame.auxBars[0].getValue() * DFilterFrame.pi / 1000.;
     }
 
-    Filter genFilter()
+    Filter genFilter ()
     {
         DirectFilter f = new DirectFilter(dFilterFrame);
         f.aList = new double[n];
@@ -52,14 +52,14 @@ class GaussianFilter extends FIRFilterType
         return f;
     }
 
-    boolean needsWindow()
-    {
-        return true;
-    }
-
-    void getInfo(String x[])
+    void getInfo (String x[])
     {
         x[0] = "Gaussian (FIR)";
         x[1] = "Order: " + n;
+    }
+
+    boolean needsWindow ()
+    {
+        return true;
     }
 }

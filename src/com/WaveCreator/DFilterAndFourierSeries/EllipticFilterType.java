@@ -2,36 +2,18 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 01:39:39
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 01:39:39
+ */
 public abstract class EllipticFilterType extends PoleFilterType
 {
-    public EllipticFilterType(DFilterFrame dFilterFrame)
-    {
-        super(dFilterFrame);
-    }
-
-    void selectElliptic(int s)
-    {
-        dFilterFrame.auxLabels[s].setText("Passband Ripple");
-        dFilterFrame.auxBars[s].setValue(60);
-        dFilterFrame.auxLabels[s + 1].setText("Transition Band Width");
-        dFilterFrame.auxBars[s + 1].setValue(100);
-    }
-
-    double p0, q;
-    double zeros[];
-    double K, Kprime;
-
     final double[] c1 = new double[100];
     final double[] b1 = new double[100];
     final double[] a1 = new double[100];
     final double[] d1 = new double[100];
     final double[] q1 = new double[100];
     final double[] z1 = new double[100];
-    double f1[] = new double[100];
     final double[] s1 = new double[100];
     final double[] p = new double[100];
     final double[] zw1 = new double[100];
@@ -39,11 +21,27 @@ public abstract class EllipticFilterType extends PoleFilterType
     final double[] zq1 = new double[100];
     final double[] rootR = new double[100];
     final double[] rootI = new double[100];
+    double p0, q;
+    double zeros[];
+    double K, Kprime;
+    double f1[] = new double[100];
     int nin;
     int m, n2, em;
     double e;
+    public EllipticFilterType (DFilterFrame dFilterFrame)
+    {
+        super(dFilterFrame);
+    }
 
-    void setupElliptic(int a)
+    void selectElliptic (int s)
+    {
+        dFilterFrame.auxLabels[s].setText("Passband Ripple");
+        dFilterFrame.auxBars[s].setValue(60);
+        dFilterFrame.auxLabels[s + 1].setText("Transition Band Width");
+        dFilterFrame.auxBars[s + 1].setValue(100);
+    }
+
+    void setupElliptic (int a)
     {
         double rp = dFilterFrame.auxBars[a].getValue() / 25.;
         //System.out.println("rp = " + rp);
@@ -118,7 +116,60 @@ public abstract class EllipticFilterType extends PoleFilterType
         }
     }
 
-    void calcfz()
+    double ellipticK (double k)
+    {
+        double a[] = new double[50];
+        double theta[] = new double[50];
+        a[0] = Math.atan(k / Math.sqrt(1 - k * k));
+        theta[0] = DFilterFrame.pi * .5;
+        int i = 0;
+        while (true)
+        {
+            double x = 2 / (1 + Math.sin(a[i])) - 1;
+            double y = Math.sin(a[i]) * Math.sin(theta[i]);
+            a[i + 1] = Math.atan(Math.sqrt(1 - x * x) / x);
+            theta[i + 1] = .5 * (theta[i] + Math.atan(y / Math.sqrt(1 - y * y)));
+            double e = 1 - a[i + 1] * 2 / DFilterFrame.pi;
+            i++;
+            if (e < 1e-7)
+            {
+                break;
+            }
+            if (i == 49)
+            {
+                break;
+            }
+        }
+        int j;
+        double p = 1;
+        for (j = 1; j <= i; j++)
+        {
+            p *= 1 + Math.cos(a[j]);
+        }
+        double x = DFilterFrame.pi * .25 + theta[i] / 2;
+        return Math.log(Math.tan(x)) * p;
+    }
+
+    double calcSn (double u)
+    {
+        double sn = 0;
+        int j;
+        // q = modular constant
+        double q = Math.exp(-DFilterFrame.pi * Kprime / K);
+        double v = DFilterFrame.pi * .5 * u / K;
+        for (j = 0; ; j++)
+        {
+            double w = Math.pow(q, j + .5);
+            sn += w * Math.sin((2 * j + 1) * v) / (1 - w * w);
+            if (w < 1e-7)
+            {
+                break;
+            }
+        }
+        return sn;
+    }
+
+    void calcfz ()
     {
         // calculate f(z)
         int i = 1;
@@ -141,53 +192,8 @@ public abstract class EllipticFilterType extends PoleFilterType
         }
     }
 
-    // generate the product of (z+s1[i]) for i = 1 .. sn and store it in b1[]
-    // (i.e. f[z] = b1[0] + b1[1] z + b1[2] z^2 + ... b1[sn] z^sn)
-    void genProductPoly(int sn)
-    {
-        b1[0] = s1[1];
-        b1[1] = 1;
-        int i, j;
-        for (j = 2; j <= sn; j++)
-        {
-            a1[0] = s1[j] * b1[0];
-            for (i = 1; i <= j - 1; i++)
-            {
-                a1[i] = b1[i - 1] + s1[j] * b1[i];
-            }
-            for (i = 0; i != j; i++)
-            {
-                b1[i] = a1[i];
-            }
-            b1[j] = 1;
-        }
-    }
-
-    // determine f(z)^2
-    void calcfz2(int i)
-    {
-        int ji = 0;
-        int jf = 0;
-        if (i < em + 2)
-        {
-            ji = 0;
-            jf = i;
-        }
-        if (i > em)
-        {
-            ji = i - em;
-            jf = em;
-        }
-        c1[i] = 0;
-        int j;
-        for (j = ji; j <= jf; j += 2)
-        {
-            c1[i] += a1[j] * (a1[i - j] * Math.pow(10, m - i / 2));
-        }
-    }
-
     // determine q(z)
-    void calcqz()
+    void calcqz ()
     {
         int i;
         for (i = 1; i <= nin; i++)
@@ -210,7 +216,7 @@ public abstract class EllipticFilterType extends PoleFilterType
         }
     }
 
-    double factorFinder(int t)
+    double factorFinder (int t)
     {
         int i;
         double a = 0;
@@ -283,66 +289,58 @@ public abstract class EllipticFilterType extends PoleFilterType
         return a;
     }
 
-    double calcSn(double u)
+    // generate the product of (z+s1[i]) for i = 1 .. sn and store it in b1[]
+    // (i.e. f[z] = b1[0] + b1[1] z + b1[2] z^2 + ... b1[sn] z^sn)
+    void genProductPoly (int sn)
     {
-        double sn = 0;
-        int j;
-        // q = modular constant
-        double q = Math.exp(-DFilterFrame.pi * Kprime / K);
-        double v = DFilterFrame.pi * .5 * u / K;
-        for (j = 0; ; j++)
+        b1[0] = s1[1];
+        b1[1] = 1;
+        int i, j;
+        for (j = 2; j <= sn; j++)
         {
-            double w = Math.pow(q, j + .5);
-            sn += w * Math.sin((2 * j + 1) * v) / (1 - w * w);
-            if (w < 1e-7)
+            a1[0] = s1[j] * b1[0];
+            for (i = 1; i <= j - 1; i++)
             {
-                break;
+                a1[i] = b1[i - 1] + s1[j] * b1[i];
             }
+            for (i = 0; i != j; i++)
+            {
+                b1[i] = a1[i];
+            }
+            b1[j] = 1;
         }
-        return sn;
     }
 
-    double ellipticK(double k)
+    // determine f(z)^2
+    void calcfz2 (int i)
     {
-        double a[] = new double[50];
-        double theta[] = new double[50];
-        a[0] = Math.atan(k / Math.sqrt(1 - k * k));
-        theta[0] = DFilterFrame.pi * .5;
-        int i = 0;
-        while (true)
+        int ji = 0;
+        int jf = 0;
+        if (i < em + 2)
         {
-            double x = 2 / (1 + Math.sin(a[i])) - 1;
-            double y = Math.sin(a[i]) * Math.sin(theta[i]);
-            a[i + 1] = Math.atan(Math.sqrt(1 - x * x) / x);
-            theta[i + 1] = .5 * (theta[i] + Math.atan(y / Math.sqrt(1 - y * y)));
-            double e = 1 - a[i + 1] * 2 / DFilterFrame.pi;
-            i++;
-            if (e < 1e-7)
-            {
-                break;
-            }
-            if (i == 49)
-            {
-                break;
-            }
+            ji = 0;
+            jf = i;
         }
+        if (i > em)
+        {
+            ji = i - em;
+            jf = em;
+        }
+        c1[i] = 0;
         int j;
-        double p = 1;
-        for (j = 1; j <= i; j++)
+        for (j = ji; j <= jf; j += 2)
         {
-            p *= 1 + Math.cos(a[j]);
+            c1[i] += a1[j] * (a1[i - j] * Math.pow(10, m - i / 2));
         }
-        double x = DFilterFrame.pi * .25 + theta[i] / 2;
-        return Math.log(Math.tan(x)) * p;
     }
 
-    void getSPole(int i, Complex c1, double wc)
+    void getSPole (int i, Complex c1, double wc)
     {
         double tanwc = Math.tan(wc * .5);
         c1.set(rootR[i + 1] * tanwc, rootI[i + 1] * tanwc);
     }
 
-    void getEllipticZero(int i, Complex c1, double wc)
+    void getEllipticZero (int i, Complex c1, double wc)
     {
         double tanwc = Math.tan(wc * .5);
         c1.set(0, zeros[i / 2] * tanwc);
@@ -353,16 +351,16 @@ public abstract class EllipticFilterType extends PoleFilterType
         bilinearXform(c1);
     }
 
-    void getInfoElliptic(String x[])
+    void getInfoElliptic (String x[])
     {
     }
 
-    int getPoleCount()
+    int getPoleCount ()
     {
         return n;
     }
 
-    int getZeroCount()
+    int getZeroCount ()
     {
         return n;
     }

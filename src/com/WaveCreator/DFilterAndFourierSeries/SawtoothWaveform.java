@@ -2,21 +2,21 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 02:31:51
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 02:31:51
+ */
 class SawtoothWaveform extends Waveform
 {
     int ix;
     short smbuf[];
 
-    public SawtoothWaveform(DFilterFrame dFilterFrame)
+    public SawtoothWaveform (DFilterFrame dFilterFrame)
     {
         super(dFilterFrame);
     }
 
-    boolean start()
+    boolean start ()
     {
         createBuffer();
         ix = 0;
@@ -24,7 +24,7 @@ class SawtoothWaveform extends Waveform
         return true;
     }
 
-    int getData()
+    int getData ()
     {
         int i;
         int period = (int) (2 * DFilterFrame.pi / dFilterFrame.inputW);

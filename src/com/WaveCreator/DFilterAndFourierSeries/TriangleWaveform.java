@@ -2,21 +2,21 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 02:32:47
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 02:32:47
+ */
 class TriangleWaveform extends Waveform
 {
     int ix;
     short smbuf[];
 
-    public TriangleWaveform(DFilterFrame dFilterFrame)
+    public TriangleWaveform (DFilterFrame dFilterFrame)
     {
         super(dFilterFrame);
     }
 
-    boolean start()
+    boolean start ()
     {
         createBuffer();
         ix = 0;
@@ -24,7 +24,7 @@ class TriangleWaveform extends Waveform
         return true;
     }
 
-    int getData()
+    int getData ()
     {
         int i;
         int period = (int) (2 * DFilterFrame.pi / dFilterFrame.inputW);

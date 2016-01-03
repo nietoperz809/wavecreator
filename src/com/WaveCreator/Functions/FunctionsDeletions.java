@@ -100,7 +100,7 @@ public final class FunctionsDeletions extends Functions
                 if (cnt == keep)
                 {
                     cnt = 0;
-                    mode = !mode;
+                    mode = false;
                 }
             }
             else
@@ -109,7 +109,7 @@ public final class FunctionsDeletions extends Functions
                 if (cnt == miss)
                 {
                     cnt = 0;
-                    mode = !mode;
+                    mode = true;
                 }
             }
         }

@@ -3,7 +3,6 @@ package com.WaveCreator.Functions;
 import com.WaveCreator.ParamDesc;
 import com.WaveCreator.Tools;
 import com.WaveCreator.Wave16;
-import java.util.Arrays;
 
 /**
  * New Class.

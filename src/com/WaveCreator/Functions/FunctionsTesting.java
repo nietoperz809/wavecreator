@@ -12,7 +12,6 @@ import com.WaveCreator.Wave16;
 import com.WaveCreator.lindenmayerrule.RuleManager;
 import java.awt.Point;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 import java.util.Stack;
 
@@ -628,7 +627,7 @@ public final class FunctionsTesting extends Functions
         static final double X_MAX = 2.0;  //Max value for X, used for normalizing values
         static final double Y_MAX = 0.5;  //Analogous to X_MAX
 
-        protected int[] minorScale =
+        protected final int[] minorScale =
         {
             440, 470, 496, 528, 564, 634, 660, 704, 760, 792, 844, 880, 939, 1056, 1276
         };
@@ -833,7 +832,7 @@ public final class FunctionsTesting extends Functions
 
     static class WaveArray
     {
-        ArrayList<Wave16> waves = new ArrayList<>();
+        final ArrayList<Wave16> waves = new ArrayList<>();
         static final int SAMPLERATE = 22000;
 
         void newWave(Point p)
@@ -864,7 +863,7 @@ public final class FunctionsTesting extends Functions
     }
 
     private void doDraw(WaveArray out, Point pos, double angle,
-            Point mult, int pensize, double distance, char cmd)
+                        Point mult, double distance, char cmd)
     {
         Point p = newPoint(pos, distance, angle, mult, cmd == 'F' ? 1 : -1);
 
@@ -877,13 +876,9 @@ public final class FunctionsTesting extends Functions
     double fixangle = 90.0;
     double fixstep = 10.0;
 
-    void drawTurtleSteps(String in, WaveArray out) throws Exception
-    {
+    void drawTurtleSteps(String in, WaveArray out) {
         Point currentTurtlePosition = new Point(1000, 1000);
         Point multiplicator = new Point(1, 1);
-        int x;
-        int y;
-        int linenumber = 0;
         int pensize = 0;
         double currentAngle = -90.0;
         Stack<StackElement> stack = new Stack<>();
@@ -916,7 +911,7 @@ public final class FunctionsTesting extends Functions
 
                 case 'F':
                 case 'R':
-                    doDraw(out, currentTurtlePosition, currentAngle, multiplicator, pensize, fixstep, c);
+                    doDraw(out, currentTurtlePosition, currentAngle, multiplicator, fixstep, c);
                     break;
 
                 case 'f':

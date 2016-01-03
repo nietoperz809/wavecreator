@@ -2,39 +2,39 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 02:17:01
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 02:17:01
+ */
 class InvChebyLowPass extends InvChebyFilterType
 {
-    public InvChebyLowPass(DFilterFrame dFilterFrame)
+    public InvChebyLowPass (DFilterFrame dFilterFrame)
     {
         super(dFilterFrame);
     }
 
-    int select()
+    int select ()
     {
         int s = selectLowPass();
         selectCheby(s++);
         return s;
     }
 
-    void setup()
+    void setup ()
     {
         setupLowPass();
         setupCheby(2);
     }
 
-    void getInfo(String x[])
+    void getZero (int i, Complex c1)
+    {
+        getChebyZero(i, c1, wc);
+    }
+
+    void getInfo (String x[])
     {
         x[0] = "Inverse Chebyshev (IIR), " + getPoleCount() + "-pole";
         getInfoLowPass(x);
         getInfoCheby(x);
-    }
-
-    void getZero(int i, Complex c1)
-    {
-        getChebyZero(i, c1, wc);
     }
 }

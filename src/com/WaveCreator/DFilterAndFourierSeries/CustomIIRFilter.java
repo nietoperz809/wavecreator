@@ -2,20 +2,20 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 02:08:52
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 02:08:52
+ */
 class CustomIIRFilter extends IIRFilterType
 {
     int npoles, nzeros;
 
-    public CustomIIRFilter(DFilterFrame dFilterFrame)
+    public CustomIIRFilter (DFilterFrame dFilterFrame)
     {
         super(dFilterFrame);
     }
 
-    int select()
+    int select ()
     {
         dFilterFrame.auxLabels[0].setText("# of Pole Pairs");
         dFilterFrame.auxBars[0].setMaximum(10);
@@ -23,38 +23,38 @@ class CustomIIRFilter extends IIRFilterType
         return 1;
     }
 
-    void setup()
+    void setup ()
     {
         npoles = nzeros = dFilterFrame.auxBars[0].getValue() * 2;
     }
 
-    void getPole(int i, Complex c1)
-    {
-        c1.set(dFilterFrame.customPoles[i]);
-    }
-
-    int getPoleCount()
+    int getPoleCount ()
     {
         return npoles;
     }
 
-    void getZero(int i, Complex c1)
-    {
-        c1.set(dFilterFrame.customZeros[i]);
-    }
-
-    int getZeroCount()
+    int getZeroCount ()
     {
         return nzeros;
     }
 
-    void getInfo(String x[])
+    void getPole (int i, Complex c1)
+    {
+        c1.set(dFilterFrame.customPoles[i]);
+    }
+
+    void getZero (int i, Complex c1)
+    {
+        c1.set(dFilterFrame.customZeros[i]);
+    }
+
+    void getInfo (String x[])
     {
         x[0] = "Custom IIR";
         x[1] = npoles + " poles and zeros";
     }
 
-    void editPoleZero(Complex c)
+    void editPoleZero (Complex c)
     {
         if (c.mag > 1.1)
         {

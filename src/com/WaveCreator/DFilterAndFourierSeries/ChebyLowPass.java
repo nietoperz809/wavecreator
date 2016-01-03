@@ -2,56 +2,56 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 02:05:27
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 02:05:27
+ */
 class ChebyLowPass extends ChebyFilterType
 {
-    ChebyLowPass(DFilterFrame dFilterFrame)
+    ChebyLowPass (DFilterFrame dFilterFrame)
     {
-        super (dFilterFrame);
+        super(dFilterFrame);
         sign = 1;
     }
 
-    int select()
+    int select ()
     {
         int s = selectLowPass();
         selectCheby(s++);
         return s;
     }
 
-    void setup()
+    void setup ()
     {
         setupLowPass();
         setupCheby(2);
     }
 
-    void getPole(int i, Complex c1)
+    int getPoleCount ()
     {
-        super.getPole(i, c1);
-        c1.mult(sign);
+        return n;
     }
 
-    void getZero(int i, Complex c1)
+    int getZeroCount ()
+    {
+        return n;
+    }
+
+    void getZero (int i, Complex c1)
     {
         c1.set(-sign);
     }
 
-    int getPoleCount()
-    {
-        return n;
-    }
-
-    int getZeroCount()
-    {
-        return n;
-    }
-
-    void getInfo(String x[])
+    void getInfo (String x[])
     {
         x[0] = "Chebyshev (IIR), " + getPoleCount() + "-pole";
         getInfoLowPass(x);
         getInfoCheby(x);
+    }
+
+    void getPole (int i, Complex c1)
+    {
+        super.getPole(i, c1);
+        c1.mult(sign);
     }
 }

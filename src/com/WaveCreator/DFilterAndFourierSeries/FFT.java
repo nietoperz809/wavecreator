@@ -2,17 +2,17 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 04.01.2009
-* Time: 12:50:04
-*/
+ * User: Administrator
+ * Date: 04.01.2009
+ * Time: 12:50:04
+ */
 class FFT
 {
+    final int size;
     double wtabf[];
     double wtabi[];
-    final int size;
 
-    FFT(int sz)
+    FFT (int sz)
     {
         size = sz;
         if ((size & (size - 1)) != 0)
@@ -22,7 +22,7 @@ class FFT
         calcWTable();
     }
 
-    void calcWTable()
+    void calcWTable ()
     {
         // calculate table of powers of w
         wtabf = new double[size];
@@ -39,7 +39,7 @@ class FFT
         }
     }
 
-    void transform(double data[], boolean inv)
+    void transform (double data[], boolean inv)
     {
         int i;
         int j = 0;

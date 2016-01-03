@@ -108,7 +108,7 @@ public final class FunctionsReorder extends Functions
             parts[s] = parts[s + 1];
             parts[s + 1] = tmp;
         }
-        return m_base.combineAppend(parts);
+        return Wave16.combineAppend(parts);
     }
 
     /**

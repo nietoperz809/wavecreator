@@ -2,38 +2,38 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 02:26:37
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 02:26:37
+ */
 public abstract class Waveform
 {
-    short buffer[];
     public final DFilterFrame dFilterFrame;
+    short buffer[];
 
-    public Waveform(DFilterFrame dFilterFrame)
+    public Waveform (DFilterFrame dFilterFrame)
     {
         this.dFilterFrame = dFilterFrame;
     }
 
-    boolean start()
+    boolean start ()
     {
         return true;
     }
 
-    abstract int getData();
+    abstract int getData ();
 
-    void createBuffer()
+    void createBuffer ()
     {
         buffer = new short[dFilterFrame.getPower2(dFilterFrame.sampleRate / 12)];
     }
 
-    String getInputText()
+    String getInputText ()
     {
         return "Input Frequency";
     }
 
-    boolean needsFrequency()
+    boolean needsFrequency ()
     {
         return true;
     }

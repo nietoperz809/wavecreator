@@ -17,5 +17,5 @@ public @interface ParamDesc
      *
      * @return
      */
-    public abstract String value();
+    String value();
 }

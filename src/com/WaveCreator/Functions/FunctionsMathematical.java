@@ -14,36 +14,35 @@ public final class FunctionsMathematical extends Functions
 {
     public FunctionsMathematical (Wave16 base)
     {
-        super (base);
+        super(base);
     }
 
-    public Wave16 u_law()
+    public Wave16 u_law ()
     {
         Wave16 out = m_base.functionsMathematical.normalize();
         double u = Wave16.MAX_VALUE;
-        double half = Wave16.MAX_VALUE/2;
 
-        for (int s=0; s<m_base.data.length; s++)
+        for (int s = 0; s < m_base.data.length; s++)
         {
             double m;
-            m = Math.signum(out.data[s])*Math.log(1+u*Math.abs(out.data[s]))/Math.log(1+u);
+            m = Math.signum(out.data[s]) * Math.log(1 + u * Math.abs(out.data[s])) / Math.log(1 + u);
             m *= Wave16.MAX_VALUE;
             out.data[s] = m;
         }
         return out;
     }
 
-    public Wave16 haarTransform()
+    public Wave16 haarTransform ()
     {
         Wave16 out = m_base.functionsLength.padToNextPowerOfTwo(0);
-        int ldn = (int)(Math.log(out.data.length)/Math.log(2));
-        int n = 1<<ldn;
+        int ldn = (int) (Math.log(out.data.length) / Math.log(2));
+        int n = 1 << ldn;
         double s2 = Math.sqrt(0.5);
         double v = 1.0;
-        for (int js=2; js<=n; js<<=1)
+        for (int js = 2; js <= n; js <<= 1)
         {
             v *= s2;
-            for (int j=0, t=js>>1; j<n; j+=js, t+=js)
+            for (int j = 0, t = js >> 1; j < n; j += js, t += js)
             {
                 double x = out.data[j];
                 double y = out.data[t];
@@ -57,17 +56,17 @@ public final class FunctionsMathematical extends Functions
         return out;
     }
 
-    public Wave16 inverseHaarTransform()
+    public Wave16 inverseHaarTransform ()
     {
         Wave16 out = m_base.functionsLength.padToNextPowerOfTwo(0);
-        int ldn = (int)(Math.log(out.data.length)/Math.log(2));
-        int n = 1<<ldn;
+        int ldn = (int) (Math.log(out.data.length) / Math.log(2));
+        int n = 1 << ldn;
         double s2 = Math.sqrt(2.0);
-        double v = 1.0/Math.sqrt((double)n);
+        double v = 1.0 / Math.sqrt((double) n);
         out.data[0] *= v;
-        for (int js=n; js>=2; js>>=1)
+        for (int js = n; js >= 2; js >>= 1)
         {
-            for (int j=0, t=js>>1; j<n; j+=js, t+=js)
+            for (int j = 0, t = js >> 1; j < n; j += js, t += js)
             {
                 double x = out.data[j];
                 double y = out.data[t] * v;
@@ -80,8 +79,8 @@ public final class FunctionsMathematical extends Functions
         //out.data = Wave16.fitValues(out.data);
         return out;
     }
-    
-    public Wave16 inverse()
+
+    public Wave16 inverse ()
     {
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
@@ -92,7 +91,7 @@ public final class FunctionsMathematical extends Functions
         return out;
     }
 
-    public Wave16 cubeRoot()
+    public Wave16 cubeRoot ()
     {
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
@@ -103,12 +102,12 @@ public final class FunctionsMathematical extends Functions
         return out;
     }
 
-    public Wave16 log()
+    public Wave16 log ()
     {
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
         {
-            out.data[s] = Math.log(m_base.data[s]+Wave16.MAX_VALUE);
+            out.data[s] = Math.log(m_base.data[s] + Wave16.MAX_VALUE);
         }
         out.data = Tools.fitValues(out.data);
         return out;
@@ -127,9 +126,10 @@ public final class FunctionsMathematical extends Functions
 
     /**
      * Makes all samples positive
+     *
      * @return New sampling data
      */
-    public Wave16 abs()
+    public Wave16 abs ()
     {
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
@@ -142,9 +142,10 @@ public final class FunctionsMathematical extends Functions
     /**
      * Negative <b>abs()</b> function
      * All positive samples are made <0
+     *
      * @return A new sampling object
      */
-    public Wave16 absNegative()
+    public Wave16 absNegative ()
     {
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
@@ -154,17 +155,17 @@ public final class FunctionsMathematical extends Functions
         return out;
     }
 
-    public Wave16 floorTo (@ParamDesc("Rounding level")double lev)
+    public Wave16 floorTo (@ParamDesc("Rounding level") double lev)
     {
         Wave16 out = m_base.createEmptyCopy();
-        for (int s=0; s<m_base.data.length; s++)
+        for (int s = 0; s < m_base.data.length; s++)
         {
-            out.data[s] = Math.floor(m_base.data[s]*lev)/lev;
+            out.data[s] = Math.floor(m_base.data[s] * lev) / lev;
         }
         return out;
     }
 
-    public Wave16 mod (@ParamDesc("Second Mod operand")double m)
+    public Wave16 mod (@ParamDesc("Second Mod operand") double m)
     {
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
@@ -177,9 +178,10 @@ public final class FunctionsMathematical extends Functions
 
     /**
      * Makes positive square roots from 16-bit sampling data
+     *
      * @return Output array
      */
-    public Wave16 sqrt()
+    public Wave16 sqrt ()
     {
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
@@ -200,9 +202,10 @@ public final class FunctionsMathematical extends Functions
 
     /**
      * Calculates the derivative of this wave
+     *
      * @return The new wave
      */
-    public Wave16 derive()
+    public Wave16 derive ()
     {
         double f1;
         double f2;
@@ -219,7 +222,7 @@ public final class FunctionsMathematical extends Functions
         return out;
     }
 
-    public Wave16 deriveAndFitValues()
+    public Wave16 deriveAndFitValues ()
     {
         Wave16 derived = derive();
         derived.data = Tools.fitValues(derived.data);
@@ -228,9 +231,10 @@ public final class FunctionsMathematical extends Functions
 
     /**
      * Calculates numeric quadrature over all samples
+     *
      * @return New sampling data object
      */
-    public Wave16 integrateRaw()
+    public Wave16 integrateRaw ()
     {
         Wave16 out = m_base.createEmptyCopy();
         double sum = 0.0;
@@ -246,9 +250,10 @@ public final class FunctionsMathematical extends Functions
     /**
      * Calculates numeric quadrature over all samples
      * Values are normalized before and expanded after
+     *
      * @return New sampling data object
      */
-    public Wave16 integrateAndFitValues()
+    public Wave16 integrateAndFitValues ()
     {
         Wave16 out = normalize().functionsMathematical.integrateRaw();
         out.data = Tools.fitValues(out.data);
@@ -257,49 +262,54 @@ public final class FunctionsMathematical extends Functions
 
     /**
      * Normalizes sampling array to -1 ...0 ... +1
+     *
      * @return The normalized aray
      */
-    public Wave16 normalize()
+    public Wave16 normalize ()
     {
         Wave16 out = m_base.createEmptyCopy();
-        for (int s=0; s<m_base.data.length; s++)
+        for (int s = 0; s < m_base.data.length; s++)
         {
-            out.data[s] = m_base.data[s]/Wave16.MAX_VALUE;
+            out.data[s] = m_base.data[s] / Wave16.MAX_VALUE;
         }
         return out;
     }
 
     /**
      * Stretches a normalized array so that it is hearable
+     *
      * @return The stretched(samples) array
      */
-    public Wave16 deNormalize()
+    public Wave16 deNormalize ()
     {
         Wave16 out = m_base.createEmptyCopy();
-        for (int s=0; s<m_base.data.length; s++)
+        for (int s = 0; s < m_base.data.length; s++)
         {
-            out.data[s] = m_base.data[s]*Wave16.MAX_VALUE;
+            out.data[s] = m_base.data[s] * Wave16.MAX_VALUE;
         }
         return out;
     }
 
     /**
      * Creates a new sampling array that is the energy of the source
+     *
      * @param step Window size
      * @return The new array
      */
-    public Wave16 energy (@ParamDesc("Window size")int step)
+    public Wave16 energy (@ParamDesc("Window size") int step)
     {
         Wave16 norm = m_base.functionsMathematical.normalize();
         Wave16 out = m_base.createEmptyCopy();
-        for (int s=0; s<norm.data.length; s++)
+        for (int s = 0; s < norm.data.length; s++)
         {
             double sum = 0.0;
-            for (int n=0; n<step; n++)
+            for (int n = 0; n < step; n++)
             {
-                int idx = s+n;
+                int idx = s + n;
                 if (idx == m_base.data.length)
+                {
                     break;
+                }
                 sum = sum + (norm.data[idx] * norm.data[idx]);
             }
             out.data[s] = sum;

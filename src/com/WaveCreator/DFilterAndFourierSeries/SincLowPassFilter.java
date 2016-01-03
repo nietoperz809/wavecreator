@@ -2,10 +2,10 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 02:24:05
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 02:24:05
+ */
 class SincLowPassFilter extends FIRFilterType
 {
     int n;
@@ -13,12 +13,12 @@ class SincLowPassFilter extends FIRFilterType
     double resp[];
     boolean invert;
 
-    public SincLowPassFilter(DFilterFrame dFilterFrame)
+    public SincLowPassFilter (DFilterFrame dFilterFrame)
     {
         super(dFilterFrame);
     }
 
-    int select()
+    int select ()
     {
         dFilterFrame.auxLabels[0].setText("Cutoff Frequency");
         dFilterFrame.auxLabels[1].setText("Order");
@@ -28,13 +28,13 @@ class SincLowPassFilter extends FIRFilterType
         return 2;
     }
 
-    void setup()
+    void setup ()
     {
         wc = dFilterFrame.auxBars[0].getValue() * DFilterFrame.pi / 1000.;
         n = dFilterFrame.auxBars[1].getValue();
     }
 
-    Filter genFilter()
+    Filter genFilter ()
     {
         DirectFilter f = new DirectFilter(dFilterFrame);
         f.aList = new double[n];
@@ -68,13 +68,13 @@ class SincLowPassFilter extends FIRFilterType
         return f;
     }
 
-    void getInfo(String x[])
+    void getInfo (String x[])
     {
         x[0] = "Cutoff freq: " + dFilterFrame.getOmegaText(wc);
         x[1] = "Order: " + n;
     }
 
-    boolean needsWindow()
+    boolean needsWindow ()
     {
         return true;
     }

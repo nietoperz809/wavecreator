@@ -2,27 +2,27 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 02:27:04
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 02:27:04
+ */
 public class ImpulseWaveform extends Waveform
 {
     int ix;
 
-    public ImpulseWaveform(DFilterFrame dFilterFrame)
+    public ImpulseWaveform (DFilterFrame dFilterFrame)
     {
         super(dFilterFrame);
     }
 
-    boolean start()
+    boolean start ()
     {
         createBuffer();
         ix = 0;
         return true;
     }
 
-    int getData()
+    int getData ()
     {
         int i;
         int ww = dFilterFrame.inputBar.getValue() / 51 + 1;
@@ -40,12 +40,12 @@ public class ImpulseWaveform extends Waveform
         return buffer.length;
     }
 
-    String getInputText()
+    String getInputText ()
     {
         return "Impulse Frequency";
     }
 
-    boolean needsFrequency()
+    boolean needsFrequency ()
     {
         return false;
     }

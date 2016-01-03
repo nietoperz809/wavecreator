@@ -2,19 +2,20 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 02:18:34
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 02:18:34
+ */
 class RandomFilter extends FIRFilterType
 {
     int n;
-    public RandomFilter(DFilterFrame dFilterFrame)
+
+    public RandomFilter (DFilterFrame dFilterFrame)
     {
         super(dFilterFrame);
     }
 
-    int select()
+    int select ()
     {
         dFilterFrame.auxLabels[0].setText("Order");
         dFilterFrame.auxBars[0].setMaximum(1600);
@@ -22,16 +23,12 @@ class RandomFilter extends FIRFilterType
         return 1;
     }
 
-    void setCutoff(double f)
-    {
-    }
-
-    void setup()
+    void setup ()
     {
         n = dFilterFrame.auxBars[0].getValue();
     }
 
-    Filter genFilter()
+    Filter genFilter ()
     {
         DirectFilter f = new DirectFilter(dFilterFrame);
         f.aList = new double[n];
@@ -44,14 +41,18 @@ class RandomFilter extends FIRFilterType
         return f;
     }
 
-    boolean needsWindow()
+    void getInfo (String x[])
+    {
+        x[0] = "Random (FIR)";
+        x[1] = "Order: " + n;
+    }
+
+    boolean needsWindow ()
     {
         return true;
     }
 
-    void getInfo(String x[])
+    void setCutoff (double f)
     {
-        x[0] = "Random (FIR)";
-        x[1] = "Order: " + n;
     }
 }

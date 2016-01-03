@@ -2,46 +2,46 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 02:03:00
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 02:03:00
+ */
 class ButterLowPass extends ButterFilterType
 {
     int sign;
 
-    ButterLowPass(DFilterFrame ddFilterFrame)
+    ButterLowPass (DFilterFrame ddFilterFrame)
     {
-        super (ddFilterFrame);
+        super(ddFilterFrame);
         sign = 1;
     }
 
-    int select()
+    int select ()
     {
         return selectLowPass();
     }
 
-    void setup()
+    void setup ()
     {
         setupLowPass();
     }
 
-    void getZero(int i, Complex c1)
+    int getPoleCount ()
+    {
+        return n;
+    }
+
+    int getZeroCount ()
+    {
+        return n;
+    }
+
+    void getZero (int i, Complex c1)
     {
         c1.set(-sign);
     }
 
-    int getPoleCount()
-    {
-        return n;
-    }
-
-    int getZeroCount()
-    {
-        return n;
-    }
-
-    void getInfo(String x[])
+    void getInfo (String x[])
     {
         x[0] = "Butterworth (IIR), " + getPoleCount() + "-pole";
         getInfoLowPass(x);

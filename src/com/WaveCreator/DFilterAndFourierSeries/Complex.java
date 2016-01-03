@@ -2,49 +2,55 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 01:24:39
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 01:24:39
+ */
 public class Complex
 {
     public double re, im, mag, phase;
 
-    Complex()
+    Complex ()
     {
         re = im = mag = phase = 0;
     }
 
-    Complex(double r, double i)
+    Complex (double r, double i)
     {
         set(r, i);
     }
 
-    Complex(Complex c)
-    {
-        set(c.re, c.im);
-    }
-
-    double magSquared()
-    {
-        return mag * mag;
-    }
-
-    void set(double aa, double bb)
+    void set (double aa, double bb)
     {
         re = aa;
         im = bb;
         setMagPhase();
     }
 
-    void set(double aa)
+    void setMagPhase ()
+    {
+        mag = Math.sqrt(re * re + im * im);
+        phase = Math.atan2(im, re);
+    }
+
+    Complex (Complex c)
+    {
+        set(c.re, c.im);
+    }
+
+    double magSquared ()
+    {
+        return mag * mag;
+    }
+
+    void set (double aa)
     {
         re = aa;
         im = 0;
         setMagPhase();
     }
 
-    void set(Complex c)
+    void set (Complex c)
     {
         re = c.re;
         im = c.im;
@@ -52,67 +58,44 @@ public class Complex
         phase = c.phase;
     }
 
-    void add(double r)
+    void add (double r)
     {
         re += r;
         setMagPhase();
     }
 
-    void add(double r, double i)
+    void add (double r, double i)
     {
         re += r;
         im += i;
         setMagPhase();
     }
 
-    void add(Complex c)
+    void add (Complex c)
     {
         re += c.re;
         im += c.im;
         setMagPhase();
     }
 
-    void addMult(double x, Complex z)
+    void addMult (double x, Complex z)
     {
         re += z.re * x;
         im += z.im * x;
         setMagPhase();
     }
 
-    void square()
+    void square ()
     {
         set(re * re - im * im, 2 * re * im);
     }
 
-    void sqrt()
+    void sqrt ()
     {
         setMagPhase(Math.sqrt(mag), phase * .5);
     }
 
-    void mult(double c, double d)
-    {
-        set(re * c - im * d, re * d + im * c);
-    }
-
-    void mult(double c)
-    {
-        re *= c;
-        im *= c;
-        mag *= c;
-    }
-
-    void mult(Complex c)
-    {
-        mult(c.re, c.im);
-    }
-
-    void setMagPhase()
-    {
-        mag = Math.sqrt(re * re + im * im);
-        phase = Math.atan2(im, re);
-    }
-
-    void setMagPhase(double m, double ph)
+    void setMagPhase (double m, double ph)
     {
         mag = m;
         phase = ph;
@@ -120,30 +103,47 @@ public class Complex
         im = m * Math.sin(ph);
     }
 
-    void recip()
+    void mult (double c)
+    {
+        re *= c;
+        im *= c;
+        mag *= c;
+    }
+
+    void mult (Complex c)
+    {
+        mult(c.re, c.im);
+    }
+
+    void mult (double c, double d)
+    {
+        set(re * c - im * d, re * d + im * c);
+    }
+
+    void recip ()
     {
         double n = re * re + im * im;
         set(re / n, -im / n);
     }
 
-    void div(Complex c)
+    void div (Complex c)
     {
         double n = c.re * c.re + c.im * c.im;
         mult(c.re / n, -c.im / n);
     }
 
-    void rotate(double a)
+    void rotate (double a)
     {
         setMagPhase(mag, (phase + a) % (2 * DFilterFrame.pi));
     }
 
-    void conjugate()
+    void conjugate ()
     {
         im = -im;
         phase = -phase;
     }
 
-    void pow(double p)
+    void pow (double p)
     {
         //double arg = java.lang.Math.atan2(im, re);
         phase *= p;

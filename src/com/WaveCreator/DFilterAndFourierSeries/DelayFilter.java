@@ -2,19 +2,19 @@ package com.WaveCreator.DFilterAndFourierSeries;
 
 /**
  * New Class.
-* User: Administrator
-* Date: 06.01.2009
-* Time: 02:09:05
-*/
+ * User: Administrator
+ * Date: 06.01.2009
+ * Time: 02:09:05
+ */
 class DelayFilter extends CombFilter
 {
-    DelayFilter(DFilterFrame dFilterFrame)
+    DelayFilter (DFilterFrame dFilterFrame)
     {
         super(dFilterFrame, 1);
         this.dFilterFrame = dFilterFrame;
     }
 
-    void getResponse(double w, Complex c)
+    void getResponse (double w, Complex c)
     {
         if (n > 212)
         {
@@ -26,11 +26,11 @@ class DelayFilter extends CombFilter
         }
     }
 
-    void setCutoff(double f)
+    void setCutoff (double f)
     {
     }
 
-    int select()
+    int select ()
     {
         dFilterFrame.auxLabels[0].setText("Delay");
         dFilterFrame.auxBars[0].setValue(300);
@@ -39,18 +39,18 @@ class DelayFilter extends CombFilter
         return 2;
     }
 
-    void setup()
+    void setup ()
     {
         n = dFilterFrame.auxBars[0].getValue() * 16384 / 1000;
         mult = dFilterFrame.auxBars[1].getValue() / 1250.;
         peak = 1 / (1 - mult);
     }
 
-    void getInfo(String x[])
+    void getInfo (String x[])
     {
         x[0] = "Delay (IIR)";
         x[1] = "Delay: " + n + " samples, " +
-               dFilterFrame.getUnitText(n / (double) dFilterFrame.sampleRate, "s");
+                dFilterFrame.getUnitText(n / (double) dFilterFrame.sampleRate, "s");
         double tl = 340. * n / dFilterFrame.sampleRate / 2;
         x[2] = "Echo Distance: " + dFilterFrame.getUnitText(tl, "m");
         if (tl > 1)

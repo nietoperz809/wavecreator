@@ -18,7 +18,7 @@ public class ByteBucket
         reset();
     }
 
-    public void reset()
+    public void reset ()
     {
         m_count = 0;
         m_space = m_array.length;
@@ -28,25 +28,29 @@ public class ByteBucket
     {
         int num;
         if (length < m_space)
+        {
             num = length;
+        }
         else
+        {
             num = m_space;
-        System.arraycopy (in, 0, m_array, m_count, num);
+        }
+        System.arraycopy(in, 0, m_array, m_count, num);
         m_space -= num;
         m_count += num;
     }
 
-    public boolean isFull()
+    public boolean isFull ()
     {
         return m_space == 0;
     }
 
-    public byte[] getArray()
+    public byte[] getArray ()
     {
         return m_array;
     }
 
-    public int getSize()
+    public int getSize ()
     {
         return m_array.length;
     }

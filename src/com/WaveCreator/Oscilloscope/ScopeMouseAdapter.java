@@ -34,13 +34,8 @@ public class ScopeMouseAdapter implements MouseMotionListener, MouseListener
 
     private void showPositionLabel (MouseEvent e)
     {
-        StringBuilder sb = new StringBuilder()
-                .append(" X:")
-                .append(m_xp)
-                .append(" Y:")
-                .append(m_scopeWindow.m_oscilloscope.m_points[m_xp])
-                .append(" ");
-        m_label.setText(sb.toString());
+        String sb = " X:" + m_xp + " Y:" + m_scopeWindow.m_oscilloscope.m_points[m_xp] + " ";
+        m_label.setText(sb);
 
         Dimension labeldimension = m_label.getPreferredSize();
         m_labelWindow.setLocation(e.getXOnScreen() - labeldimension.width / 2,
@@ -66,6 +61,7 @@ public class ScopeMouseAdapter implements MouseMotionListener, MouseListener
      * Enables drawing or setting of markers
      * @param e The current mouse event
      */
+    @Override
     public void mouseDragged(MouseEvent e)
     {
         // Button 1 must be down
@@ -103,6 +99,7 @@ public class ScopeMouseAdapter implements MouseMotionListener, MouseListener
      * Draws text label to show X and Y values
      * @param e The current mouse event
      */
+    @Override
     public void mouseMoved(MouseEvent e)
     {
         calcXP(e);
@@ -113,6 +110,7 @@ public class ScopeMouseAdapter implements MouseMotionListener, MouseListener
      * Click event
      * @param e The current mouse event
      */
+    @Override
     public void mouseClicked(MouseEvent e)
     {
         // Button 1 must be down
@@ -126,6 +124,7 @@ public class ScopeMouseAdapter implements MouseMotionListener, MouseListener
      * Dummy function: Does nothing but must exist because of inherited interfaces
      * @param e The current mouse event
      */
+    @Override
     public void mousePressed(MouseEvent e)
     {
         switch (e.getButton())
@@ -146,6 +145,7 @@ public class ScopeMouseAdapter implements MouseMotionListener, MouseListener
      * Dummy function: Does nothing but must exist because of inherited interfaces
      * @param e The current mouse event
      */
+    @Override
     public void mouseReleased(MouseEvent e)
     {
     }
@@ -154,6 +154,7 @@ public class ScopeMouseAdapter implements MouseMotionListener, MouseListener
      * Activates the edit control
      * @param e The current mouse event
      */
+    @Override
     public void mouseEntered(MouseEvent e)
     {
         m_xstep = (float) m_scopeWindow.m_oscilloscope.getWidth() / (m_scopeWindow.m_oscilloscope.m_length - 1);
@@ -164,6 +165,7 @@ public class ScopeMouseAdapter implements MouseMotionListener, MouseListener
      * Hides the edit control
      * @param e The current mouse event
      */
+    @Override
     public void mouseExited(MouseEvent e)
     {
         m_labelWindow.setVisible(false);
