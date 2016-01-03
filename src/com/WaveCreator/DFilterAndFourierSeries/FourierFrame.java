@@ -1573,16 +1573,15 @@ public class FourierFrame extends Frame
             {
                 Class afclass = Class.forName("javax.sound.sampled.AudioFormat");
                 Constructor cstr = afclass.getConstructor(
-                        new Class[]{float.class, int.class, int.class,
-                                boolean.class, boolean.class
-                        });
+                        float.class, int.class, int.class,
+                        boolean.class, boolean.class);
                 Object format = cstr.newInstance((float) rate, 16, 1,
                         true, true);
                 Class ifclass = Class.forName("javax.sound.sampled.DataLine$Info");
                 Class sdlclass =
                         Class.forName("javax.sound.sampled.SourceDataLine");
                 cstr = ifclass.getConstructor(
-                        new Class[]{Class.class, afclass});
+                        Class.class, afclass);
                 Object info = cstr.newInstance(sdlclass, format);
                 Class asclass = Class.forName("javax.sound.sampled.AudioSystem");
                 Class liclass = Class.forName("javax.sound.sampled.Line$Info");

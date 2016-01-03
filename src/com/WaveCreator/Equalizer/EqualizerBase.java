@@ -9,7 +9,7 @@ package com.WaveCreator.Equalizer;
 interface EqualizerBase
 {
     /* BETA, ALPHA, GAMMA */
-    public final static IIRCoefficients iir_cf10_11k_11025[] = {
+    IIRCoefficients[] iir_cf10_11k_11025 = {
             /* 31 Hz*/
             new IIRCoefficients(9.8758524689e-01, 6.2073765555e-03, 1.9872750693e+00),
             /* 62 Hz*/
@@ -32,7 +32,7 @@ interface EqualizerBase
             new IIRCoefficients(3.3453245058e-01, 3.3273377471e-01, -1.3344985880e+00)
     };
 
-    public final static IIRCoefficients iir_cf10_22k_22050[] = {
+    IIRCoefficients iir_cf10_22k_22050[] = {
             /* 31 Hz*/
             new IIRCoefficients(9.9377323686e-01, 3.1133815717e-03, 1.9936954495e+00),
             /* 62 Hz*/
@@ -54,7 +54,7 @@ interface EqualizerBase
             /* 11k Hz*/
             new IIRCoefficients(3.3453245058e-01, 3.3273377471e-01, -1.3344985880e+00)
     };
-    public final static IIRCoefficients iir_cf10_44100[] = {
+    IIRCoefficients iir_cf10_44100[] = {
             /* 31 Hz*/
             new IIRCoefficients(9.9688176273e-01, 1.5591186337e-03, 1.9968622855e+00),
             /* 62 Hz*/
@@ -76,7 +76,7 @@ interface EqualizerBase
             /* 16k Hz*/
             new IIRCoefficients(2.4198119087e-01, 3.7900940457e-01, -8.0845085113e-01)
     };
-    public final static IIRCoefficients iir_cf10_48000[] = {
+    IIRCoefficients iir_cf10_48000[] = {
             /* 31 Hz*/
             new IIRCoefficients(9.9713475915e-01, 1.4326204244e-03, 1.9971183163e+00),
             /* 62 Hz*/
@@ -98,7 +98,7 @@ interface EqualizerBase
             /* 16k Hz*/
             new IIRCoefficients(2.5620076154e-01, 3.7189961923e-01, -6.2810038077e-01)
     };
-    public final static IIRCoefficients iir_cf15_44100[] = {
+    IIRCoefficients iir_cf15_44100[] = {
             /* 25 Hz*/
             new IIRCoefficients(9.9834072702e-01, 8.2963648917e-04, 1.9983280505e+00),
             /* 40 Hz*/
@@ -130,7 +130,7 @@ interface EqualizerBase
             /* 16k Hz*/
             new IIRCoefficients(4.0179628792e-01, 2.9910185604e-01, -9.1248032613e-01)
     };
-    public final static IIRCoefficients iir_cf15_48000[] = {
+    IIRCoefficients iir_cf15_48000[] = {
             /* 25 Hz*/
             new IIRCoefficients(9.9847546664e-01, 7.6226668143e-04, 1.9984647656e+00),
             /* 40 Hz*/
@@ -162,7 +162,7 @@ interface EqualizerBase
             /* 16k Hz*/
             new IIRCoefficients(4.1811888447e-01, 2.9094055777e-01, -7.0905944223e-01)
     };
-    public final static IIRCoefficients iir_cf25_44100[] = {
+    IIRCoefficients iir_cf25_44100[] = {
             /* 20 Hz*/
             new IIRCoefficients(9.9934037157e-01, 3.2981421662e-04, 1.9993322545e+00),
             /* 31.5 Hz*/
@@ -214,7 +214,7 @@ interface EqualizerBase
             /* 20k Hz*/
             new IIRCoefficients(6.1776148240e-01, 1.9111925880e-01, -1.5492465594e+00)
     };
-    public final static IIRCoefficients iir_cf25_48000[] = {
+    IIRCoefficients iir_cf25_48000[] = {
             /* 20 Hz*/
             new IIRCoefficients(9.9939388451e-01, 3.0305774630e-04, 1.9993870327e+00),
             /* 31.5 Hz*/
@@ -266,7 +266,7 @@ interface EqualizerBase
             /* 20k Hz*/
             new IIRCoefficients(6.0884213704e-01, 1.9557893148e-01, -1.3932981614e+00)
     };
-    public final static IIRCoefficients iir_cf31_44100[] = {
+    IIRCoefficients iir_cf31_44100[] = {
             /* 20 Hz*/
             new IIRCoefficients(9.9934037157e-01, 3.2981421662e-04, 1.9993322545e+00),
             /* 25 Hz*/
@@ -330,7 +330,7 @@ interface EqualizerBase
             /* 20k Hz*/
             new IIRCoefficients(6.1776148240e-01, 1.9111925880e-01, -1.5492465594e+00)
     };
-    public final static IIRCoefficients iir_cf31_48000[] = {
+    IIRCoefficients iir_cf31_48000[] = {
             /* 20 Hz*/
             new IIRCoefficients(9.9939388451e-01, 3.0305774630e-04, 1.9993870327e+00),
             /* 25 Hz*/
