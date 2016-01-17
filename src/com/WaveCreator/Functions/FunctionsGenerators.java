@@ -253,6 +253,15 @@ public final class FunctionsGenerators extends Functions
             return out.functionsReorder.reverse();
     }
 
+    static public Wave16 sweepSine(@ParamDesc("Sampling rate") int samplingrate,
+                                   @ParamDesc("Starting frequency") int fstart,
+                                   @ParamDesc("Last frequency") int fend,
+                                   @ParamDesc("Seconds for whole curve") double seconds)
+    {
+        double time = seconds * samplingrate;
+        return sweepSine(samplingrate, fstart, fend, (int)time);
+    }
+
     static public Wave16 sweepTriangle(@ParamDesc("Sampling rate") int samplingrate,
                              @ParamDesc("Starting frequency") int fstart,
                              @ParamDesc("Last frequency") int fend,
@@ -271,6 +280,15 @@ public final class FunctionsGenerators extends Functions
             return out;
         else
             return out.functionsReorder.reverse();
+    }
+
+    static public Wave16 sweepTriangle(@ParamDesc("Sampling rate") int samplingrate,
+                                   @ParamDesc("Starting frequency") int fstart,
+                                   @ParamDesc("Last frequency") int fend,
+                                   @ParamDesc("Seconds for whole curve") double seconds)
+    {
+        double time = seconds * samplingrate;
+        return sweepTriangle(samplingrate, fstart, fend, (int)time);
     }
 
     static public Wave16 sweepSquare(@ParamDesc("Sampling rate") int samplingrate,
@@ -298,15 +316,6 @@ public final class FunctionsGenerators extends Functions
                              @ParamDesc("Number of samples") int samples)
     {
         return sweepSquare(samplingrate, fstart, fend, samples).functionsMathematical.deriveAndFitValues();
-    }
-
-    static public Wave16 sweepSine(@ParamDesc("Sampling rate") int samplingrate,
-                             @ParamDesc("Starting frequency") int fstart,
-                             @ParamDesc("Last frequency") int fend,
-                             @ParamDesc("Seconds for whole curve") double seconds)
-    {
-        double time = seconds * samplingrate;
-        return sweepSine(samplingrate, fstart, fend, (int)time);
     }
 
     /**
@@ -337,6 +346,26 @@ public final class FunctionsGenerators extends Functions
         Arrays.fill(l, length);
         return sequenceSine (rate, frequencies, l);
     }
+
+//    static public Wave16 sequenceSine (@ParamDesc("Sampling rate")int rate,
+//                                       @ParamDesc("Low frequency")double low,
+//                                       @ParamDesc("High frequency")double high,
+//                                       @ParamDesc("Entire Length in seconds")double length)
+//    {
+//        int step = 100;
+//        double singlesampletime = length/rate;
+//        double diff = Math.abs(high-low)/100;
+//        int[] l = new int[step];
+//        if (low == 0.0)
+//            low = 0.01;
+//        for (int s=0; s<step; s++)
+//        {
+//            l[s] = (int)low;
+//            low += diff;
+//        }
+//        return sequenceSine (rate, l, singlesampletime);
+//    }
+
 
     static public Wave16 sequenceSquare (@ParamDesc("Sampling rate")int rate,
                                      @ParamDesc("Array of frequencies")int[] frequencies,
