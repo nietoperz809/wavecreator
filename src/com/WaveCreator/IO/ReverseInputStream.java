@@ -75,6 +75,26 @@ class ReverseInputStream extends DataInputStream
         return res;
     }
 
+    short[] readIntArray(int size) throws Exception
+    {
+        byte[] b = new byte[size];
+        short[] res = new short[size / 4];
+        if (read(b) != size)
+        {
+            throw new Exception("Can't read all requested data");
+        }
+        for (int s = 0; s < b.length; s += 4)
+        {
+            int temp = (short)((b[s+0] & 0xff)
+                    + 256 * (b[s+1] & 0xff)
+                    + 65536 * (b[s+2] & 0xff)
+                    + 16777216 * (b[s+3] & 0xff)
+            );
+            res[s/4] = (short)(temp);
+        }
+        return res;
+    }
+
     /**
      * ???
      * @param size Number of bytes

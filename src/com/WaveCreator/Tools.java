@@ -2,6 +2,15 @@ package com.WaveCreator;
 
 //import com.google.common.math.LongMath;
 
+import java.net.URL;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  */
 public class Tools
@@ -71,6 +80,16 @@ public class Tools
         return (int) Math.pow(2.0, Math.ceil(Math.log(in) / Math.log(2.0))); 
     }
 
+    public static double[] combineStereo (double[] in)
+    {
+        double[] out = new double[in.length/2];
+        for (int s=0; s<in.length; s+=2)
+        {
+            out[s/2] = (in[s]+in[s+1])/2;
+        }
+        return out;
+    }
+
     /**
      * Fit values into defined range
      *
@@ -134,4 +153,45 @@ public class Tools
         }
         return out;
     }
+
+    public static String[] listPackage(String path)
+    {
+        try
+        {
+            int pathLen = path.length();
+            URL url1 = ClassLoader.getSystemResource(path);
+
+            String jarFileName;
+            JarFile jf;
+            Enumeration<JarEntry> jarEntries;
+            String entryName;
+            ArrayList<String> list = new ArrayList<>();
+
+            jarFileName = URLDecoder.decode(url1.getFile(), "UTF-8");
+            jarFileName = jarFileName.substring(5, jarFileName.indexOf("!"));
+            jf = new JarFile(jarFileName);
+            jarEntries = jf.entries();
+            while (jarEntries.hasMoreElements())
+            {
+                entryName = jarEntries.nextElement().getName();
+                if (entryName.startsWith(path))
+                {
+                    entryName = entryName.substring(pathLen+1);
+                    if (!entryName.isEmpty())
+                    {
+                        list.add(entryName);
+                    }
+                }
+            }
+            String[] arr = new String[list.size()];
+            list.toArray(arr);
+            return arr;
+        }
+        catch (Exception ex)
+        {
+            Logger.getLogger(Tools.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+
 }

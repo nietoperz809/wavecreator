@@ -1,6 +1,6 @@
 package com.WaveCreator.Functions;
 
-import com.WaveCreator.FFT.*;
+import com.WaveCreator.FFT.Complex;
 import com.WaveCreator.GaloisField256;
 import com.WaveCreator.MatrixRoutines.DMatrix;
 import com.WaveCreator.MatrixRoutines.DMatrixEvd;
@@ -10,7 +10,8 @@ import com.WaveCreator.ParamDesc;
 import com.WaveCreator.Tools;
 import com.WaveCreator.Wave16;
 import com.WaveCreator.lindenmayerrule.RuleManager;
-import java.awt.Point;
+
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Stack;
@@ -20,29 +21,62 @@ import java.util.Stack;
  */
 public final class FunctionsTesting extends Functions
 {
-    public FunctionsTesting(Wave16 base)
+    static final double DEGFACTOR = (2 * Math.PI) / 360.0;
+    ///////////////////////////////////////////////// BEGIN Test functions //////////////////////////////////////////////////
+    private static final short[] bz1 =
+            {
+                    0x0001, 0x0002, 0x0004, 0x0008,
+                    0x0010, 0x0020, 0x0040, 0x0080,
+                    0x0100, 0x0200, 0x0400, 0x0800,
+                    0x1000, 0x2000, 0x4000, (short) 0x8000
+            };
+
+    private static final short[] bz2 =
+            {
+                    0x0001, 0x0100, 0x0002, 0x0200,
+                    0x0004, 0x0400, 0x0008, 0x0800,
+                    0x0010, 0x1000, 0x0020, 0x2000,
+                    0x0040, 0x4000, 0x0080, (short) 0x8000
+            };
+    double fixangle = 90.0;
+    double fixstep = 10.0;
+
+    public FunctionsTesting (Wave16 base)
     {
         super(base);
     }
 
-///////////////////////////////////////////////// BEGIN Test functions //////////////////////////////////////////////////
-    private static final short[] bz1 =
+    static public Wave16 aa7Coeffs (@ParamDesc("Sampling rate") int samplingrate,
+                                 @ParamDesc("Samples") int samples)
     {
-        0x0001, 0x0002, 0x0004, 0x0008,
-        0x0010, 0x0020, 0x0040, 0x0080,
-        0x0100, 0x0200, 0x0400, 0x0800,
-        0x1000, 0x2000, 0x4000, (short) 0x8000
-    };
+        double[] coeff = {0.99986, -2.97566, -0.23930, 7.83529,
+                -3.25094, -11.51283, 13.50376, -4.36023};
+        Wave16 t = new Wave16 (samples, samplingrate);
 
-    private static final short[] bz2 =
+        for (int x=0; x<samples; x++)
+        {
+            double sum = 0;
+            for (int n = 0; n < coeff.length; n++)
+            {
+                sum = sum + coeff[n] * Math.pow (x, n);
+            }
+            t.data[x] = sum;
+        }
+        t.data = Tools.fitValues(t.data);
+        return t;
+    }
+
+    public Wave16 zip ()
     {
-        0x0001, 0x0100, 0x0002, 0x0200,
-        0x0004, 0x0400, 0x0008, 0x0800,
-        0x0010, 0x1000, 0x0020, 0x2000,
-        0x0040, 0x4000, 0x0080, (short) 0x8000
-    };
+        Wave16 out = m_base.createEmptyCopy();
+        for (int s = 0; s < m_base.data.length; s++)
+        {
+            out.data[s] = bitZip((short) m_base.data[s]);
+        }
+        return out;
+    }
 
-    private short bitZip(short a)
+    private short bitZip (short a)
     {
         short x = 0;
         for (int s = 0; s < 16; s++)
@@ -55,7 +89,17 @@ public final class FunctionsTesting extends Functions
         return x;
     }
 
-    private short bitUnzip(short a)
+    public Wave16 unzip ()
+    {
+        Wave16 out = m_base.createEmptyCopy();
+        for (int s = 0; s < m_base.data.length; s++)
+        {
+            out.data[s] = bitUnzip((short) m_base.data[s]);
+        }
+        return out;
+    }
+
+    private short bitUnzip (short a)
     {
         short x = 0;
         for (int s = 0; s < 16; s++)
@@ -68,78 +112,14 @@ public final class FunctionsTesting extends Functions
         return x;
     }
 
-    public Wave16 zip()
-    {
-        Wave16 out = m_base.createEmptyCopy();
-        for (int s = 0; s < m_base.data.length; s++)
-        {
-            out.data[s] = bitZip((short) m_base.data[s]);
-        }
-        return out;
-    }
-
-    public Wave16 unzip()
-    {
-        Wave16 out = m_base.createEmptyCopy();
-        for (int s = 0; s < m_base.data.length; s++)
-        {
-            out.data[s] = bitUnzip((short) m_base.data[s]);
-        }
-        return out;
-    }
-
     /////////////////////////////////////////////////////////////////////////////
-    public Wave16 addX()
+    public Wave16 addX ()
     {
         Wave16 out = m_base.createEmptyCopy();
         double step = (Wave16.MAX_VALUE - Wave16.MIN_VALUE) / m_base.data.length;
         for (int s = 0; s < m_base.data.length; s++)
         {
             out.data[s] = m_base.data[s] + (s * step);
-        }
-        out.data = Tools.fitValues(out.data);
-        return out;
-    }
-
-    public Wave16 subX()
-    {
-        Wave16 out = m_base.createEmptyCopy();
-        double step = (Wave16.MAX_VALUE - Wave16.MIN_VALUE) / m_base.data.length;
-        for (int s = 0; s < m_base.data.length; s++)
-        {
-            out.data[s] = m_base.data[s] - (s * step);
-        }
-        out.data = Tools.fitValues(out.data);
-        return out;
-    }
-
-    /**
-     * Multiplies samples with x-value
-     *
-     * @return The new sample array
-     */
-    public Wave16 multX()
-    {
-        Wave16 out = m_base.createEmptyCopy();
-        for (int s = 0; s < m_base.data.length; s++)
-        {
-            out.data[s] = m_base.data[s] * (s + 1);
-        }
-        out.data = Tools.fitValues(out.data);
-        return out;
-    }
-
-    /**
-     * Divides samples by x-value
-     *
-     * @return The new sample array
-     */
-    public Wave16 divX()
-    {
-        Wave16 out = m_base.createEmptyCopy();
-        for (int s = 0; s < m_base.data.length; s++)
-        {
-            out.data[s] = m_base.data[s] / (s + 1);
         }
         out.data = Tools.fitValues(out.data);
         return out;
@@ -201,13 +181,77 @@ public final class FunctionsTesting extends Functions
 //        return out;
 //    }
     ////////////////////////////////////////////////////////////////////////////////////
+
+    public Wave16 subX ()
+    {
+        Wave16 out = m_base.createEmptyCopy();
+        double step = (Wave16.MAX_VALUE - Wave16.MIN_VALUE) / m_base.data.length;
+        for (int s = 0; s < m_base.data.length; s++)
+        {
+            out.data[s] = m_base.data[s] - (s * step);
+        }
+        out.data = Tools.fitValues(out.data);
+        return out;
+    }
+
+    /**
+     * Multiplies samples with x-value
+     *
+     * @return The new sample array
+     */
+    public Wave16 multX ()
+    {
+        Wave16 out = m_base.createEmptyCopy();
+        for (int s = 0; s < m_base.data.length; s++)
+        {
+            out.data[s] = m_base.data[s] * (s + 1);
+        }
+        out.data = Tools.fitValues(out.data);
+        return out;
+    }
+
+    /**
+     * Divides samples by x-value
+     *
+     * @return The new sample array
+     */
+    public Wave16 divX ()
+    {
+        Wave16 out = m_base.createEmptyCopy();
+        for (int s = 0; s < m_base.data.length; s++)
+        {
+            out.data[s] = m_base.data[s] / (s + 1);
+        }
+        out.data = Tools.fitValues(out.data);
+        return out;
+    }
+
+    /**
+     * Calculates sum of 'best' divisors that is, both integer divisors which
+     * are nearest to the square root
+     *
+     * @return A new wave
+     */
+    public Wave16 bestDivisorsSum ()
+    {
+        Wave16 out = m_base.createEmptyCopy();
+        for (int s = 0; s < m_base.data.length; s++)
+        {
+            double sign = Math.signum(m_base.data[s]);
+            long[] d = bestTwoDivisors((long) Math.abs(m_base.data[s]));
+            out.data[s] = (d[0] + d[1]) * sign;
+        }
+        out.data = Tools.fitValues(out.data);
+        return out;
+    }
+
     /**
      * Returns list of best two divisors
      *
      * @param x Input value
      * @return Array of two elements
      */
-    private long[] bestTwoDivisors(long x)
+    private long[] bestTwoDivisors (long x)
     {
         long[] out = new long[2];
         long sqr = (long) Math.sqrt(x);
@@ -224,20 +268,14 @@ public final class FunctionsTesting extends Functions
         return out;
     }
 
-    /**
-     * Calculates sum of 'best' divisors that is, both integer divisors which
-     * are nearest to the square root
-     *
-     * @return A new wave
-     */
-    public Wave16 bestDivisorsSum()
+    public Wave16 fieldFunction (@ParamDesc("Field Base") double base)
     {
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
         {
             double sign = Math.signum(m_base.data[s]);
-            long[] d = bestTwoDivisors((long) Math.abs(m_base.data[s]));
-            out.data[s] = (d[0] + d[1]) * sign;
+            double v = myfield((long) Math.abs(m_base.data[s]), base);
+            out.data[s] = v * sign;
         }
         out.data = Tools.fitValues(out.data);
         return out;
@@ -245,7 +283,7 @@ public final class FunctionsTesting extends Functions
 
     ////////////////////////////////////////////////////////////////////////////////////
     // Field helper function
-    private double myfield(long x, double base)
+    private double myfield (long x, double base)
     {
         double mult = 1.0;
         double out = 0;
@@ -261,60 +299,7 @@ public final class FunctionsTesting extends Functions
         return out;
     }
 
-    // QSum helper function
-    private int qSum(int v, int mod)
-    {
-        int sum = 0;
-        while (v != 0)
-        {
-            sum = sum + (v % mod);
-            v = v / mod;
-        }
-        return sum;
-    }
-
-    private int qSumSum(int v, int max)
-    {
-        int sum = 0;
-        for (int s = 2; s <= max; s++)
-        {
-            sum = sum + qSum(v, s);
-        }
-        return sum;
-    }
-
-    private int qSumMult(int v, int max)
-    {
-        int sum = qSum(v, 2);
-        for (int s = 3; s <= max; s++)
-        {
-            sum = sum * qSum(v, s);
-        }
-        return sum;
-    }
-
-    public Wave16 fieldFunction(@ParamDesc("Field Base") double base)
-    {
-        Wave16 out = m_base.createEmptyCopy();
-        for (int s = 0; s < m_base.data.length; s++)
-        {
-            double sign = Math.signum(m_base.data[s]);
-            double v = myfield((long) Math.abs(m_base.data[s]), base);
-            out.data[s] = v * sign;
-        }
-        out.data = Tools.fitValues(out.data);
-        return out;
-    }
-
-    public Wave16 toPositiveByteRange()
-    {
-        Wave16 out = new Wave16();
-        out.samplingRate = m_base.samplingRate;
-        out.data = Tools.fitValuesToPositiveByteRange(m_base.data);
-        return out;
-    }
-
-    public Wave16 toByteRange()
+    public Wave16 toByteRange ()
     {
         Wave16 out = new Wave16();
         out.samplingRate = m_base.samplingRate;
@@ -322,7 +307,7 @@ public final class FunctionsTesting extends Functions
         return out;
     }
 
-    public Wave16 galoisMult(@ParamDesc("Positive value 1...255") int mult)
+    public Wave16 galoisMult (@ParamDesc("Positive value 1...255") int mult)
     {
         Wave16 w = toPositiveByteRange();
         GaloisField256 gf = new GaloisField256();
@@ -334,7 +319,15 @@ public final class FunctionsTesting extends Functions
         return w;
     }
 
-    public Wave16 galoisDiv(@ParamDesc("Positive value 1...255") int mult)
+    public Wave16 toPositiveByteRange ()
+    {
+        Wave16 out = new Wave16();
+        out.samplingRate = m_base.samplingRate;
+        out.data = Tools.fitValuesToPositiveByteRange(m_base.data);
+        return out;
+    }
+
+    public Wave16 galoisDiv (@ParamDesc("Positive value 1...255") int mult)
     {
         Wave16 w = toPositiveByteRange();
         GaloisField256 gf = new GaloisField256();
@@ -346,7 +339,7 @@ public final class FunctionsTesting extends Functions
         return w;
     }
 
-    public Wave16 digitSum(@ParamDesc("Base of numbering system") int mod)
+    public Wave16 digitSum (@ParamDesc("Base of numbering system") int mod)
     {
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
@@ -358,7 +351,19 @@ public final class FunctionsTesting extends Functions
         return out;
     }
 
-    public Wave16 digitSumSum(@ParamDesc("2...Last base") int max)
+    // QSum helper function
+    private int qSum (int v, int mod)
+    {
+        int sum = 0;
+        while (v != 0)
+        {
+            sum = sum + (v % mod);
+            v = v / mod;
+        }
+        return sum;
+    }
+
+    public Wave16 digitSumSum (@ParamDesc("2...Last base") int max)
     {
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
@@ -370,7 +375,17 @@ public final class FunctionsTesting extends Functions
         return out;
     }
 
-    public Wave16 digitSumMult(@ParamDesc("2...Last base") int max)
+    private int qSumSum (int v, int max)
+    {
+        int sum = 0;
+        for (int s = 2; s <= max; s++)
+        {
+            sum = sum + qSum(v, s);
+        }
+        return sum;
+    }
+
+    public Wave16 digitSumMult (@ParamDesc("2...Last base") int max)
     {
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
@@ -382,7 +397,17 @@ public final class FunctionsTesting extends Functions
         return out;
     }
 
-    public Wave16 pythagoras()
+    private int qSumMult (int v, int max)
+    {
+        int sum = qSum(v, 2);
+        for (int s = 3; s <= max; s++)
+        {
+            sum = sum * qSum(v, s);
+        }
+        return sum;
+    }
+
+    public Wave16 pythagoras ()
     {
         Wave16 out = new Wave16(m_base.data.length - 1, m_base.samplingRate);
         for (int s = 1; s < m_base.data.length; s++)
@@ -395,7 +420,7 @@ public final class FunctionsTesting extends Functions
     }
 
     // Works like FFT
-    public Wave16 dftImaginary() throws Exception
+    public Wave16 dftImaginary () throws Exception
     {
         if (m_base.data.length > 20000)
         {
@@ -414,7 +439,7 @@ public final class FunctionsTesting extends Functions
     }
 
     // Works like FFT
-    public Wave16 dftReal() throws Exception
+    public Wave16 dftReal () throws Exception
     {
         if (m_base.data.length > 20000)
         {
@@ -432,7 +457,7 @@ public final class FunctionsTesting extends Functions
         return out;
     }
 
-    public Wave16 aaMatrixEigenVectors()
+    public Wave16 aaMatrixEigenVectors ()
     {
         double[][] mat = m_base.createQuaraticMatrix();
         DMatrix dm = new DMatrix(mat);
@@ -442,7 +467,7 @@ public final class FunctionsTesting extends Functions
         return wv;
     }
 
-    public Wave16 aaMatrixBlockDiagonalEigenValues()
+    public Wave16 aaMatrixBlockDiagonalEigenValues ()
     {
         double[][] mat = m_base.createQuaraticMatrix();
         DMatrix dm = new DMatrix(mat);
@@ -452,7 +477,7 @@ public final class FunctionsTesting extends Functions
         return wv;
     }
 
-    public Wave16 aaMatrixLud_U()
+    public Wave16 aaMatrixLud_U ()
     {
         double[][] mat = m_base.createQuaraticMatrix();
         DMatrix dm = new DMatrix(mat);
@@ -462,7 +487,7 @@ public final class FunctionsTesting extends Functions
         return wv;
     }
 
-    public Wave16 aaMatrixLud_L()
+    public Wave16 aaMatrixLud_L ()
     {
         double[][] mat = m_base.createQuaraticMatrix();
         DMatrix dm = new DMatrix(mat);
@@ -472,7 +497,7 @@ public final class FunctionsTesting extends Functions
         return wv;
     }
 
-    public Wave16 aaMatrixQrd_Q()
+    public Wave16 aaMatrixQrd_Q ()
     {
         double[][] mat = m_base.createQuaraticMatrix();
         DMatrix dm = new DMatrix(mat);
@@ -482,7 +507,7 @@ public final class FunctionsTesting extends Functions
         return wv;
     }
 
-    public Wave16 aaMatrixQrd_R()
+    public Wave16 aaMatrixQrd_R ()
     {
         double[][] mat = m_base.createQuaraticMatrix();
         DMatrix dm = new DMatrix(mat);
@@ -492,7 +517,7 @@ public final class FunctionsTesting extends Functions
         return wv;
     }
 
-    public Wave16 aaTestTransform(@ParamDesc("Length of partitions") int step) // Test !!!
+    public Wave16 aaTestTransform (@ParamDesc("Length of partitions") int step) // Test !!!
     {
         Wave16[] arr = m_base.functionsSpecialEffects.partitionize(step);
         for (int s = 0; s < arr.length; s++)
@@ -522,7 +547,7 @@ public final class FunctionsTesting extends Functions
         return Wave16.combineAppend(arr);
     }
 
-    public Wave16 aaInverseTestTransform(@ParamDesc("Length of partitions") int step) // Test !!!
+    public Wave16 aaInverseTestTransform (@ParamDesc("Length of partitions") int step) // Test !!!
     {
         Wave16[] arr = m_base.functionsSpecialEffects.partitionize(step);
         Wave16[] at = new Wave16[arr.length];
@@ -547,7 +572,7 @@ public final class FunctionsTesting extends Functions
         return Wave16.combineAppend(at);
     }
 
-    public Wave16 aalog()
+    public Wave16 aalog ()
     {
         Wave16 out = m_base.functionsMathematical.normalize();
         for (int s = 0; s < m_base.data.length; s++)
@@ -562,7 +587,7 @@ public final class FunctionsTesting extends Functions
         return out;
     }
 
-    public Wave16 aaexp()
+    public Wave16 aaexp ()
     {
         Wave16 out = m_base.functionsMathematical.normalize();
         for (int s = 0; s < m_base.data.length; s++)
@@ -576,7 +601,17 @@ public final class FunctionsTesting extends Functions
         return out;
     }
 
-    private double[] aaReorder(double[] in)
+    public Wave16 aaReorder (@ParamDesc("Number of reordering steps") int num)
+    {
+        double[] out = m_base.data.clone();
+        for (int s = 0; s < num; s++)
+        {
+            out = aaReorder(out);
+        }
+        return new Wave16(out, m_base.samplingRate);
+    }
+
+    private double[] aaReorder (double[] in)
     {
         double[] out = new double[in.length];
         int half = in.length / 2;
@@ -589,17 +624,7 @@ public final class FunctionsTesting extends Functions
         return out;
     }
 
-    public Wave16 aaReorder(@ParamDesc("Number of reordering steps") int num)
-    {
-        double[] out = m_base.data.clone();
-        for (int s = 0; s < num; s++)
-        {
-            out = aaReorder(out);
-        }
-        return new Wave16(out, m_base.samplingRate);
-    }
-
-    public Wave16 aa3NPlus1()
+    public Wave16 aa3NPlus1 ()
     {
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
@@ -608,7 +633,7 @@ public final class FunctionsTesting extends Functions
             int sh = (short) Math.abs(m_base.data[s]);
             if ((sh & 1) == 1)
             {
-                out.data[s] = (3 * (double)sh + 1) / 2;
+                out.data[s] = (3 * (double) sh + 1) / 2;
             }
             else
             {
@@ -620,23 +645,153 @@ public final class FunctionsTesting extends Functions
         return out;
     }
 
+    /*
+     public static void testHenon ()
+     {
+     Henon h = new Henon();
+     h.make(100);
+     }
+     */
+    public Wave16 HenonMusic (@ParamDesc("notes") int num)
+    {
+        MathMusic h = new MathMusic();
+        return h.makeHenon(num);
+    }
+
+    public Wave16 MandelMusic (@ParamDesc("notes") int num)
+    {
+        MathMusic h = new MathMusic();
+        return h.makeMandel(num);
+    }
+
+    public Wave16 lindenMayer (@ParamDesc("Axiom") String axiom,
+                               @ParamDesc("Angle") double angle,
+                               @ParamDesc("Stepsize") double stepsize,
+                               @ParamDesc("Rules") String rule1,
+                               @ParamDesc("Rules") String rule2,
+                               @ParamDesc("Rules") String rule3,
+                               @ParamDesc("Rules") String rule4,
+                               @ParamDesc("Recursions") int recursions,
+                               @ParamDesc("Final Rules") String endrule) throws Exception
+    {
+        RuleManager rule = new RuleManager();
+        fixangle = angle;
+        fixstep = stepsize;
+        rule.setAxiom(axiom);
+        rule.setRule(rule1, 1.0);
+        rule.setRule(rule2, 1.0);
+        rule.setRule(rule3, 1.0);
+        rule.setRule(rule4, 1.0);
+        rule.setRecursions(recursions);
+        rule.setFinalRule(endrule, 1.0);
+        String s = rule.getResult();
+        WaveArray warr = new WaveArray();
+        drawTurtleSteps(s, warr);
+        System.out.println(s);
+        return warr.getAll();
+    }
+
+    private int applyScaling (int in, int sc)
+    {
+        if (sc < 0)
+        {
+            return in / -sc;
+        }
+        else
+        {
+            return in * sc;
+        }
+    }
+
+    private Point newPoint (Point in, double distance, double angle, Point mult, int reverse)
+    {
+        Point n = new Point();
+        angle *= DEGFACTOR;
+        n.x = in.x + reverse * applyScaling((int) (distance * Math.cos(angle)), mult.x);
+        n.y = in.y + reverse * applyScaling((int) (distance * Math.sin(angle)), mult.y);
+        return n;
+    }
+
+    private void doDraw (WaveArray out, Point pos, double angle,
+                         Point mult, double distance, char cmd)
+    {
+        Point p = newPoint(pos, distance, angle, mult, cmd == 'F' ? 1 : -1);
+
+        out.newWave(p);
+
+        pos.x = p.x;
+        pos.y = p.y;
+    }
+
+    void drawTurtleSteps (String in, WaveArray out)
+    {
+        Point currentTurtlePosition = new Point(1000, 1000);
+        Point multiplicator = new Point(1, 1);
+        int pensize = 0;
+        double currentAngle = -90.0;
+        Stack<StackElement> stack = new Stack<>();
+        for (int s = 0; s < in.length(); s++)
+        {
+            char c = in.charAt(s);
+            switch (c)
+            {
+                case '/':
+                    fixstep /= 2;
+                    if (fixstep < 1)
+                    {
+                        fixstep = 1;
+                    }
+                    break;
+
+                case '*':
+                    fixstep *= 2;
+                    break;
+
+                case '[':
+                    stack.push(new StackElement(currentAngle, currentTurtlePosition));
+                    break;
+
+                case ']':
+                    StackElement e = stack.pop();
+                    currentAngle = e.getAngle();
+                    currentTurtlePosition = e.getPoint();
+                    break;
+
+                case 'F':
+                case 'R':
+                    doDraw(out, currentTurtlePosition, currentAngle, multiplicator, fixstep, c);
+                    break;
+
+                case 'f':
+                case 'r':
+                    currentTurtlePosition = newPoint(currentTurtlePosition, fixstep, currentAngle, multiplicator, c == 'f' ? 1 : -1);
+                    break;
+
+                case '+':
+                    currentAngle -= fixangle % 360;
+                    break;
+
+                case '-':
+                    currentAngle += fixangle % 360;
+                    break;
+            }
+        }
+    }
+
     static class MathMusic
     {
         static final double A = 1.4;      //Default value for a in Henon equations
         static final double B = 0.3;      //Default value for b in Henon equations
         static final double X_MAX = 2.0;  //Max value for X, used for normalizing values
         static final double Y_MAX = 0.5;  //Analogous to X_MAX
-
-        protected final int[] minorScale =
-        {
-            440, 470, 496, 528, 564, 634, 660, 704, 760, 792, 844, 880, 939, 1056, 1276
-        };
-
         static final int SAMPLERATE = 22000;
-
+        protected final int[] minorScale =
+                {
+                        440, 470, 496, 528, 564, 634, 660, 704, 760, 792, 844, 880, 939, 1056, 1276
+                };
         Wave16 pause = FunctionsGenerators.constant(SAMPLERATE, 200, 0);
 
-        public Wave16 makeMandel(int notes)
+        public Wave16 makeMandel (int notes)
         {
             Random r = new Random(System.currentTimeMillis());
             Complex c, z, zold;
@@ -688,12 +843,12 @@ public final class FunctionsTesting extends Functions
             return ret;
         }
 
-        private double modulus(Complex c)
+        private double modulus (Complex c)
         {
             return Math.sqrt(c.re * c.re + c.im * c.im);
         }
 
-        public Wave16 makeHenon(int notes)
+        public Wave16 makeHenon (int notes)
         {
             double x = Math.random(); //0.0;
             double y = Math.random(); //0.0;
@@ -732,52 +887,6 @@ public final class FunctionsTesting extends Functions
         }
     }
 
-    /*
-     public static void testHenon ()
-     {
-     Henon h = new Henon();
-     h.make(100);
-     }
-     */
-    public Wave16 HenonMusic(@ParamDesc("notes") int num)
-    {
-        MathMusic h = new MathMusic();
-        return h.makeHenon(num);
-    }
-
-    public Wave16 MandelMusic(@ParamDesc("notes") int num)
-    {
-        MathMusic h = new MathMusic();
-        return h.makeMandel(num);
-    }
-
-    public Wave16 lindenMayer(@ParamDesc("Axiom") String axiom,
-            @ParamDesc("Angle") double angle,
-            @ParamDesc("Stepsize") double stepsize,
-            @ParamDesc("Rules") String rule1,
-            @ParamDesc("Rules") String rule2,
-            @ParamDesc("Rules") String rule3,
-            @ParamDesc("Rules") String rule4,
-            @ParamDesc("Recursions") int recursions,
-            @ParamDesc("Final Rules") String endrule) throws Exception
-    {
-        RuleManager rule = new RuleManager();
-        fixangle = angle;
-        fixstep = stepsize;
-        rule.setAxiom(axiom);
-        rule.setRule(rule1, 1.0);
-        rule.setRule(rule2, 1.0);
-        rule.setRule(rule3, 1.0);
-        rule.setRule(rule4, 1.0);
-        rule.setRecursions(recursions);
-        rule.setFinalRule(endrule, 1.0);
-        String s = rule.getResult();
-        WaveArray warr = new WaveArray();
-        drawTurtleSteps(s, warr);
-        System.out.println(s);
-        return warr.getAll();
-    }
-
     static class StackElement
     {
         private final double angle;
@@ -789,7 +898,7 @@ public final class FunctionsTesting extends Functions
          * @param d The angle
          * @param p The point
          */
-        public StackElement(double d, Point p)
+        public StackElement (double d, Point p)
         {
             angle = d;
             point = new Point(p);
@@ -800,7 +909,7 @@ public final class FunctionsTesting extends Functions
          *
          * @return the angle
          */
-        public double getAngle()
+        public double getAngle ()
         {
             return angle;
         }
@@ -810,39 +919,25 @@ public final class FunctionsTesting extends Functions
          *
          * @return the Point
          */
-        public Point getPoint()
+        public Point getPoint ()
         {
             return point;
         }
     }
 
-    static final double DEGFACTOR = (2 * Math.PI) / 360.0;
-
-    private int applyScaling(int in, int sc)
-    {
-        if (sc < 0)
-        {
-            return in / -sc;
-        }
-        else
-        {
-            return in * sc;
-        }
-    }
-
     static class WaveArray
     {
-        final ArrayList<Wave16> waves = new ArrayList<>();
         static final int SAMPLERATE = 22000;
+        final ArrayList<Wave16> waves = new ArrayList<>();
 
-        void newWave(Point p)
+        void newWave (Point p)
         {
             Wave16 w = FunctionsGenerators.curveSine(SAMPLERATE, SAMPLERATE / 4, (double) p.x, (double) p.y);
             System.out.println("add");
             waves.add(w);
         }
 
-        Wave16 getAll()
+        Wave16 getAll ()
         {
             Wave16 wres = new Wave16(0, SAMPLERATE);
             for (Wave16 wave : waves)
@@ -850,83 +945,6 @@ public final class FunctionsTesting extends Functions
                 wres = Wave16.combineAppend(wres, wave);
             }
             return wres;
-        }
-    }
-
-    private Point newPoint(Point in, double distance, double angle, Point mult, int reverse)
-    {
-        Point n = new Point();
-        angle *= DEGFACTOR;
-        n.x = in.x + reverse * applyScaling((int) (distance * Math.cos(angle)), mult.x);
-        n.y = in.y + reverse * applyScaling((int) (distance * Math.sin(angle)), mult.y);
-        return n;
-    }
-
-    private void doDraw(WaveArray out, Point pos, double angle,
-                        Point mult, double distance, char cmd)
-    {
-        Point p = newPoint(pos, distance, angle, mult, cmd == 'F' ? 1 : -1);
-
-        out.newWave(p);
-
-        pos.x = p.x;
-        pos.y = p.y;
-    }
-
-    double fixangle = 90.0;
-    double fixstep = 10.0;
-
-    void drawTurtleSteps(String in, WaveArray out) {
-        Point currentTurtlePosition = new Point(1000, 1000);
-        Point multiplicator = new Point(1, 1);
-        int pensize = 0;
-        double currentAngle = -90.0;
-        Stack<StackElement> stack = new Stack<>();
-        for (int s = 0; s < in.length(); s++)
-        {
-            char c = in.charAt(s);
-            switch (c)
-            {
-                case '/':
-                    fixstep /= 2;
-                    if (fixstep < 1)
-                    {
-                        fixstep = 1;
-                    }
-                    break;
-
-                case '*':
-                    fixstep *= 2;
-                    break;
-
-                case '[':
-                    stack.push(new StackElement(currentAngle, currentTurtlePosition));
-                    break;
-
-                case ']':
-                    StackElement e = stack.pop();
-                    currentAngle = e.getAngle();
-                    currentTurtlePosition = e.getPoint();
-                    break;
-
-                case 'F':
-                case 'R':
-                    doDraw(out, currentTurtlePosition, currentAngle, multiplicator, fixstep, c);
-                    break;
-
-                case 'f':
-                case 'r':
-                    currentTurtlePosition = newPoint(currentTurtlePosition, fixstep, currentAngle, multiplicator, c == 'f' ? 1 : -1);
-                    break;
-
-                case '+':
-                    currentAngle -= fixangle % 360;
-                    break;
-
-                case '-':
-                    currentAngle += fixangle % 360;
-                    break;
-            }
         }
     }
 

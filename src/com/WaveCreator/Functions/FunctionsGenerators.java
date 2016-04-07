@@ -24,11 +24,65 @@ public final class FunctionsGenerators extends Functions
         return m_base.copy();
     }
 
+    private static int maxKey, key, range;
+    private static float whiteValues[];
+    private static float maxSumEver;
+
+    private static void initPink()
+    {
+        maxKey = 0x1f;
+        range = 128;
+        maxSumEver = 90;
+        key = 0;
+        whiteValues = new float[6];
+        for (int i = 0; i < 6; i++)
+            whiteValues[i] = ((float) Math.random() * Long.MAX_VALUE) % (range / 6);
+    }
+
+    // return a pink noise value
+    private static float pink()
+    {
+        int last_key = key;
+        float sum;
+
+        key++;
+        if (key > maxKey) key = 0;
+        // Exclusive-Or previous value with current value. This gives
+        // a list of bits that have changed.
+        int diff = last_key ^ key;
+        sum = 0;
+        for (int i = 0; i < 6; i++)
+        {
+            // If bit changed get new random number for corresponding
+            // white_value
+            if ((diff & (1 << i)) != 0)
+            {
+                whiteValues[i] = ((float) Math.random() * Long.MAX_VALUE) % (range / 6);
+            }
+            sum += whiteValues[i];
+        }
+        if (sum > maxSumEver) maxSumEver = sum;
+        sum = 2f * (sum / maxSumEver) - 1f;
+        return sum;
+    }
+
+    static public Wave16 pinkNoise (@ParamDesc("Sampling rate") int samplingrate,
+                                    @ParamDesc("Number of samples") int samples)
+    {
+        initPink();
+        Wave16 t = new Wave16(samples, samplingrate);
+        for (int s=0; s<t.data.length; s++)
+        {
+            t.data[s] = pink();
+        }
+        t.data = Tools.fitValues(t.data);
+        return t;
+    }
+
     static public Wave16 dtmf (@ParamDesc("Phone number")String numbers)
     {
         return new DTMF(10000, 1500).dtmfFromString(numbers);
     }
-
 
     static public Wave16 fromString (@ParamDesc("String used as values") String str,
                               @ParamDesc("Sampling rate") int rate)
@@ -79,6 +133,14 @@ public final class FunctionsGenerators extends Functions
         {
             out.data[s] = array[s];
         }
+        return out;
+    }
+
+    static public Wave16 fromDoubleArray(@ParamDesc("Array of values")double[] array,
+                                        @ParamDesc("Sampling rate") int rate)
+    {
+        Wave16 out = new Wave16(array.length, rate);
+        out.data = array;
         return out;
     }
 
@@ -204,7 +266,7 @@ public final class FunctionsGenerators extends Functions
             double f = 0;
             for (int aFreq : freq)
             {
-                f = f + (Wave16.MAX_VALUE * Math.signum(Math.sin(2 * x * Wave16.PI / samplingrate * aFreq)));
+                f = f + (Wave16.MAX_VALUE * Math.signum(Math.sin(x * Wave16.TWOPI / samplingrate * aFreq)));
             }
             out.data[x] = f / freq.length;
         }
@@ -244,7 +306,7 @@ public final class FunctionsGenerators extends Functions
         double fact = fstart < fend ? fstart : fend;
         for (int x = 0; x < samples; x++)
         {
-            out.data[x] = Wave16.MAX_VALUE * Math.sin(2 * Wave16.PI * fact * ((double) x / samplingrate));
+            out.data[x] = Wave16.MAX_VALUE * Math.sin(Wave16.TWOPI * fact * ((double) x / samplingrate));
             fact += step;
         }
         if (fstart < fend)
@@ -272,7 +334,7 @@ public final class FunctionsGenerators extends Functions
         double fact = fstart < fend ? fstart : fend;
         for (int x = 0; x < samples; x++)
         {
-            double c1 = Math.sin(2 * Wave16.PI * fact * ((double) x / samplingrate));
+            double c1 = Math.sin(Wave16.TWOPI * fact * ((double) x / samplingrate));
             out.data[x] = Wave16.MAX_VALUE * Math.asin(c1) / Math.asin(1);
             fact += step;
         }
@@ -301,7 +363,7 @@ public final class FunctionsGenerators extends Functions
         double fact = fstart < fend ? fstart : fend;
         for (int x = 0; x < samples; x++)
         {
-            out.data[x] = Wave16.MAX_VALUE * Math.signum(Math.sin(2 * Wave16.PI * fact * ((double) x / samplingrate)));
+            out.data[x] = Wave16.MAX_VALUE * Math.signum(Math.sin(Wave16.TWOPI * fact * ((double) x / samplingrate)));
             fact += step;
         }
         if (fstart < fend)
@@ -452,7 +514,7 @@ public final class FunctionsGenerators extends Functions
             double f = 0;
             for (double aFreq : freq)
             {
-                f = f + (Wave16.MAX_VALUE * Math.sin(2 * x * Wave16.PI / samplingrate * aFreq));
+                f = f + (Wave16.MAX_VALUE * Math.sin(x * Wave16.TWOPI / samplingrate * aFreq));
             }
             out.data[x] = f / freq.length;
         }
@@ -541,7 +603,7 @@ public final class FunctionsGenerators extends Functions
             double f = 0;
             for (int aFreq : freq)
             {
-                double c1 = Math.sin(2 * x * Wave16.PI / samplingrate * aFreq);
+                double c1 = Math.sin(x * Wave16.TWOPI / samplingrate * aFreq);
                 f = f + (Wave16.MAX_VALUE * Math.asin(c1) / Math.asin(1));
             }
             out.data[x] = f / freq.length;

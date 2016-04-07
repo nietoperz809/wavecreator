@@ -22,6 +22,7 @@ public class Wave16 implements Serializable
      * Circle constant PI
      */
     public static final double PI = Math.PI;
+    public static final double TWOPI = 2*Math.PI;
     /**
      *
      */
