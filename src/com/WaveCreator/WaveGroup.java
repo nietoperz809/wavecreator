@@ -2,6 +2,7 @@ package com.WaveCreator;
 
 import com.WaveCreator.IO.Wave16IO;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,11 +39,12 @@ public class WaveGroup
             Files.copy (in, temp, StandardCopyOption.REPLACE_EXISTING);
             Wave16 wv;
             if (name.endsWith("ogg"))
-                wv = Wave16IO.loadOgg(temp.toFile());
+                wv = Wave16IO.loadOgg (new FileInputStream(temp.toFile()));
             else
                 wv = Wave16IO.loadWave(temp.toFile());
             temp.toFile().delete();
             _waves.add(wv);
+            System.out.println(_waves.size());
         }
     }
 
@@ -53,9 +55,9 @@ public class WaveGroup
      */
     public static void main (String[] args) throws Exception
     {
-        WaveGroup wv = new WaveGroup ("bassloopes");
+        WaveGroup wv = new WaveGroup ("drums");
         Wave16[] waves = wv.getWaves();
-        System.exit(1);
+        //System.exit(1);
         for (Wave16 w : waves)
         {
             FrameManager.getInstance().createFrame(w, "?");

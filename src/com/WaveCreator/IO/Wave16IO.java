@@ -2,18 +2,11 @@ package com.WaveCreator.IO;
 
 import com.WaveCreator.Tools;
 import com.WaveCreator.Wave16;
-import de.jarnbjo.ogg.FileStream;
-import de.jarnbjo.ogg.LogicalOggStream;
-import de.jarnbjo.ogg.PhysicalOggStream;
-import de.jarnbjo.vorbis.VorbisStream;
+import com.jcraft.jorbis.OggDecoder;
 
 import javax.imageio.stream.FileImageInputStream;
 import javax.imageio.stream.FileImageOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.RandomAccessFile;
-import java.util.Arrays;
+import java.io.*;
 
 import static com.WaveCreator.Functions.FunctionsGenerators.fromDoubleArray;
 
@@ -104,7 +97,6 @@ public class Wave16IO
         /**
          * Loads Wave16 from wav ile
          *
-         * @param filename file path
          * @return The loaded Wave16 object
          * @throws Exception if anything's gone wrong
          */
@@ -132,60 +124,24 @@ public class Wave16IO
     public static Wave16 loadOgg (String filename) throws Exception
     {
         File f = new File(filename);
-        return loadOgg(f);
+        return loadOgg(new FileInputStream(f));
     }
 
-    public synchronized static Wave16 loadOgg (File file) throws Exception
+    public synchronized static Wave16 loadOgg (InputStream in) throws Exception
     {
-        // open the file args[0] for reading and initialize an Ogg stream
-        PhysicalOggStream os = new FileStream(new RandomAccessFile(file, "r"));
-
-        // get the first logical Ogg stream from the file
-        LogicalOggStream los = (LogicalOggStream) os.getLogicalStreams().iterator().next();
-
-        // exit, if it is not a Vorbis stream
-        if (los.getFormat() != LogicalOggStream.FORMAT_VORBIS)
-        {
-            throw new Exception("not Ogg Vorbis file");
-        }
-
-        final VorbisStream vs = new VorbisStream(los);
-        //int channels = vs.getIdentificationHeader().getChannels();
-        int sampleRate = vs.getIdentificationHeader().getSampleRate();
-
-        // allocate a buffer for data
-        final byte[] tmpbuff = new byte[16384];
-
-        int len = 0;
-        byte[] allbytes = new byte[len];
-
+        ByteArrayOutputStream out = new ByteArrayOutputStream(65536);
+        OggDecoder dec = new OggDecoder();
         try
         {
-            // read pcm data from the vorbis channel and
-            // write the data to the wav file
-            while (true)
-            {
-                System.out.println("in "+file.getName());
-                System.out.println("out "+file.getName());
-                int read = vs.readPcm(tmpbuff, 0, tmpbuff.length);
-                for (int i = 0; i < read; i += 2)
-                {
-                    // swap from big endian to little endian
-                    byte tB = tmpbuff[i];
-                    tmpbuff[i] = tmpbuff[i + 1];
-                    tmpbuff[i + 1] = tB;
-                }
-                int oldlen = len;
-                len += read;
-                allbytes = Arrays.copyOf(allbytes, len);
-                System.arraycopy(tmpbuff, 0, allbytes, oldlen, read);
-            }
+            dec.decode(in, out);
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            Wave16 wv = new Wave16(allbytes, sampleRate, allbytes.length);
-            return wv;
+            return null;
         }
+        byte[] arr = out.toByteArray();
+        Wave16 wv = new Wave16 (arr, dec.getSampleRate(), arr.length);
+        return wv;
     }
 }
 
