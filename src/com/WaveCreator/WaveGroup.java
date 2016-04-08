@@ -1,20 +1,12 @@
 package com.WaveCreator;
 
 import com.WaveCreator.IO.Wave16IO;
-import de.jarnbjo.ogg.FileStream;
-import de.jarnbjo.ogg.LogicalOggStream;
-import de.jarnbjo.ogg.PhysicalOggStream;
-import de.jarnbjo.vorbis.VorbisStream;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Created by Administrator on 4/7/2016.
