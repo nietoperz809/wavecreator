@@ -2,6 +2,8 @@ package com.WaveCreator;
 
 //import com.google.common.math.LongMath;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -17,13 +19,39 @@ public class Tools
 {
 
     /**
+     * @param in
+     * @return
+     */
+    public static long lcm (long[] in)
+    {
+        if (in.length == 1)
+        {
+            return in[0];
+        }
+        long res = lcm(in[0], in[1]);
+        if (in.length > 2)
+        {
+            for (int s = 2; s < in.length; s++)
+            {
+                res = lcm(res, in[s]);
+            }
+        }
+        return res;
+    }
+
+    public static long lcm (long a, long b)
+    {
+        return a * b / gcd(a, b);
+    }
+
+    /**
      * Computes the GCD of a and b
      *
      * @param a Input a
      * @param b Input b
      * @return The GCD
      */
-    public static long gcd(long a, long b)
+    public static long gcd (long a, long b)
     {
         // a must be > b
         if (a <= b)
@@ -41,33 +69,6 @@ public class Tools
         return a;
     }
 
-    public static long lcm(long a, long b)
-    {
-        return a * b / gcd(a, b);
-    }
-
-    /**
-     *
-     * @param in
-     * @return
-     */
-    public static long lcm(long[] in)
-    {
-        if (in.length == 1)
-        {
-            return in[0];
-        }
-        long res = lcm(in[0], in[1]);
-        if (in.length > 2)
-        {
-            for (int s = 2; s < in.length; s++)
-            {
-                res = lcm(res, in[s]);
-            }
-        }
-        return res;
-    }
-
     /**
      * Calculates next 2's power of input value Thus, 127 gives 128, 128 gives
      * 128 and 129 gives 256
@@ -75,17 +76,17 @@ public class Tools
      * @param in The input value
      * @return The 2's power
      */
-    public static int nextPowerOfTwo(int in)
+    public static int nextPowerOfTwo (int in)
     {
-        return (int) Math.pow(2.0, Math.ceil(Math.log(in) / Math.log(2.0))); 
+        return (int) Math.pow(2.0, Math.ceil(Math.log(in) / Math.log(2.0)));
     }
 
     public static double[] combineStereo (double[] in)
     {
-        double[] out = new double[in.length/2];
-        for (int s=0; s<in.length; s+=2)
+        double[] out = new double[in.length / 2];
+        for (int s = 0; s < in.length; s += 2)
         {
-            out[s/2] = (in[s]+in[s+1])/2;
+            out[s / 2] = (in[s] + in[s + 1]) / 2;
         }
         return out;
     }
@@ -96,7 +97,7 @@ public class Tools
      * @param in array of double value
      * @return array of converted double values
      */
-    public static double[] fitValues(double[] in)
+    public static double[] fitValues (double[] in)
     {
         double[] out = new double[in.length];
         Wave16AmplitudeInfo am = new Wave16AmplitudeInfo();
@@ -120,7 +121,7 @@ public class Tools
      * @param in array of double value
      * @return array of converted double values
      */
-    public static double[] fitValuesToPositiveByteRange(double[] in)
+    public static double[] fitValuesToPositiveByteRange (double[] in)
     {
         double[] out = new double[in.length];
         Wave16AmplitudeInfo am = new Wave16AmplitudeInfo();
@@ -140,7 +141,7 @@ public class Tools
      * @param in array of double value
      * @return array of converted double values
      */
-    public static double[] fitValuesToByteRange(double[] in)
+    public static double[] fitValuesToByteRange (double[] in)
     {
         double[] out = new double[in.length];
         Wave16AmplitudeInfo am = new Wave16AmplitudeInfo();
@@ -154,7 +155,7 @@ public class Tools
         return out;
     }
 
-    public static String[] listPackage(String path)
+    public static String[] listPackage (String path)
     {
         try
         {
@@ -176,7 +177,7 @@ public class Tools
                 entryName = jarEntries.nextElement().getName();
                 if (entryName.startsWith(path))
                 {
-                    entryName = entryName.substring(pathLen+1);
+                    entryName = entryName.substring(pathLen + 1);
                     if (!entryName.isEmpty())
                     {
                         list.add(entryName);
@@ -194,4 +195,19 @@ public class Tools
         return null;
     }
 
+    public static void copyStream (InputStream is, OutputStream os) throws Exception
+    {
+        final int buffer_size = 1024;
+
+        byte[] bytes = new byte[buffer_size];
+        for (;;)
+        {
+            int count = is.read(bytes, 0, buffer_size);
+            if (count == -1)
+            {
+                break;
+            }
+            os.write(bytes, 0, count);
+        }
+    }
 }

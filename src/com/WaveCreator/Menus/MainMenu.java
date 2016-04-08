@@ -206,7 +206,7 @@ public class MainMenu extends JPopupMenu
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                loadWave(scopeWindow);
+                loadWave (scopeWindow);
             }
         });
 

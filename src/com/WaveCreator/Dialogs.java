@@ -84,13 +84,22 @@ public class Dialogs
     {
         JFileChooser chooser = new JFileChooser();
         chooser.setApproveButtonText("Get it!");
-        chooser.setFileFilter(new FileNameExtensionFilter("16Bit Wave files", "wav"));
+        String[] ext = {"wav", "ogg"};
+        chooser.setFileFilter(new FileNameExtensionFilter("Ogg or Wave files", ext));
         if (chooser.showOpenDialog(scopeWindow) == JFileChooser.APPROVE_OPTION)
         {
             String name = chooser.getSelectedFile().getAbsolutePath();
             try
             {
-                Wave16 w = Wave16IO.loadWave16(name);
+                Wave16 w = null;
+                if (chooser.getSelectedFile().getName().endsWith("wav"))
+                {
+                    w = Wave16IO.loadWave(name);
+                }
+                else
+                {
+                    w = Wave16IO.loadOgg(name);
+                }
                 w.setName(chooser.getSelectedFile().getName());
                 FrameManager.getInstance().createFrame(w, "loaded from file");
             }

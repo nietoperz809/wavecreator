@@ -2,7 +2,6 @@ package com.WaveCreator.IO;
 
 import com.WaveCreator.Tools;
 import com.WaveCreator.Wave16;
-import de.jarnbjo.ogg.EndOfOggStreamException;
 import de.jarnbjo.ogg.FileStream;
 import de.jarnbjo.ogg.LogicalOggStream;
 import de.jarnbjo.ogg.PhysicalOggStream;
@@ -11,13 +10,12 @@ import de.jarnbjo.vorbis.VorbisStream;
 import javax.imageio.stream.FileImageInputStream;
 import javax.imageio.stream.FileImageOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.util.Arrays;
 
 import static com.WaveCreator.Functions.FunctionsGenerators.fromDoubleArray;
-import static com.WaveCreator.Functions.FunctionsGenerators.fromShortArray;
 
 /**
  * To change this template use File | Settings | File Templates.
@@ -62,55 +60,6 @@ public class Wave16IO
         return new Wave16(arr, samplingRate);
     }
 
-    /**
-     * Loads Ogg Vorbis file
-     *
-     * @param filename
-     * @return
-     * @throws Exception
-     */
-    public static Wave16 loadOgg (String filename) throws Exception
-    {
-        PhysicalOggStream os = new FileStream(new RandomAccessFile(filename, "r"));
-        LogicalOggStream los = (LogicalOggStream) os.getLogicalStreams().iterator().next();
-        System.out.println(os);
-
-        // exit, if it is not a Vorbis stream
-        if (los.getFormat() != LogicalOggStream.FORMAT_VORBIS)
-        {
-            throw new Exception("Not OGG");
-        }
-
-        final VorbisStream vs = new VorbisStream(los);
-        byte[] buffer=new byte[65536];
-        long len = 0;
-
-        try
-        {
-            // read pcm data from the vorbis channel and
-            // write the data to the wav file
-            while (true)
-            {
-                int read = vs.readPcm(buffer, 0, buffer.length);
-                for (int i = 0; i < read; i += 2)
-                {
-                    // swap from big endian to little endian
-                    byte tB = buffer[i];
-                    buffer[i] = buffer[i + 1];
-                    buffer[i + 1] = tB;
-                }
-                //outFile.write(buffer, 0, read);
-                len += read;
-            }
-        }
-        catch (EndOfOggStreamException e)
-        {
-            // not really an error, but we've
-            // reached the end of the vorbis stream
-            // and so exit the loop
-        }
-        return null;
-    }
 
     /**
      * Save data as mono WAV file
@@ -147,24 +96,96 @@ public class Wave16IO
         }
     }
 
+    public static Wave16 loadWave (String filename) throws Exception
+    {
+        return loadWave (new File(filename));
+    }
+
+        /**
+         * Loads Wave16 from wav ile
+         *
+         * @param filename file path
+         * @return The loaded Wave16 object
+         * @throws Exception if anything's gone wrong
+         */
+    public static Wave16 loadWave (File file) throws Exception
+    {
+        WavFile wv = WavFile.openWavFile(file);
+        double[] frames = new double[(int) wv.getNumFrames() * wv.getNumChannels()];
+
+        wv.readFrames(frames, frames.length);
+        frames = Tools.fitValues(frames);
+        if (wv.getNumChannels() == 2)
+        {
+            frames = Tools.combineStereo(frames); // Make mono
+        }
+        return fromDoubleArray(frames, (int) wv.getSampleRate());
+    }
 
     /**
-     * Loads Wave16 from file
+     * Loads Wave16 from ogg ile
      *
      * @param filename file path
      * @return The loaded Wave16 object
      * @throws Exception if anything's gone wrong
      */
-    public static Wave16 loadWave16 (String filename) throws Exception
+    public static Wave16 loadOgg (String filename) throws Exception
     {
-        WavFile wv = WavFile.openWavFile(new File(filename));
-        double[] frames = new double[(int)wv.getNumFrames() * wv.getNumChannels()];
+        File f = new File(filename);
+        return loadOgg(f);
+    }
 
-        wv.readFrames(frames, frames.length);
-        frames = Tools.fitValues(frames);
-        if (wv.getNumChannels() == 2)
-            frames = Tools.combineStereo(frames); // Make mono
-        return fromDoubleArray(frames, (int) wv.getSampleRate());
+    public synchronized static Wave16 loadOgg (File file) throws Exception
+    {
+        // open the file args[0] for reading and initialize an Ogg stream
+        PhysicalOggStream os = new FileStream(new RandomAccessFile(file, "r"));
+
+        // get the first logical Ogg stream from the file
+        LogicalOggStream los = (LogicalOggStream) os.getLogicalStreams().iterator().next();
+
+        // exit, if it is not a Vorbis stream
+        if (los.getFormat() != LogicalOggStream.FORMAT_VORBIS)
+        {
+            throw new Exception("not Ogg Vorbis file");
+        }
+
+        final VorbisStream vs = new VorbisStream(los);
+        //int channels = vs.getIdentificationHeader().getChannels();
+        int sampleRate = vs.getIdentificationHeader().getSampleRate();
+
+        // allocate a buffer for data
+        final byte[] tmpbuff = new byte[16384];
+
+        int len = 0;
+        byte[] allbytes = new byte[len];
+
+        try
+        {
+            // read pcm data from the vorbis channel and
+            // write the data to the wav file
+            while (true)
+            {
+                System.out.println("in "+file.getName());
+                System.out.println("out "+file.getName());
+                int read = vs.readPcm(tmpbuff, 0, tmpbuff.length);
+                for (int i = 0; i < read; i += 2)
+                {
+                    // swap from big endian to little endian
+                    byte tB = tmpbuff[i];
+                    tmpbuff[i] = tmpbuff[i + 1];
+                    tmpbuff[i + 1] = tB;
+                }
+                int oldlen = len;
+                len += read;
+                allbytes = Arrays.copyOf(allbytes, len);
+                System.arraycopy(tmpbuff, 0, allbytes, oldlen, read);
+            }
+        }
+        catch (Exception e)
+        {
+            Wave16 wv = new Wave16(allbytes, sampleRate, allbytes.length);
+            return wv;
+        }
     }
 }
 

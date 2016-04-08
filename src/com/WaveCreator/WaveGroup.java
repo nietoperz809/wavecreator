@@ -1,15 +1,19 @@
 package com.WaveCreator;
 
+import com.WaveCreator.IO.Wave16IO;
 import de.jarnbjo.ogg.FileStream;
 import de.jarnbjo.ogg.LogicalOggStream;
 import de.jarnbjo.ogg.PhysicalOggStream;
 import de.jarnbjo.vorbis.VorbisStream;
 
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -17,9 +21,37 @@ import java.util.Arrays;
  */
 public class WaveGroup
 {
-    public WaveGroup (String path)
-    {
+    private final String _dir = "sounds";
+    private final ArrayList<Wave16> _waves = new ArrayList<>();
 
+    public WaveGroup (String subdir) throws Exception
+    {
+        createGroup (subdir);
+    }
+
+    public Wave16[] getWaves()
+    {
+        return _waves.toArray(new Wave16[_waves.size()]);
+    }
+
+    private void createGroup (String subdir) throws Exception
+    {
+        String path = _dir+"/"+subdir;
+        String[] names = Tools.listPackage (path);
+        for (String name : names)
+        {
+            InputStream in = ClassLoader.getSystemResourceAsStream(path + "/" + name);
+
+            Path temp = Files.createTempFile("tmp", ".tmp");
+            Files.copy (in, temp, StandardCopyOption.REPLACE_EXISTING);
+            Wave16 wv;
+            if (name.endsWith("ogg"))
+                wv = Wave16IO.loadOgg(temp.toFile());
+            else
+                wv = Wave16IO.loadWave(temp.toFile());
+            temp.toFile().delete();
+            _waves.add(wv);
+        }
     }
 
     /**
@@ -29,28 +61,12 @@ public class WaveGroup
      */
     public static void main (String[] args) throws Exception
     {
-//        String path = "sounds/basses";
-//        String[] s = Tools.listPackage(path);
-//        System.out.println(Arrays.toString(s));
-//
-//        Path temp = Files.createTempFile("resource-", ".ext");
-//        Files.copy(ClassLoader.getSystemResourceAsStream(path + "/" + s[0]), temp, StandardCopyOption.REPLACE_EXISTING);
-//        FileInputStream input = new FileInputStream(temp.toFile());
-//
-//        PhysicalOggStream os = new FileStream(new RandomAccessFile(temp.toFile(), "r"));
-//        LogicalOggStream los=(LogicalOggStream)os.getLogicalStreams().iterator().next();
-//        System.out.println(os);
-//
-//        // exit, if it is not a Vorbis stream
-//        if (los.getFormat() != LogicalOggStream.FORMAT_VORBIS)
-//        {
-//            System.out.println("This tool only supports Ogg files with Vorbis content.");
-//            System.exit(0);
-//        }
-//
-//        long t0 = System.currentTimeMillis();
-//
-//        // create a Vorbis stream from the logical Ogg stream
-//        final VorbisStream vs = new VorbisStream(los);
+        WaveGroup wv = new WaveGroup ("bassloopes");
+        Wave16[] waves = wv.getWaves();
+        System.exit(1);
+        for (Wave16 w : waves)
+        {
+            FrameManager.getInstance().createFrame(w, "?");
+        }
     }
 }
