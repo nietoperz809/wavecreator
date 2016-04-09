@@ -40,9 +40,32 @@ public final class FunctionsReorder extends Functions
         return out;
     }
 
+    public Wave16 getLeftChannel()
+    {
+        Wave16 out = new Wave16((m_base.data.length+1)/2, m_base.samplingRate/2);
+        for (int s=0; s<m_base.data.length; s++)
+        {
+            if (s%2 == 0)
+                out.data[s/2] = m_base.data[s];
+        }
+        return out;
+    }
+
+    public Wave16 getRightChannel()
+    {
+        Wave16 out = new Wave16((m_base.data.length+1)/2, m_base.samplingRate/2);
+        for (int s=0; s<m_base.data.length; s++)
+        {
+            if (s%2 == 1)
+                out.data[s/2] = m_base.data[s];
+        }
+        return out;
+    }
+
+
     /**
      * --> Stretches this object to have a number of samples that is devidable by <b>rowlen</b>
-     * --> Makes a matrix from it an transposes the matrix
+     * --> Makes a matrix from it and transposes the matrix
      * @param rowlen Length of matrix rows
      * @return The new object
      */

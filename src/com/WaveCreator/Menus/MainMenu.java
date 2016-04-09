@@ -42,7 +42,10 @@ public class MainMenu extends JPopupMenu
             }
         });
 
-        add(new AbstractAction("Monitor")
+        add(new SubMenuZoom(scopeWindow));
+        add(new SubMenuWaveGroup(scopeWindow));
+
+        add(new AbstractAction("MemoryMonitor")
         {
             @Override
             public void actionPerformed(ActionEvent e)
@@ -112,45 +115,6 @@ public class MainMenu extends JPopupMenu
             }
         });
 
-        addSeparator();
-
-        add(new AbstractAction("Zoom in")
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                scopeWindow.changeShowWindow(scopeWindow.m_showWindow / 2);
-            }
-        });
-
-        add(new AbstractAction("Zoom out")
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                scopeWindow.changeShowWindow(scopeWindow.m_showWindow * 2);
-            }
-        });
-
-        add(new AbstractAction("Maximal zoom")
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                scopeWindow.changeShowWindow(0);
-            }
-        });
-
-        add(new AbstractAction("Minimal zoom")
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                scopeWindow.changeShowWindow(MAX_VALUE);
-            }
-        });
-
-        addSeparator();
 
         add(new AbstractAction("Play")
         {
@@ -161,7 +125,7 @@ public class MainMenu extends JPopupMenu
             }
         });
 
-        add(new AbstractAction("DirectPlay")
+        add(new AbstractAction("Play repeatedly")
         {
             @Override
             public void actionPerformed(ActionEvent e)

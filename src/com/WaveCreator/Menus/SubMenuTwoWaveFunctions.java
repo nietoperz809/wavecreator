@@ -20,7 +20,6 @@ import javax.swing.JMenu;
  */
 class SubMenuTwoWaveFunctions extends JMenu
 {
-
     /**
      * Constructor for this JMenu
      * @param scopeWindow Ref. to correspondent frame

@@ -83,15 +83,7 @@ public class OggDecoder
             // submit a 4k block to libvorbis' Ogg layer
             int index = oy.buffer(4096);
             buffer = oy.data;
-            try
-            {
                 bytes = input.read(buffer, index, 4096);
-            }
-            catch (Exception e)
-            {
-                System.err.println(e);
-                System.exit(-1);
-            }
             oy.wrote(bytes);
 
             // Get the first page.
@@ -105,7 +97,7 @@ public class OggDecoder
 
                 // error case.  Must not be Vorbis data
                 System.err.println("Input does not appear to be an Ogg bitstream.");
-                System.exit(1);
+                //System.exit(1);
             }
 
             // Get the serial number and set up the rest of decode.
@@ -126,14 +118,14 @@ public class OggDecoder
             {
                 // error; stream version mismatch perhaps
                 System.err.println("Error reading first page of Ogg bitstream data.");
-                System.exit(1);
+                //System.exit(1);
             }
 
             if (os.packetout(op) != 1)
             {
                 // no page? must not be vorbis
                 System.err.println("Error reading initial header packet.");
-                System.exit(1);
+                //System.exit(1);
             }
 
             if (vi.synthesis_headerin(vc, op) < 0)
@@ -141,7 +133,7 @@ public class OggDecoder
                 // error case; not a vorbis header
                 System.err
                         .println("This Ogg bitstream does not contain Vorbis audio data.");
-                System.exit(1);
+                //System.exit(1);
             }
 
             // At this point, we're sure we're Vorbis.  We've set up the logical
@@ -185,7 +177,7 @@ public class OggDecoder
                                 // Uh oh; data at some point was corrupted or missing!
                                 // We can't tolerate that in a header.  Die.
                                 System.err.println("Corrupt secondary header.  Exiting.");
-                                System.exit(1);
+                                //System.exit(1);
                             }
                             vi.synthesis_headerin(vc, op);
                             i++;
@@ -195,19 +187,11 @@ public class OggDecoder
                 // no harm in not checking before adding more
                 index = oy.buffer(4096);
                 buffer = oy.data;
-                try
-                {
                     bytes = input.read(buffer, index, 4096);
-                }
-                catch (Exception e)
-                {
-                    System.err.println(e);
-                    System.exit(1);
-                }
                 if (bytes == 0 && i < 2)
                 {
                     System.err.println("End of file before finding all Vorbis headers!");
-                    System.exit(1);
+                    //System.exit(1);
                 }
                 oy.wrote(bytes);
             }
@@ -344,15 +328,7 @@ public class OggDecoder
                 {
                     index = oy.buffer(4096);
                     buffer = oy.data;
-                    try
-                    {
-                        bytes = input.read(buffer, index, 4096);
-                    }
-                    catch (Exception e)
-                    {
-                        System.err.println(e);
-                        System.exit(1);
-                    }
+                    bytes = input.read(buffer, index, 4096);
                     oy.wrote(bytes);
                     if (bytes == 0)
                     {

@@ -155,7 +155,7 @@ public class Tools
         return out;
     }
 
-    public static String[] listPackage (String path)
+    public static String[] listPackage (String path, boolean maindironly)
     {
         try
         {
@@ -180,7 +180,10 @@ public class Tools
                     entryName = entryName.substring(pathLen + 1);
                     if (!entryName.isEmpty())
                     {
-                        list.add(entryName);
+                        if (!maindironly)
+                            list.add(entryName);
+                        else if (entryName.indexOf("/") == entryName.length()-1)
+                            list.add(entryName);
                     }
                 }
             }

@@ -30,11 +30,12 @@ public class WaveGroup
     private void createGroup (String subdir) throws Exception
     {
         String path = _dir+"/"+subdir;
-        String[] names = Tools.listPackage (path);
+        String[] names = Tools.listPackage (path, false);
         for (String name : names)
         {
             InputStream in = ClassLoader.getSystemResourceAsStream(path + "/" + name);
-
+            if (in == null)
+                continue;
             Path temp = Files.createTempFile("tmp", ".tmp");
             Files.copy (in, temp, StandardCopyOption.REPLACE_EXISTING);
             Wave16 wv;
@@ -43,8 +44,11 @@ public class WaveGroup
             else
                 wv = Wave16IO.loadWave(temp.toFile());
             temp.toFile().delete();
-            _waves.add(wv);
-            System.out.println(_waves.size());
+            if (wv != null)
+            {
+                wv.setName(name);
+                _waves.add(wv);
+            }
         }
     }
 
@@ -55,12 +59,12 @@ public class WaveGroup
      */
     public static void main (String[] args) throws Exception
     {
-        WaveGroup wv = new WaveGroup ("drums");
+        WaveGroup wv = new WaveGroup ("effects");
         Wave16[] waves = wv.getWaves();
         //System.exit(1);
         for (Wave16 w : waves)
         {
-            FrameManager.getInstance().createFrame(w, "?");
+            FrameManager.getInstance().createFrame(w, w.name);
         }
     }
 }

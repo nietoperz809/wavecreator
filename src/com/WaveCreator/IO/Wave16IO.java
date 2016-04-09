@@ -100,12 +100,29 @@ public class Wave16IO
          * @return The loaded Wave16 object
          * @throws Exception if anything's gone wrong
          */
-    public static Wave16 loadWave (File file) throws Exception
+    public static Wave16 loadWave (File file)
     {
-        WavFile wv = WavFile.openWavFile(file);
+        WavFile wv = null;
+        try
+        {
+            wv = WavFile.openWavFile(file);
+        }
+        catch (Exception e)
+        {
+            System.err.println(e);
+            return null;
+        }
         double[] frames = new double[(int) wv.getNumFrames() * wv.getNumChannels()];
 
-        wv.readFrames(frames, frames.length);
+        try
+        {
+            wv.readFrames(frames, frames.length);
+        }
+        catch (Exception e)
+        {
+            System.err.println(e);
+            return null;
+        }
         frames = Tools.fitValues(frames);
         if (wv.getNumChannels() == 2)
         {
