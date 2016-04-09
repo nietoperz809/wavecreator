@@ -41,8 +41,10 @@ public class WaveGroup
             Wave16 wv;
             if (name.endsWith("ogg"))
                 wv = Wave16IO.loadOgg (new FileInputStream(temp.toFile()));
+            else if (name.endsWith("aif") || name.endsWith("aiff"))
+                wv = Wave16IO.loadAiff(temp.toFile());
             else
-                wv = Wave16IO.loadWave(temp.toFile());
+                wv = Wave16IO.loadWave(temp.toFile()); // wav
             temp.toFile().delete();
             if (wv != null)
             {

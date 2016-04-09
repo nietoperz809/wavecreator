@@ -84,7 +84,7 @@ public class Dialogs
     {
         JFileChooser chooser = new JFileChooser();
         chooser.setApproveButtonText("Get it!");
-        String[] ext = {"wav", "ogg"};
+        String[] ext = {"wav", "ogg", "aif", "aiff"};
         chooser.setFileFilter(new FileNameExtensionFilter("Ogg or Wave files", ext));
         if (chooser.showOpenDialog(scopeWindow) == JFileChooser.APPROVE_OPTION)
         {
@@ -92,9 +92,14 @@ public class Dialogs
             try
             {
                 Wave16 w = null;
-                if (chooser.getSelectedFile().getName().endsWith("wav"))
+                String nm = chooser.getSelectedFile().getName();
+                if (nm.endsWith("wav"))
                 {
                     w = Wave16IO.loadWave(name);
+                }
+                else if (nm.endsWith("aif"))
+                {
+                    w = Wave16IO.loadAiff(name);
                 }
                 else
                 {

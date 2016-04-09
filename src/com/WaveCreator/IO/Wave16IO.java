@@ -6,6 +6,8 @@ import com.jcraft.jorbis.OggDecoder;
 
 import javax.imageio.stream.FileImageInputStream;
 import javax.imageio.stream.FileImageOutputStream;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
 import java.io.*;
 
 import static com.WaveCreator.Functions.FunctionsGenerators.fromDoubleArray;
@@ -89,17 +91,87 @@ public class Wave16IO
         }
     }
 
-    public static Wave16 loadWave (String filename) throws Exception
+    public static Wave16 loadAiff (String filename) throws Exception
     {
-        return loadWave (new File(filename));
+        return loadAiff(new File(filename));
     }
 
-        /**
-         * Loads Wave16 from wav ile
-         *
-         * @return The loaded Wave16 object
-         * @throws Exception if anything's gone wrong
-         */
+    public static Wave16 loadAiff (File fileIn)
+    {
+        try
+        {
+            System.out.println(fileIn.getName());
+            int totalFramesRead = 0;
+            AudioInputStream audioInputStream =
+                    AudioSystem.getAudioInputStream(fileIn);
+            int bytesPerFrame =
+                    audioInputStream.getFormat().getFrameSize();
+            int sampleRate =
+                    (int) audioInputStream.getFormat().getSampleRate();
+            int channels = audioInputStream.getFormat().getChannels();
+
+            System.out.println(sampleRate);
+            System.out.println(channels);
+
+            if (bytesPerFrame == AudioSystem.NOT_SPECIFIED)
+            {
+                // some audio formats may have unspecified frame size
+                // in that case we may read any amount of bytes
+                bytesPerFrame = 1;
+            }
+            // Set an arbitrary buffer size of 1024 frames.
+            int numBytes = 1024 * bytesPerFrame;
+            byte[] audioBytes = new byte[numBytes];
+            ByteArrayOutputStream ba = new ByteArrayOutputStream(65536);
+            int numBytesRead = 0;
+            int numFramesRead = 0;
+            // Try to read numBytes bytes from the file.
+            while ((numBytesRead =
+                    audioInputStream.read(audioBytes)) != -1)
+            {
+                // Calculate the number of frames actually read.
+                numFramesRead = numBytesRead / bytesPerFrame;
+                totalFramesRead += numFramesRead;
+                // Here, do something useful with the audio data that's
+                // now in the audioBytes array...
+                ba.write(audioBytes, 0, numBytesRead);
+            }
+            if (bytesPerFrame == 3)
+            {
+                double[] d1 = new double[totalFramesRead];
+                byte[] b1 = ba.toByteArray();
+                for (int s = 0; s < b1.length; s += 3)
+                {
+                    double dx = b1[s + 2] +
+                            256 * b1[s + 1] +
+                            65536 * b1[s + 0];
+                    d1[s / 3] = dx;
+                }
+                Wave16 wv = new Wave16(Tools.fitValues(d1), sampleRate);
+                return wv;
+            }
+            else
+            {
+                throw new Exception("unsupported aif frame count");
+            }
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+    }
+
+    public static Wave16 loadWave (String filename) throws Exception
+    {
+        return loadWave(new File(filename));
+    }
+
+    /**
+     * Loads Wave16 from wav ile
+     *
+     * @return The loaded Wave16 object
+     * @throws Exception if anything's gone wrong
+     */
     public static Wave16 loadWave (File file)
     {
         WavFile wv = null;
@@ -157,7 +229,7 @@ public class Wave16IO
             return null;
         }
         byte[] arr = out.toByteArray();
-        Wave16 wv = new Wave16 (arr, dec.getSampleRate(), arr.length);
+        Wave16 wv = new Wave16(arr, dec.getSampleRate(), arr.length);
         return wv;
     }
 }
