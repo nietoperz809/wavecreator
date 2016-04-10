@@ -44,6 +44,7 @@ public class MainMenu extends JPopupMenu
 
         add(new SubMenuZoom(scopeWindow));
         add(new SubMenuWaveGroup(scopeWindow));
+        add (new SubMenuPlayer(scopeWindow));
 
         add(new AbstractAction("MemoryMonitor")
         {
@@ -95,6 +96,7 @@ public class MainMenu extends JPopupMenu
                 });
             }
         }
+
         add(new AbstractAction("Toggle draw mode")
         {
             @Override
@@ -112,45 +114,6 @@ public class MainMenu extends JPopupMenu
                 Wave16 w = scopeWindow.m_wave.copy();
                 ScopeWindow sc = getInstance().createFrame(w, "drawable copy");
                 sc.m_drawing_allowed = true;
-            }
-        });
-
-
-        add(new AbstractAction("Play")
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                scopeWindow.m_player.play();
-            }
-        });
-
-        add(new AbstractAction("Play repeatedly")
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                getInstance().startDirectPlay();
-            }
-        });
-
-        add(new AbstractAction("Stop")
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                scopeWindow.m_player.stop();
-                getInstance().stopDirectPlay();
-            }
-        });
-
-        add(new AbstractAction("Rewind")
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                scopeWindow.m_player.setFramePosition(0);
-                scopeWindow.updateView(0);
             }
         });
 
