@@ -213,4 +213,42 @@ public class Tools
             os.write(bytes, 0, count);
         }
     }
+
+    /**
+     * Read BE bytes inzo double array
+     * @param inputBytes array of bytes
+     * @param bytesPerFrame size of frame, 1...8
+     * @return newly created double array
+     */
+    public static double[] readBE (byte[] inputBytes, int bytesPerFrame)
+    {
+        int numframes = inputBytes.length/bytesPerFrame;
+        double[] outputWords = new double[numframes];
+        for (int i=0; i<inputBytes.length; i+=bytesPerFrame)
+        {
+            double n = 0;
+            for (int s = 0; s < bytesPerFrame; s++)
+            {
+                n = (n * 256) + (inputBytes[i+s]);
+            }
+            outputWords[i/bytesPerFrame] = n;
+        }
+        return outputWords;
+    }
+
+    public static double[] readLE (byte[] inputBytes, int bytesPerFrame)
+    {
+        int numframes = inputBytes.length/bytesPerFrame;
+        double[] outputWords = new double[numframes];
+        for (int i=0; i<inputBytes.length; i+=bytesPerFrame)
+        {
+            double n = 0;
+            for (int s = bytesPerFrame-1; s > -1; s--)
+            {
+                n = (n * 256) + (inputBytes[i+s]);
+            }
+            outputWords[i/bytesPerFrame] = n;
+        }
+        return outputWords;
+    }
 }

@@ -136,27 +136,13 @@ public class Wave16IO
                 // now in the audioBytes array...
                 ba.write(audioBytes, 0, numBytesRead);
             }
-            if (bytesPerFrame == 3)
-            {
-                double[] d1 = new double[totalFramesRead];
-                byte[] b1 = ba.toByteArray();
-                for (int s = 0; s < b1.length; s += 3)
-                {
-                    double dx = b1[s + 2] +
-                            256 * b1[s + 1] +
-                            65536 * b1[s + 0];
-                    d1[s / 3] = dx;
-                }
-                Wave16 wv = new Wave16(Tools.fitValues(d1), sampleRate);
-                return wv;
-            }
-            else
-            {
-                throw new Exception("unsupported aif frame count");
-            }
+            double[] dx = Tools.readBE(ba.toByteArray(), bytesPerFrame);
+            Wave16 wv = new Wave16(Tools.fitValues(dx), sampleRate);
+            return wv;
         }
         catch (Exception ex)
         {
+            System.out.println(ex);
             return null;
         }
     }

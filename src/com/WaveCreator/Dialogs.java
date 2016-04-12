@@ -105,6 +105,8 @@ public class Dialogs
                 {
                     w = Wave16IO.loadOgg(name);
                 }
+                if (w == null)
+                    return;
                 w.setName(chooser.getSelectedFile().getName());
                 FrameManager.getInstance().createFrame(w, "loaded from file");
             }
