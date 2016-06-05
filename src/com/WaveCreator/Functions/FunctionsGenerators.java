@@ -1,7 +1,9 @@
 package com.WaveCreator.Functions;
 
 import com.WaveCreator.*;
+import com.WaveCreator.Helpers.Tools;
 import com.WaveCreator.Math.PiDigits;
+import com.WaveCreator.Helpers.DynamicFunction;
 
 import java.security.SecureRandom;
 import java.util.Arrays;
@@ -522,6 +524,26 @@ public final class FunctionsGenerators extends Functions
         return out;
     }
 
+    // Experimental
+    static public Wave16 curveUser(@ParamDesc("Sampling rate")int samplingrate,
+                                   @ParamDesc("Number of samples")int samples,
+                                   @ParamDesc("Frequency")int freq,
+                                   @ParamDesc("Function")String func) throws Exception
+    {
+        Wave16 out = new Wave16(samples, samplingrate);
+
+        DynamicFunction df = new DynamicFunction();
+        df.createSource (func);
+        df.compile();
+
+        for (int x = 0; x < samples; x++)
+        {
+            out.data[x] = df.runIt(x * Wave16.TWOPI / samplingrate * freq);
+        }
+        out.data = Tools.fitValues(out.data);
+        return out;
+    }
+
     /**
      * Generates a DUR chord
      * @param samplingrate  Samplingrate
@@ -563,7 +585,6 @@ public final class FunctionsGenerators extends Functions
     {
         double[] f = {frequency};
         int samples = (int)Math.round(0.5+samplingrate/frequency);
-        //samples *= 1000;
         return curveSine (samplingrate, samples, f);
     }
 

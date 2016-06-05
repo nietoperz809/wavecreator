@@ -8,8 +8,8 @@ import com.WaveCreator.WaveGroup;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 
-import static com.WaveCreator.FrameManager.getInstance;
-import static com.WaveCreator.Tools.listPackage;
+import static com.WaveCreator.Helpers.Tools.listPackage;
+
 
 /**
  * Created by Administrator on 4/9/2016.
