@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="WaveCreator:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/WaveCreator_jar</output-path>
+    <root id="archive" name="WaveCreator.jar">
+      <element id="module-output" name="WaveCreator" />
+      <element id="library" level="project" name="sounds" />
+    </root>
+  </artifact>
+</component>
