@@ -18,7 +18,7 @@ public final class Wave16AmplitudeInfo
      */
     public double span;
 
-    Wave16AmplitudeInfo()
+    public Wave16AmplitudeInfo()
     {
     }
 

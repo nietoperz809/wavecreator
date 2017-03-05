@@ -1,6 +1,6 @@
 package com.WaveCreator.IO;
 
-import com.WaveCreator.Tools;
+import com.WaveCreator.Helpers.Tools;
 import com.WaveCreator.Wave16;
 import com.jcraft.jorbis.OggDecoder;
 

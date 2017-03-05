@@ -7,7 +7,7 @@ import com.WaveCreator.MatrixRoutines.DMatrixEvd;
 import com.WaveCreator.MatrixRoutines.DMatrixLud;
 import com.WaveCreator.MatrixRoutines.DMatrixQrd;
 import com.WaveCreator.ParamDesc;
-import com.WaveCreator.Tools;
+import com.WaveCreator.Helpers.Tools;
 import com.WaveCreator.Wave16;
 import com.WaveCreator.lindenmayerrule.RuleManager;
 

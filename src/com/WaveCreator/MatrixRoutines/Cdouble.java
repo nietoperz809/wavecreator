@@ -123,7 +123,7 @@ public class Cdouble
      */
     public static Cdouble div(Cdouble x, Cdouble y)
     {
-        return x.over(y);
+        return x.divide(y);
     }
 
     /**
@@ -222,7 +222,7 @@ public class Cdouble
      */
     public static Cdouble log10(Cdouble x)
     {
-        return log(x).overEquals(log(10.0));
+        return log(x).divideBy(log(10.0));
     }
 
     /**
@@ -304,7 +304,7 @@ public class Cdouble
      */
     public static Cdouble tan(Cdouble x)
     {
-        return sin(x).overEquals(cos(x));
+        return sin(x).divideBy(cos(x));
     }
 
     /**
@@ -337,7 +337,7 @@ public class Cdouble
      */
     public static Cdouble tanh(Cdouble x)
     {
-        return sinh(x).overEquals(cosh(x));
+        return sinh(x).divideBy(cosh(x));
     }
 
   ///////////////////////////////////////////////////////////////////////////
@@ -491,9 +491,9 @@ public class Cdouble
      * @param x a complex number.
      * @return z / x.
      */
-    public Cdouble over(Cdouble x)
+    public Cdouble divide (Cdouble x)
     {
-        return new Cdouble(this).overEquals(x);
+        return new Cdouble(this).divideBy(x);
     }
 
     /**
@@ -535,9 +535,9 @@ public class Cdouble
      * @param x a real number.
      * @return z / x.
      */
-    public Cdouble over(double x)
+    public Cdouble divide (double x)
     {
-        return new Cdouble(this).overEquals(x);
+        return new Cdouble(this).divideBy(x);
     }
 
     /**
@@ -589,7 +589,7 @@ public class Cdouble
      * @param x a complex number.
      * @return z /= x.
      */
-    public Cdouble overEquals(Cdouble x)
+    public Cdouble divideBy (Cdouble x)
     {
         double tr = this.r;
         double ti = this.i;
@@ -644,7 +644,7 @@ public class Cdouble
      * @param x a real number.
      * @return z /= x.
      */
-    public Cdouble overEquals(double x)
+    public Cdouble divideBy (double x)
     {
         r /= x;
         i /= x;

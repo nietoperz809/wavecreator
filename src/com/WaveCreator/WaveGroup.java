@@ -1,5 +1,6 @@
 package com.WaveCreator;
 
+import com.WaveCreator.Helpers.Tools;
 import com.WaveCreator.IO.Wave16IO;
 
 import java.io.FileInputStream;

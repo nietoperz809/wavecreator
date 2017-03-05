@@ -4,7 +4,7 @@ import com.WaveCreator.ParamDesc;
 import com.WaveCreator.Wave16;
 import com.WaveCreator.OtherFilters.MoogFilter;
 import com.WaveCreator.Equalizer.Equalizer;
-import com.WaveCreator.Tools;
+import com.WaveCreator.Helpers.Tools;
 
 /**
  * New Class.

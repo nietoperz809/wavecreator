@@ -1,6 +1,6 @@
 package com.WaveCreator.Functions;
 
-import com.WaveCreator.Tools;
+import com.WaveCreator.Helpers.Tools;
 import com.WaveCreator.Wave16;
 
 /**

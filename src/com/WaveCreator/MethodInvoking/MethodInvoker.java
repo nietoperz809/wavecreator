@@ -1,6 +1,7 @@
 package com.WaveCreator.MethodInvoking;
 
 import com.WaveCreator.Functions.Functions;
+import com.WaveCreator.Helpers.Tools;
 
 import javax.swing.*;
 import javax.swing.table.TableColumnModel;
@@ -20,6 +21,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * This class is used to invoke methods by reflection
@@ -31,7 +33,18 @@ public class MethodInvoker extends JDialog implements ActionListener
     private final Object m_object;
     private final MethodInvokerResult m_result = new MethodInvokerResult();
 
-    
+    /**
+     * Store last values
+     * so they can appear again
+     */
+    static private HashMap<Integer, String> oldvalues = new HashMap<>();
+
+    /**
+     * reads CSV values into ArrayList
+     * @param value String containing CSV values
+     * @param <T> Type of values
+     * @return Typed ArrayList filled with values
+     */
     private <T> ArrayList<T> readArray(String value)
     {
         ArrayList<T> li = new ArrayList<>();
@@ -44,6 +57,11 @@ public class MethodInvoker extends JDialog implements ActionListener
         return li;
     }
 
+    /**
+     * Reads CSV Strings into string array
+     * @param value String of CSV Strings
+     * @return array of Strings
+     */
     private String[] readStringArray (String value)
     {
         ArrayList<String> a = readArray(value);
@@ -73,7 +91,11 @@ public class MethodInvoker extends JDialog implements ActionListener
         return res;
     }
 
-    
+    /**
+     * Reads comma-separated Short values and creates an integer array
+     * @param value String containing all values
+     * @return A new short-array
+     */
     private short[] readShortArray(String value)
     {
         ArrayList<Short> li = new ArrayList<>();
@@ -123,49 +145,39 @@ public class MethodInvoker extends JDialog implements ActionListener
     private Object parseObject(String typename, String value)
     {
         try
-        {
-            if (typename.equals("boolean"))
+        {   switch (typename)
             {
+                case "boolean":
                 return parseBoolean(value);
-            }
-            if (typename.equals("int"))
-            {
+
+                case "int":
                 return parseInt(value);
-            }
-            if (typename.equals("float"))
-            {
+
+                case "float":
                 return parseFloat(value);
-            }
-            if (typename.equals("double"))
-            {
+
+                case "double":
                 return parseDouble(value);
-            }
-            if (typename.equals("char"))
-            {
+
+                case "char":
                 return value.charAt(0);
-            }
-            if (typename.equals("long"))
-            {
+
+                case "long":
                 return parseLong(value);
-            }
-            if (typename.equals("String"))
-            {
+
+                case "String":
                 return value;
-            }
-            if (typename.equals("String[]"))
-            {
+
+                case "String[]":
                 return readStringArray(value);
-            }
-            if (typename.equals("int[]"))
-            {
+
+                case "int[]":
                 return readIntegerArray(value);
-            }
-            if (typename.equals("double[]"))
-            {
+
+                case "double[]":
                 return readDoubleArray(value);
-            }
-            if (typename.equals("short[]"))
-            {
+
+                case "short[]":
                 return readShortArray(value);
             }
         }
@@ -220,7 +232,7 @@ public class MethodInvoker extends JDialog implements ActionListener
      * User clicked OK button
      * @param e Swing Action event
      */
-        @Override
+    @Override
     public void actionPerformed(ActionEvent e)
     {
         // Possibly cancel cell editing
@@ -239,6 +251,9 @@ public class MethodInvoker extends JDialog implements ActionListener
         {
             String type = (String) m_table.getModel().getValueAt(s, 0);
             String value = (String) m_table.getModel().getValueAt(s, 1);
+            String desc = (String) m_table.getModel().getValueAt(s, 2);
+            //oldvalues.put(desc.hashCode()+m_method.hashCode(), value);
+            oldvalues.put (Tools.multiHash(desc, m_method), value);
             args[s] = parseObject(type, value);
             params = params + type + ":" + value + " ";
         }
@@ -312,15 +327,17 @@ public class MethodInvoker extends JDialog implements ActionListener
                     break;
             }
             String descr = "";
+            String old = "";
             if (ann != null)
             {
                 if (ann[s].length != 0)
                 {
                     descr = ann[s][0].toString();
                     descr = descr.substring(6 + descr.indexOf("value="), descr.length() - 1);
+                    old = oldvalues.get (Tools.multiHash(descr,m_method));
                 }
             }
-            data[s] = new Object[]{type, "", descr};
+            data[s] = new Object[]{type, old, descr};
         }
 
         // Create and adjust the table

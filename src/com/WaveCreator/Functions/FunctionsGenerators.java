@@ -524,6 +524,34 @@ public final class FunctionsGenerators extends Functions
         return out;
     }
 
+    /**
+     * Generates wave object of multiple sinus cardinalis curves
+     * @param samplingrate The sampling rate
+     * @param freq         The frequencies
+     * @param samples      Number of samples of output array
+     * @param offset       offset on x axis
+     * @return A single wave
+     */
+    static public Wave16 curveSinC(@ParamDesc("Sampling rate")int samplingrate,
+                                   @ParamDesc("Number of samples")int samples,
+                                   @ParamDesc("x-offset")int offset,
+                                   @ParamDesc("Array of frequencies")double... freq)
+    {
+        Wave16 out = new Wave16(samples, samplingrate);
+        for (int x = 0; x < samples; x++)
+        {
+            double f = 0;
+            for (double aFreq : freq)
+            {
+                int n = x-offset;
+                f = f + (Wave16.MAX_VALUE * Math.sin(n * Wave16.TWOPI / samplingrate * aFreq)/n);
+            }
+            out.data[x] = f / freq.length;
+        }
+        out = out.functionsAmplitude.multiply(3); //Tools.fitValues(out.data);
+        return out;
+    }
+
     // Experimental
     static public Wave16 curveUser(@ParamDesc("Sampling rate")int samplingrate,
                                    @ParamDesc("Number of samples")int samples,

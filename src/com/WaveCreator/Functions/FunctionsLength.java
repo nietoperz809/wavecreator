@@ -2,7 +2,7 @@ package com.WaveCreator.Functions;
 
 import com.WaveCreator.ParamDesc;
 import com.WaveCreator.Wave16;
-import com.WaveCreator.Tools;
+import com.WaveCreator.Helpers.Tools;
 
 /**
  * New Class.

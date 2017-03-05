@@ -3,7 +3,7 @@ package com.WaveCreator.Functions;
 import com.WaveCreator.FFT.CepstrumTransform;
 import com.WaveCreator.FFT.Complex;
 import com.WaveCreator.FFT.FFT;
-import com.WaveCreator.Tools;
+import com.WaveCreator.Helpers.Tools;
 import com.WaveCreator.Wave16;
 
 /**
