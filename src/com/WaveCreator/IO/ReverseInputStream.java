@@ -85,7 +85,7 @@ class ReverseInputStream extends DataInputStream
         }
         for (int s = 0; s < b.length; s += 4)
         {
-            int temp = (short)((b[s+0] & 0xff)
+            int temp = (short)((b[s] & 0xff)
                     + 256 * (b[s+1] & 0xff)
                     + 65536 * (b[s+2] & 0xff)
                     + 16777216 * (b[s+3] & 0xff)

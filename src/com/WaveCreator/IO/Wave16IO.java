@@ -91,7 +91,7 @@ public class Wave16IO
         }
     }
 
-    public static Wave16 loadAiff (String filename) throws Exception
+    public static Wave16 loadAiff (String filename)
     {
         return loadAiff(new File(filename));
     }
@@ -123,8 +123,8 @@ public class Wave16IO
             int numBytes = 1024 * bytesPerFrame;
             byte[] audioBytes = new byte[numBytes];
             ByteArrayOutputStream ba = new ByteArrayOutputStream(65536);
-            int numBytesRead = 0;
-            int numFramesRead = 0;
+            int numBytesRead;
+            int numFramesRead;
             // Try to read numBytes bytes from the file.
             while ((numBytesRead =
                     audioInputStream.read(audioBytes)) != -1)
@@ -137,8 +137,7 @@ public class Wave16IO
                 ba.write(audioBytes, 0, numBytesRead);
             }
             double[] dx = Tools.readBE(ba.toByteArray(), bytesPerFrame);
-            Wave16 wv = new Wave16(Tools.fitValues(dx), sampleRate);
-            return wv;
+            return new Wave16(Tools.fitValues(dx), sampleRate);
         }
         catch (Exception ex)
         {
@@ -147,7 +146,7 @@ public class Wave16IO
         }
     }
 
-    public static Wave16 loadWave (String filename) throws Exception
+    public static Wave16 loadWave (String filename)
     {
         return loadWave(new File(filename));
     }
@@ -202,7 +201,7 @@ public class Wave16IO
         return loadOgg(new FileInputStream(f));
     }
 
-    public synchronized static Wave16 loadOgg (InputStream in) throws Exception
+    public synchronized static Wave16 loadOgg (InputStream in)
     {
         ByteArrayOutputStream out = new ByteArrayOutputStream(65536);
         OggDecoder dec = new OggDecoder();
@@ -215,8 +214,7 @@ public class Wave16IO
             return null;
         }
         byte[] arr = out.toByteArray();
-        Wave16 wv = new Wave16(arr, dec.getSampleRate(), arr.length);
-        return wv;
+        return new Wave16(arr, dec.getSampleRate(), arr.length);
     }
 }
 

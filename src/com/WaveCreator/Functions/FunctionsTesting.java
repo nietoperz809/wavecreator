@@ -1,13 +1,15 @@
 package com.WaveCreator.Functions;
 
+import be.tarsos.dsp.PitchShifter;
 import com.WaveCreator.FFT.Complex;
 import com.WaveCreator.GaloisField256;
+import com.WaveCreator.Helpers.Tools;
 import com.WaveCreator.MatrixRoutines.DMatrix;
 import com.WaveCreator.MatrixRoutines.DMatrixEvd;
 import com.WaveCreator.MatrixRoutines.DMatrixLud;
 import com.WaveCreator.MatrixRoutines.DMatrixQrd;
 import com.WaveCreator.ParamDesc;
-import com.WaveCreator.Helpers.Tools;
+import com.WaveCreator.TarsosWrapper.Tarsos;
 import com.WaveCreator.Wave16;
 import com.WaveCreator.lindenmayerrule.RuleManager;
 
@@ -44,6 +46,14 @@ public final class FunctionsTesting extends Functions
     public FunctionsTesting (Wave16 base)
     {
         super(base);
+    }
+
+    public Wave16 pitchShift (@ParamDesc("Factor") float factor)
+    {
+        int buffsize = 4096;
+        int overlap = buffsize-128;
+        PitchShifter ps = new PitchShifter(factor, m_base.getAudioFormat().getSampleRate(), buffsize, overlap);
+        return Tarsos.process(m_base, ps);
     }
 
     static public Wave16 aa7Coeffs (@ParamDesc("Sampling rate") int samplingrate,

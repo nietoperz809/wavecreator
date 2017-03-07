@@ -9,5 +9,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="sounds" level="project" />
     <orderEntry type="library" name="j-ogg-vorbisd" level="project" />
+    <orderEntry type="library" name="TarsosDSP-latest" level="project" />
   </component>
 </module>

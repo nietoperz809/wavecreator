@@ -2,6 +2,7 @@ package com.WaveCreator;
 
 import com.WaveCreator.Functions.*;
 
+import javax.sound.sampled.AudioFormat;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -76,7 +77,7 @@ public class Wave16 implements Serializable
     /**
      * Data array that holds sampling data
      */
-    public double[] data;
+    public volatile double[] data;
     /**
      * Sampling rate
      */
@@ -85,6 +86,11 @@ public class Wave16 implements Serializable
      * Optional name of this wave
      */
     public String name = "unnamed";
+
+    public AudioFormat getAudioFormat()
+    {
+        return new AudioFormat(samplingRate,16,1,true,false);
+    }
 
     /**
      * Builds a new Wave16 object
@@ -105,16 +111,23 @@ public class Wave16 implements Serializable
         samplingRate = 0;
     }
 
-    public Wave16 (byte[] in, int rate, int bytesInBuffer)
+    //     public int write(byte[] b, int off, int len);
+    public Wave16 (byte[] in, int rate, int offset, int bytesInBuffer)
     {
         double[] d = new double[bytesInBuffer / 2];
         for (int s = 0; s < bytesInBuffer; s += 2)
         {
-            int i = (in[s] & 0xff | in[s + 1] << 8) & 0xffff;
+            int off = s+offset;
+            int i = (in[off] & 0xff | in[off + 1] << 8) & 0xffff;
             d[s / 2] = (double) (short) i;
         }
         data = d;
         samplingRate = rate;
+    }
+
+    public Wave16 (byte[] in, int rate, int bytesInBuffer)
+    {
+        this(in, rate, 0, bytesInBuffer);
     }
 
     public Wave16 (double[] d, int rate)
@@ -280,6 +293,17 @@ public class Wave16 implements Serializable
         for (int s = 0; s < data.length; s++)
         {
             res[s] = (short) data[s];
+        }
+        return res;
+    }
+
+    public byte[] toByteArray ()
+    {
+        byte[] res = new byte[data.length*2];
+        for (int s = 0; s < data.length; s++)
+        {
+            res[s * 2 + 1] = (byte) ((short)data[s] >>> 8);
+            res[s * 2] = (byte) ((short)data[s] & 0xff);
         }
         return res;
     }

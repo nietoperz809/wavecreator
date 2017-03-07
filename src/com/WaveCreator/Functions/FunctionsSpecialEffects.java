@@ -1,7 +1,7 @@
 package com.WaveCreator.Functions;
 
-import com.WaveCreator.ParamDesc;
 import com.WaveCreator.Helpers.Tools;
+import com.WaveCreator.ParamDesc;
 import com.WaveCreator.Wave16;
 
 /**
@@ -50,6 +50,20 @@ public final class FunctionsSpecialEffects extends Functions
         out.data = Tools.fitValues(out.data);
         return out;
     }
+
+//    public Wave16 pitchShift (@ParamDesc("Factor") float fac)
+//    {
+//        PitchShifter ps = new PitchShifter (fac,
+//                m_base.samplingRate,
+//                m_base.data.length,
+//                m_base.data.length-32);
+//        AudioFormat f = new AudioFormat(m_base.samplingRate,
+//                16,
+//                1,
+//                true,
+//                false);
+//        AudioEvent ae
+//    }
 
     /**
      * Squelch function. Values below the squelch level are set to zero

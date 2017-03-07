@@ -88,6 +88,8 @@ public class DirectPlay implements Runnable
         while (m_thread != null)
         {
             int how_much = m_dataline.available();
+            if (how_much <= 0)
+                continue;
             if (how_much > buffer.length)
                 how_much = buffer.length;
             for (int s=0; s<how_much; s+=2)
