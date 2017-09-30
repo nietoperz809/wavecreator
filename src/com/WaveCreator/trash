@@ -2,6 +2,19 @@
     Nice Wave16 routines
 **/
 
+        JButton jb = new JButton("Play");
+        jb.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed (ActionEvent e)
+            {
+                m_player.play();
+            }
+        });
+        add (BorderLayout.SOUTH, jb);
+
+
+
 //////////////////////////////////////// test functions ////////////////////////////////////////
 
     // y = (x-x0)^-1

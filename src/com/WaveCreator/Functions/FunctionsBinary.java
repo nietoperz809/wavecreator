@@ -103,9 +103,9 @@ public final class FunctionsBinary extends Functions
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
         {
-            double a = m_base.data[s];
-            double frac = a-Math.rint(a);
-            double sign = Math.signum(a);
+            float a = m_base.data[s];
+            float frac = (float) (a-Math.rint(a));
+            float sign = Math.signum(a);
             a = (int)Math.abs(a) ^ value;
             out.data[s] = sign*a + frac;
         }
@@ -117,9 +117,9 @@ public final class FunctionsBinary extends Functions
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
         {
-            double a = m_base.data[s];
-            double frac = a-Math.rint(a);
-            double sign = Math.signum(a);
+            float a = m_base.data[s];
+            float frac = (float) (a-Math.rint(a));
+            float sign = Math.signum(a);
             a = (int)Math.abs(a) & value;
             out.data[s] = sign*a + frac;
         }
@@ -131,9 +131,9 @@ public final class FunctionsBinary extends Functions
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
         {
-            double a = m_base.data[s];
-            double frac = a-Math.rint(a);
-            double sign = Math.signum(a);
+            float a = m_base.data[s];
+            float frac = (float) (a-Math.rint(a));
+            float sign = Math.signum(a);
             a = (int)Math.abs(a) | value;
             out.data[s] = sign*a + frac;
         }

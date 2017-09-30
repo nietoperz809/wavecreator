@@ -40,15 +40,15 @@ public class DMatrixQrd {
     int m = _m = a.getM();
     int n = _n = a.getN();
     _qr = a.get();
-    _rdiag = new double[_n];
+    _rdiag = new float[_n];
 
     // Main loop.
     for (int k=0; k<n; ++k) {
 
       // Compute 2-norm of k-th column without under/overflow.
-      double nrm = 0;
+      float nrm = 0;
       for (int i=k; i<m; ++i)
-        nrm = hypot(nrm,_qr[i][k]);
+        nrm = (float) hypot(nrm,_qr[i][k]);
 
       if (nrm!=0.0) {
 
@@ -90,12 +90,12 @@ public class DMatrixQrd {
    * @return the m-by-n matrix factor Q.
    */
   public DMatrix getQ() {
-    double[][] q = new double[_m][_n];
+    float[][] q = new float[_m][_n];
     for (int k=_n-1; k>=0; --k) {
       for (int i=0; i<_m; ++i) {
-        q[i][k] = 0.0;
+        q[i][k] = 0.0f;
       }
-      q[k][k] = 1.0;
+      q[k][k] = 1.0f;
       for (int j=k; j<_n; ++j) {
         if (_qr[k][k]!=0.0) {
           double s = 0.0;
@@ -117,7 +117,7 @@ public class DMatrixQrd {
    * @return the n-by-n matrix factor R.
    */
   public DMatrix getR() {
-    double[][] r = new double[_n][_n];
+    float[][] r = new float[_n][_n];
     for (int i=0; i<_n; ++i) {
       r[i][i] = _rdiag[i];
         System.arraycopy(_qr[i], i + 1, r[i], i + 1, _n - (i + 1));
@@ -140,7 +140,7 @@ public class DMatrixQrd {
       
     // Copy the right hand side.
     int nx = b.getN();
-    double[][] x = b.get();
+    float[][] x = b.get();
 
     // Compute Y = transpose(Q)*B.
     for (int k=0; k<_n; ++k) {
@@ -174,6 +174,6 @@ public class DMatrixQrd {
 
   final int _m;
     final int _n;
-  final double[][] _qr;
-  final double[] _rdiag;
+  final float[][] _qr;
+  final float[] _rdiag;
 }

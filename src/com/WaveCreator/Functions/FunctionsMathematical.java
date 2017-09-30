@@ -24,8 +24,8 @@ public final class FunctionsMathematical extends Functions
 
         for (int s = 0; s < m_base.data.length; s++)
         {
-            double m;
-            m = Math.signum(out.data[s]) * Math.log(1 + u * Math.abs(out.data[s])) / Math.log(1 + u);
+            float m;
+            m = (float) (Math.signum(out.data[s]) * Math.log(1 + u * Math.abs(out.data[s])) / Math.log(1 + u));
             m *= Wave16.MAX_VALUE;
             out.data[s] = m;
         }
@@ -44,10 +44,10 @@ public final class FunctionsMathematical extends Functions
             v *= s2;
             for (int j = 0, t = js >> 1; j < n; j += js, t += js)
             {
-                double x = out.data[j];
-                double y = out.data[t];
+                float x = out.data[j];
+                float y = out.data[t];
                 out.data[j] = x + y;
-                out.data[t] = (x - y) * v;
+                out.data[t] = (float) ((x - y) * v);
             }
         }
         out.data[0] *= v; // v==1.0/sqrt(n);
@@ -61,15 +61,15 @@ public final class FunctionsMathematical extends Functions
         Wave16 out = m_base.functionsLength.padToNextPowerOfTwo(0);
         int ldn = (int) (Math.log(out.data.length) / Math.log(2));
         int n = 1 << ldn;
-        double s2 = Math.sqrt(2.0);
-        double v = 1.0 / Math.sqrt((double) n);
+        float s2 = (float) Math.sqrt(2.0);
+        float v = (float) (1.0 / Math.sqrt((double) n));
         out.data[0] *= v;
         for (int js = n; js >= 2; js >>= 1)
         {
             for (int j = 0, t = js >> 1; j < n; j += js, t += js)
             {
-                double x = out.data[j];
-                double y = out.data[t] * v;
+                float x = out.data[j];
+                float y = out.data[t] * v;
                 out.data[j] = x + y;
                 out.data[t] = x - y;
             }
@@ -85,7 +85,7 @@ public final class FunctionsMathematical extends Functions
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
         {
-            out.data[s] = Math.pow(m_base.data[s], -1.0);
+            out.data[s] = (float) Math.pow(m_base.data[s], -1.0f);
         }
         out.data = Tools.fitValues(out.data);
         return out;
@@ -96,7 +96,7 @@ public final class FunctionsMathematical extends Functions
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
         {
-            out.data[s] = Math.cbrt(m_base.data[s]);
+            out.data[s] = (float) Math.cbrt(m_base.data[s]);
         }
         out.data = Tools.fitValues(out.data);
         return out;
@@ -107,7 +107,7 @@ public final class FunctionsMathematical extends Functions
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
         {
-            out.data[s] = Math.log(m_base.data[s] + Wave16.MAX_VALUE);
+            out.data[s] = (float) Math.log(m_base.data[s] + Wave16.MAX_VALUE);
         }
         out.data = Tools.fitValues(out.data);
         return out;
@@ -155,22 +155,22 @@ public final class FunctionsMathematical extends Functions
         return out;
     }
 
-    public Wave16 floorTo (@ParamDesc("Rounding level") double lev)
+    public Wave16 floorTo (@ParamDesc("Rounding level") float lev)
     {
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
         {
-            out.data[s] = Math.floor(m_base.data[s] * lev) / lev;
+            out.data[s] = (float) (Math.floor(m_base.data[s] * lev) / lev);
         }
         return out;
     }
 
-    public Wave16 mod (@ParamDesc("Second Mod operand") double m)
+    public Wave16 mod (@ParamDesc("Second Mod operand") float m)
     {
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
         {
-            out.data[s] = m_base.data[s] % m;
+            out.data[s] = (float) (m_base.data[s] % m);
         }
         out.data = Tools.fitValues(out.data);
         return out;
@@ -215,7 +215,7 @@ public final class FunctionsMathematical extends Functions
         {
             f1 = m_base.data[s];
             f2 = m_base.data[s + 1];
-            out.data[s] = f2 - f1;
+            out.data[s] = (float) (f2 - f1);
         }
         // Last sample
         out.data[m_base.data.length - 1] = out.data[m_base.data.length - 2];
@@ -237,7 +237,7 @@ public final class FunctionsMathematical extends Functions
     public Wave16 integrateRaw ()
     {
         Wave16 out = m_base.createEmptyCopy();
-        double sum = 0.0;
+        float sum = 0.0f;
 
         for (int k = 0; k < m_base.data.length; k++)
         {
@@ -302,7 +302,7 @@ public final class FunctionsMathematical extends Functions
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < norm.data.length; s++)
         {
-            double sum = 0.0;
+            float sum = 0.0f;
             for (int n = 0; n < step; n++)
             {
                 int idx = s + n;

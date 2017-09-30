@@ -54,18 +54,18 @@ public class DMatrix
     public static DMatrix identity(int m, int n)
     {
         DMatrix x = new DMatrix(m, n);
-        double[][] xa = x._a;
+        float[][] xa = x._a;
         int mn = min(m, n);
         for (int i = 0; i < mn; ++i)
         {
-            xa[i][i] = 1.0;
+            xa[i][i] = 1.0f;
         }
         return x;
     }
 
     // Used in implementation of toString() above.
 
-    private static String[][] format(double[][] d)
+    private static String[][] format(float[][] d)
     {
         int m = d.length;
         int n = d[0].length;
@@ -179,7 +179,7 @@ public class DMatrix
     // private
     private final int _m; // number of rows
     private final int _n; // number of columns
-    private final double[][] _a; // array[_m][_n] of matrix elements
+    private final float[][] _a; // array[_m][_n] of matrix elements
 
     /**
      * Constructs an m-by-n matrix of zeros.
@@ -191,7 +191,7 @@ public class DMatrix
     {
         _m = m;
         _n = n;
-        _a = new double[m][n];
+        _a = new float[m][n];
     }
 
     /**
@@ -201,7 +201,7 @@ public class DMatrix
      * @param n the number of columns.
      * @param v the value.
      */
-    public DMatrix(int m, int n, double v)
+    public DMatrix(int m, int n, float v)
     {
         this(m, n);
         Array.fill(v, _a);
@@ -218,7 +218,7 @@ public class DMatrix
      *
      * @param a the array.
      */
-    public DMatrix(double[][] a)
+    public DMatrix(float[][] a)
     {
         Check.argument(Array.isRegular(a), "array a is regular");
         _m = a.length;
@@ -239,7 +239,7 @@ public class DMatrix
     ///////////////////////////////////////////////////////////////////////////
 
     // package
-    DMatrix(int m, int n, double[][] a)
+    DMatrix(int m, int n, float[][] a)
     {
         _m = m;
         _n = n;
@@ -291,7 +291,7 @@ public class DMatrix
      *
      * @return the array; by reference, not by copy.
      */
-    public double[][] getArray()
+    public float[][] getArray()
     {
         return _a;
     }
@@ -335,7 +335,7 @@ public class DMatrix
      *
      * @return the array.
      */
-    public double[][] get()
+    public float[][] get()
     {
         return Array.copy(_a);
     }
@@ -345,7 +345,7 @@ public class DMatrix
      *
      * @param a the array.
      */
-    public void get(double[][] a)
+    public void get(float[][] a)
     {
         Array.copy(_a, a);
     }
@@ -357,7 +357,7 @@ public class DMatrix
      * @param j the column index.
      * @return the element.
      */
-    public double get(int i, int j)
+    public float get(int i, int j)
     {
         return _a[i][j];
     }
@@ -399,7 +399,7 @@ public class DMatrix
         {
             int m = (r != null) ? r.length : _m;
             int n = (c != null) ? c.length : _n;
-            double[][] b = new double[m][n];
+            float[][] b = new float[m][n];
             if (r == null)
             {
                 for (int i = 0; i < m; ++i)
@@ -474,7 +474,7 @@ public class DMatrix
         {
             int m = i1 - i0 + 1;
             int n = c.length;
-            double[][] b = new double[m][n];
+            float[][] b = new float[m][n];
             for (int i = i0; i <= i1; ++i)
             {
                 for (int j = 0; j < n; ++j)
@@ -505,7 +505,7 @@ public class DMatrix
         {
             int m = r.length;
             int n = j1 - j0 + 1;
-            double[][] b = new double[m][n];
+            float[][] b = new float[m][n];
             for (int i = 0; i < m; ++i)
             {
                 for (int j = j0; j <= j1; ++j)
@@ -522,9 +522,9 @@ public class DMatrix
      *
      * @return the array of matrix elements packed by columns.
      */
-    public double[] getPackedColumns()
+    public float[] getPackedColumns()
     {
-        double[] c = new double[_m * _n];
+        float[] c = new float[_m * _n];
         for (int i = 0; i < _m; ++i)
         {
             for (int j = 0; j < _n; ++j)
@@ -540,9 +540,9 @@ public class DMatrix
      *
      * @return the array of matrix elements packed by rows.
      */
-    public double[] getPackedRows()
+    public float[] getPackedRows()
     {
-        double[] r = new double[_m * _n];
+        float[] r = new float[_m * _n];
         for (int i = 0; i < _m; ++i)
         {
             System.arraycopy(_a[i], 0, r, i * _n, _n);
@@ -556,7 +556,7 @@ public class DMatrix
      *
      * @param a the array.
      */
-    public void set(double[][] a)
+    public void set(float[][] a)
     {
         for (int i = 0; i < _m; ++i)
         {
@@ -571,7 +571,7 @@ public class DMatrix
      * @param j the column index.
      * @param v the element value.
      */
-    public void set(int i, int j, double v)
+    public void set(int i, int j, float v)
     {
         _a[i][j] = v;
     }
@@ -629,7 +629,7 @@ public class DMatrix
         {
             int m = (r != null) ? r.length : _m;
             int n = (c != null) ? c.length : _n;
-            double[][] b = x._a;
+            float[][] b = x._a;
             if (r == null)
             {
                 for (int i = 0; i < m; ++i)
@@ -703,7 +703,7 @@ public class DMatrix
         else
         {
             int n = c.length;
-            double[][] b = x._a;
+            float[][] b = x._a;
             for (int i = i0; i <= i1; ++i)
             {
                 for (int j = 0; j < n; ++j)
@@ -733,7 +733,7 @@ public class DMatrix
         else
         {
             int m = r.length;
-            double[][] b = x._a;
+            float[][] b = x._a;
             for (int i = 0; i < m; ++i)
             {
                 for (int j = j0; j <= j1; ++j)
@@ -749,7 +749,7 @@ public class DMatrix
      *
      * @param c the array of matrix elements packed by columns.
      */
-    public void setPackedColumns(double[] c)
+    public void setPackedColumns(float[] c)
     {
         for (int i = 0; i < _m; ++i)
         {
@@ -765,7 +765,7 @@ public class DMatrix
      *
      * @param r the array of matrix elements packed by rows.
      */
-    public void setPackedRows(double[] r)
+    public void setPackedRows(float[] r)
     {
         for (int i = 0; i < _m; ++i)
         {
@@ -781,7 +781,7 @@ public class DMatrix
     public DMatrix transpose()
     {
         DMatrix x = new DMatrix(_n, _m);
-        double[][] b = x._a;
+        float[][] b = x._a;
         for (int i = 0; i < _m; ++i)
         {
             for (int j = 0; j < _n; ++j)
@@ -797,12 +797,12 @@ public class DMatrix
      *
      * @return the one-norm.
      */
-    public double norm1()
+    public float norm1()
     {
-        double f = 0.0;
+        float f = 0.0f;
         for (int j = 0; j < _n; ++j)
         {
-            double s = 0.0;
+            float s = 0.0f;
             for (int i = 0; i < _m; ++i)
             {
                 s += abs(_a[i][j]);
@@ -817,9 +817,9 @@ public class DMatrix
      *
      * @return the two-norm.
      */
-    public double norm2()
+    public float norm2()
     {
-        return 1.0; // TODO: use the SVD.
+        return 1.0f; // TODO: use the SVD.
     }
 
     /**
@@ -827,12 +827,12 @@ public class DMatrix
      *
      * @return the infinity-norm.
      */
-    public double normI()
+    public float normI()
     {
-        double f = 0.0;
+        float f = 0.0f;
         for (int i = 0; i < _m; ++i)
         {
-            double s = 0.0;
+            float s = 0.0f;
             for (int j = 0; j < _n; ++j)
             {
                 s += abs(_a[i][j]);
@@ -847,14 +847,14 @@ public class DMatrix
      *
      * @return the Frobenius norm.
      */
-    public double normF()
+    public float normF()
     {
-        double f = 0.0;
+        float f = 0.0f;
         for (int i = 0; i < _m; ++i)
         {
             for (int j = 0; j < _n; ++j)
             {
-                f = hypot(f, _a[i][j]);
+                f = (float) hypot(f, _a[i][j]);
             }
         }
         return f;
@@ -1009,7 +1009,7 @@ public class DMatrix
      * @param s the scalar s.
      * @return C = A * s.
      */
-    public DMatrix times(double s)
+    public DMatrix times(float s)
     {
         DMatrix c = new DMatrix(_m, _n);
         Array.mul(_a, s, c._a);
@@ -1022,7 +1022,7 @@ public class DMatrix
      * @param s the scalar s.
      * @return A = A * s.
      */
-    public DMatrix timesEquals(double s)
+    public DMatrix timesEquals(float s)
     {
         Array.mul(_a, s, _a);
         return this;
@@ -1040,10 +1040,10 @@ public class DMatrix
         Check.argument(_n == b._m,
                 "number of columns in A equals number of rows in B");
         DMatrix c = new DMatrix(_m, b._n);
-        double[][] aa = _a;
-        double[][] ba = b._a;
-        double[][] ca = c._a;
-        double[] bj = new double[_n];
+        float[][] aa = _a;
+        float[][] ba = b._a;
+        float[][] ca = c._a;
+        float[] bj = new float[_n];
         for (int j = 0; j < b._n; ++j)
         {
             for (int k = 0; k < _n; ++k)
@@ -1052,8 +1052,8 @@ public class DMatrix
             }
             for (int i = 0; i < _m; ++i)
             {
-                double[] ai = aa[i];
-                double s = 0.0;
+                float[] ai = aa[i];
+                float s = 0.0f;
                 for (int k = 0; k < _n; ++k)
                 {
                     s += ai[k] * bj[k];
@@ -1069,10 +1069,10 @@ public class DMatrix
      *
      * @return the trace.
      */
-    public double trace()
+    public float trace()
     {
         int mn = min(_m, _n);
-        double t = 0.0;
+        float t = 0.0f;
         for (int i = 0; i < mn; ++i)
         {
             t += _a[i][i];
@@ -1096,8 +1096,8 @@ public class DMatrix
         {
             return false;
         }
-        double[][] a = this._a;
-        double[][] b = that._a;
+        float[][] a = this._a;
+        float[][] b = that._a;
         for (int i = 0; i < _m; ++i)
         {
             for (int j = 0; j < _n; ++j)

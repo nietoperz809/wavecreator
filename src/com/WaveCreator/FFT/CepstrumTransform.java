@@ -23,10 +23,10 @@ public final class CepstrumTransform
      * @param logarithm
      * @return
      */
-    public double[] doCepstrumTransform(double[] vec, boolean logarithm)
+    public float[] doCepstrumTransform(float[] vec, boolean logarithm)
     {
         n = vec.length;
-        double ld = (Math.log(n) / Math.log(2.0));
+        float ld = (float) (Math.log(n) / Math.log(2.0));
         nu = (int) ld;
         if ((int)ld - ld != 0)
         {
@@ -60,10 +60,10 @@ public final class CepstrumTransform
             }
         }
         FFT();
-        double[] cep = new double[n];
+        float[] cep = new float[n];
         for (int i = 0; i < n; i++)
         {
-            cep[i] = 2 * Math.sqrt(xre[i] * xre[i] + xim[i] * xim[i]) / n;
+            cep[i] = (float) (2 * Math.sqrt(xre[i] * xre[i] + xim[i] * xim[i]) / n);
         }
         cep[0] = 0.0f;
         cep[1] = 0.0f;

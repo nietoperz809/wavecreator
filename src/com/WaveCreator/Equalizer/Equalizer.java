@@ -135,7 +135,7 @@ public class Equalizer implements EqualizerBase
      * Main filtering method.
      * @param data   - data to be filtered
      */
-    public void iir(double[] data)
+    public void iir(float[] data)
     {
         int index, band;
         float eqpreamp = preamp;
@@ -195,7 +195,7 @@ public class Equalizer implements EqualizerBase
             out *= 4;
 
             /* Round and convert to integer */
-            data[index] = out;
+            data[index] = (float) out;
 
             i++;
             j++;

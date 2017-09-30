@@ -56,7 +56,7 @@ public final class FunctionsTwoWaves extends Functions
         Wave16 out = m_base.createEmptyCopy();
         for (int tau = 0; tau<m_base.data.length; tau++)
         {
-            double s = 0.0;
+            float s =  0.0f;
             for (int k=0; k<m_base.data.length; k++)
             {
                 int k2 = tau - k;
@@ -64,7 +64,7 @@ public final class FunctionsTwoWaves extends Functions
                     k2 += m_base.data.length;
                 s += (m_base.data[k] * other.data[k2]);
             }
-            out.data[tau] = s;
+            out.data[tau] =  s;
         }
         out.data = Tools.fitValues (out.data);
         return out;
@@ -81,7 +81,7 @@ public final class FunctionsTwoWaves extends Functions
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
         {
-            out.data[s] = (m_base.data[s] + in.data[s % in.data.length]) / 2.0;
+            out.data[s] = (float) ((m_base.data[s] + in.data[s % in.data.length]) / 2.0);
         }
         return out;
     }
@@ -123,7 +123,7 @@ public final class FunctionsTwoWaves extends Functions
     public Wave16 combineDftLike (Wave16 in)
     {
         Wave16 out = m_base.createEmptyCopy();
-        double sum = 0.0;
+        float sum = 0.0f;
 
         for (int k = 0; k < m_base.data.length; k++)
         {
@@ -163,7 +163,7 @@ public final class FunctionsTwoWaves extends Functions
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
         {
-            out.data[s] = Math.pow(m_base.data[s], in.data[s % in.data.length]);
+            out.data[s] = (float) Math.pow(m_base.data[s], in.data[s % in.data.length]);
         }
         out.data = Tools.fitValues(out.data);
         return out;
@@ -174,7 +174,7 @@ public final class FunctionsTwoWaves extends Functions
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
         {
-            out.data[s] = Math.log(m_base.data[s])/Math.log(in.data[s % in.data.length]);
+            out.data[s] = (float) (Math.log(m_base.data[s])/Math.log(in.data[s % in.data.length]));
         }
         out.data = Tools.fitValues(out.data);
         return out;
@@ -196,8 +196,8 @@ public final class FunctionsTwoWaves extends Functions
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
         {
-            double v1 = in.data[s % in.data.length];
-            double v2 = m_base.data[s];
+            float v1 = in.data[s % in.data.length];
+            float v2 = m_base.data[s];
             if (v1 > v2)
                 out.data[s] = v1;
             else
@@ -227,8 +227,8 @@ public final class FunctionsTwoWaves extends Functions
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
         {
-            double v1 = in.data[s % in.data.length];
-            double v2 = m_base.data[s];
+            float v1 = in.data[s % in.data.length];
+            float v2 = m_base.data[s];
             if (v1 < v2)
                 out.data[s] = v1;
             else
@@ -347,7 +347,7 @@ public final class FunctionsTwoWaves extends Functions
                 sign = Math.signum (m_base.data[s]);
             else
                 sign = Math.signum (in.data[idx]);
-            out.data[s] = sign * Math.sqrt(q1 + q2);
+            out.data[s] = (float) (sign * Math.sqrt(q1 + q2));
         }
         out.data = Tools.fitValues(out.data);
         return out;
@@ -409,7 +409,7 @@ public final class FunctionsTwoWaves extends Functions
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
         {
-            out.data[s] = Math.atan2 (m_base.data[s], in.data[s % in.data.length]);
+            out.data[s] = (float) Math.atan2 (m_base.data[s], in.data[s % in.data.length]);
         }
         out.data = Tools.fitValues(out.data);
         return out;
@@ -420,7 +420,7 @@ public final class FunctionsTwoWaves extends Functions
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
         {
-            double sign = Math.signum(in.data[s % in.data.length]);
+            float sign = Math.signum(in.data[s % in.data.length]);
             out.data[s] = Math.abs(m_base.data[s]) * sign;
         }
         return out;

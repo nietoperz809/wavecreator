@@ -36,11 +36,11 @@ public class Complex
     /**
      *
      */
-    public final double re;   // the real part
+    public final float re;   // the real part
     /**
      *
      */
-    public final double im;   // the imaginary part
+    public final float im;   // the imaginary part
 
     // createEmptyCopy a new object with the given real and imaginary parts
     /**
@@ -50,8 +50,8 @@ public class Complex
      */
     public Complex(double real, double imag)
     {
-        re = real;
-        im = imag;
+        re = (float) real;
+        im = (float) imag;
     }
 
     // return a string representation of the invoking Complex object
@@ -77,18 +77,18 @@ public class Complex
      *
      * @return
      */
-    public double abs()
+    public float abs()
     {
-        return Math.hypot(re, im);
+        return (float) Math.hypot(re, im);
     }  // Math.sqrt(re*re + im*im)
 
     /**
      *
      * @return
      */
-    public double phase()
+    public float phase()
     {
-        return Math.atan2(im, re);
+        return (float) Math.atan2(im, re);
     }  // between -pi and pi
 
     // return a new Complex object whose value is (this + b)
@@ -100,8 +100,8 @@ public class Complex
     public Complex plus(Complex b)
     {
         Complex a = this;             // invoking object
-        double real = a.re + b.re;
-        double imag = a.im + b.im;
+        float real = a.re + b.re;
+        float imag = a.im + b.im;
         return new Complex(real, imag);
     }
 
@@ -114,8 +114,8 @@ public class Complex
     public Complex minus(Complex b)
     {
         Complex a = this;
-        double real = a.re - b.re;
-        double imag = a.im - b.im;
+        float real = a.re - b.re;
+        float imag = a.im - b.im;
         return new Complex(real, imag);
     }
 
@@ -128,8 +128,8 @@ public class Complex
     public Complex times(Complex b)
     {
         Complex a = this;
-        double real = a.re * b.re - a.im * b.im;
-        double imag = a.re * b.im + a.im * b.re;
+        float real = a.re * b.re - a.im * b.im;
+        float imag = a.re * b.im + a.im * b.re;
         return new Complex(real, imag);
     }
 
@@ -140,7 +140,7 @@ public class Complex
      * @param alpha
      * @return
      */
-    public Complex times(double alpha)
+    public Complex times(float alpha)
     {
         return new Complex(alpha * re, alpha * im);
     }
@@ -158,7 +158,7 @@ public class Complex
     // return a new Complex object whose value is the reciprocal of this
     Complex reciprocal()
     {
-        double scale = re * re + im * im;
+        float scale = re * re + im * im;
         return new Complex(re / scale, -im / scale);
     }
 

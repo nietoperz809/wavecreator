@@ -1,13 +1,12 @@
 package com.WaveCreator;
 
+import com.WaveCreator.Audio.ClipPlayer;
 import com.WaveCreator.Oscilloscope.Oscilloscope;
 import com.WaveCreator.Oscilloscope.ScopeMouseAdapter;
-import com.WaveCreator.Audio.ClipPlayer;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
+import java.awt.event.*;
 import java.io.Serializable;
 
 /**
@@ -157,8 +156,27 @@ public class ScopeWindow extends JFrame implements Serializable
         m_scopePanel = scopePanel;
         add (BorderLayout.CENTER, m_scopePanel);
 
-        JScrollBar scr = makeScrollBar (wave, showwindow);
+        addKeyListener (new KeyAdapter()  // Key events
+        {
+            @Override
+            public void keyTyped (KeyEvent e)
+            {
+                switch (e.getKeyChar())
+                {
+                    case 'p':
+                        m_player.play();
+                        break;
+                    case 's':
+                        m_player.stop();
+                        break;
+                    case 'i':
+                        Dialogs.waveInfo(ScopeWindow.this);
+                        break;
+                }
+            }
+        });
 
+        JScrollBar scr = makeScrollBar (wave, showwindow);
 
         if (scr != null)
         {

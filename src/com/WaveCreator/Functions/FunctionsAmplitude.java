@@ -23,9 +23,9 @@ public final class FunctionsAmplitude extends Functions
      * @param mult Multiplier
      * @return New sampling data
      */
-    public Wave16 multiply(@ParamDesc("Multiplier") double mult)
+    public Wave16 multiply(@ParamDesc("Multiplier") float mult)
     {
-        double[] m = {mult};
+        float[] m = {mult};
         return multiply(m);
     }
 
@@ -34,13 +34,13 @@ public final class FunctionsAmplitude extends Functions
      * @param mult Array o multipliers
      * @return New sampling data
      */
-    public Wave16 multiply(@ParamDesc("Array of multipliers")double[] mult)
+    public Wave16 multiply(@ParamDesc("Array of multipliers")float[] mult)
     {
         Wave16 out = m_base.createEmptyCopy();
         int m_idx = 0;
         for (int s = 0; s < m_base.data.length; s++)
         {
-            double v1 = m_base.data[s];
+            float v1 = m_base.data[s];
             v1 *= mult[m_idx++];
             if (m_idx == mult.length)
             {
@@ -53,7 +53,7 @@ public final class FunctionsAmplitude extends Functions
 
     public Wave16 multiply(@ParamDesc("First sample to be changed")int from,
                                    @ParamDesc("Last sample to be changed")int to,
-                                   @ParamDesc("Multiplicator")double factor)
+                                   @ParamDesc("Multiplicator")float factor)
     {
         Wave16 out = m_base.createEmptyCopy();
         for (int s=0; s<m_base.data.length; s++)
@@ -75,7 +75,7 @@ public final class FunctionsAmplitude extends Functions
      * @param shift Offset
      * @return New sampling data
      */
-    public Wave16 shift(@ParamDesc("Constant value to add") double shift)
+    public Wave16 shift(@ParamDesc("Constant value to add") float shift)
     {
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
@@ -92,7 +92,7 @@ public final class FunctionsAmplitude extends Functions
     public Wave16 moveToCenter()
     {
         Wave16AmplitudeInfo am = new Wave16AmplitudeInfo(m_base);
-        return shift(-am.min-Math.floor(am.span/2));
+        return shift((float) (-am.min-Math.floor(am.span/2)));
     }
 
     /**
@@ -117,12 +117,12 @@ public final class FunctionsAmplitude extends Functions
 
     public Wave16 divideToTop()
     {
-        return fitValues().functionsAmplitude.multiply(0.5).functionsAmplitude.moveToTop();
+        return fitValues().functionsAmplitude.multiply(0.5f).functionsAmplitude.moveToTop();
     }
 
     public Wave16 divideToBottom()
     {
-        return fitValues().functionsAmplitude.multiply(0.5).functionsAmplitude.moveToBottom();
+        return fitValues().functionsAmplitude.multiply(0.5f).functionsAmplitude.moveToBottom();
     }
 
     /**
@@ -133,8 +133,8 @@ public final class FunctionsAmplitude extends Functions
     public Wave16 fadeIn (@ParamDesc("Samples used for fading")int samples)
     {
         Wave16 out = m_base.copy();
-        double step = 1.0 / samples;
-        double mult = 0.0;
+        float step = 1.0f / samples;
+        float mult = 0.0f;
         for (int s = 0; s < samples; s++)
         {
             mult += step;
@@ -151,8 +151,8 @@ public final class FunctionsAmplitude extends Functions
     public Wave16 fadeOut(@ParamDesc("Samples used for fading")int samples)
     {
         Wave16 out = m_base.copy();
-        double step = 1.0 / samples;
-        double mult = 1.0;
+        float step = 1.0f / samples;
+        float mult = 1.0f;
         int start = m_base.data.length - samples;
         for (int s = start; s < m_base.data.length; s++)
         {

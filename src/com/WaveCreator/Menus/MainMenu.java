@@ -3,26 +3,75 @@ package com.WaveCreator.Menus;
 
 import com.WaveCreator.DFilterAndFourierSeries.DFilterFrame;
 import com.WaveCreator.DFilterAndFourierSeries.FourierFrame;
-import static com.WaveCreator.Dialogs.closeApplication;
-import static com.WaveCreator.Dialogs.loadWave;
-import static com.WaveCreator.Dialogs.saveWave;
-import static com.WaveCreator.Dialogs.waveInfo;
-import static com.WaveCreator.FrameManager.getInstance;
-import static com.WaveCreator.Monitor.MemoryMonitorFrame.go;
 import com.WaveCreator.ScopeWindow;
 import com.WaveCreator.Wave16;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
-import static java.lang.Integer.MAX_VALUE;
+
+import static com.WaveCreator.Dialogs.*;
+import static com.WaveCreator.FrameManager.getInstance;
+import static com.WaveCreator.Monitor.MemoryMonitorFrame.go;
 import static java.lang.Runtime.getRuntime;
 import static java.lang.System.exit;
-import javax.swing.AbstractAction;
-import javax.swing.JPopupMenu;
+
+/*
+    static
+    {
+        Font f = new Font("arial", Font.BOLD, 8);
+        UIManager.put("Menu.font", f);
+        UIManager.put("MenuItem.font", f);
+        UIManager.put("MenuItem.margin", new Insets(0,0,0,0));
+        UIManager.put("MenuItem.border", BorderFactory.createLineBorder(Color.BLACK));
+        UIManager.put("MenuItem.borderPainted", true);
+    }
+
+ */
+
+class MyPMenu extends JPopupMenu
+{
+    static Font font = new Font("arial", Font.BOLD, 8);
+    static Insets nullInsets = new Insets(0,0,0,0);
+
+    /**
+     * Make smaller Menuitem
+     * @param mi
+     */
+    private void adjustM (JMenuItem mi)
+    {
+        mi.setFont(font);
+        Dimension d = new Dimension(200,18);
+        mi.setPreferredSize(d);
+        mi.setVerticalTextPosition(0);
+        mi.setHorizontalTextPosition(0);
+        mi.setIconTextGap(0);
+        mi.setMargin(nullInsets);
+        mi.setBackground(Color.CYAN);
+        mi.setOpaque(true);
+    }
+
+    public JMenuItem add (JMenuItem m)
+    {
+        super.add(m);
+        adjustM(m);
+        return m;
+    }
+
+    public JMenuItem add(Action a)
+    {
+        JMenuItem mi = super.add(a);
+        adjustM(mi);
+        return mi;
+    }
+
+}
 
 /**
  * Class that implements the main context menu
  */
-public class MainMenu extends JPopupMenu
+public class MainMenu extends MyPMenu
 {
     /**
      * Constructor
@@ -150,7 +199,7 @@ public class MainMenu extends JPopupMenu
             w = scopeWindow.m_wave;
         }
         add(new SubMenuFunctions(scopeWindow, w.functionsGenerators, "Generator Functions"));
-        
+        add(new SubMenuFunctions(scopeWindow, w.functionsTarsos, "TarsosRunner DSP"));
         add(new SubMenuFunctions(scopeWindow, w.functionsFFT, "FFT Functions"));
         add(new SubMenuFunctions(scopeWindow, w.functionsDeletions, "Sample deleting Functions"));
         add(new SubMenuFunctions(scopeWindow, w.functionsBinary, "Binary Functions"));

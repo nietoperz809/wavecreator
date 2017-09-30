@@ -18,7 +18,7 @@ public class Oscilloscope extends JPanel
     /**
      * Array of points
      */
-    double[] m_points;
+    float[] m_points;
     /**
      * Scale factor
      */
@@ -48,16 +48,16 @@ public class Oscilloscope extends JPanel
      * @param ysc Y scale factor
      * @param points Array of points to draw
      */
-    private Oscilloscope(int ysc, double[] points)
+    private Oscilloscope(int ysc, float[] points)
     {
         yscale = ysc;
         m_points = points;
         setBackground(Color.BLACK);
     }
 
-    private Oscilloscope(int ysc, Double[] points)
+    private Oscilloscope(int ysc, Float[] points)
     {
-        double[] pts = new double[points.length];
+        float[] pts = new float[points.length];
         for (int s = 0; s < points.length; s++)
         {
             pts[s] = points[s];
@@ -88,9 +88,9 @@ public class Oscilloscope extends JPanel
         if (m_points.length < 2)
         {
             x = 0;
-            m_points = new double[]
+            m_points = new float[]
             {
-                0, 0
+                0f, 0f
             };
             length = 2;
         }

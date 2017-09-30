@@ -26,7 +26,7 @@ public final class FunctionsSpecialEffects extends Functions
         Wave16 out = m_base.createEmptyCopy();
         for (int s=0; s<m_base.data.length; s++)
         {
-            double sum;
+            float sum;
             sum = m_base.data[s] + m_base.data[m_base.data.length-s-1];
             out.data[s] = sum;
         }
@@ -43,7 +43,7 @@ public final class FunctionsSpecialEffects extends Functions
         Wave16 out = m_base.createEmptyCopy();
         for (int s=0; s<m_base.data.length; s++)
         {
-            double sum;
+            float sum;
             sum = m_base.data[s] * m_base.data[m_base.data.length-s-1];
             out.data[s] = sum;
         }
@@ -260,9 +260,9 @@ public final class FunctionsSpecialEffects extends Functions
      * @param d Resolution shrinking factor
      * @return The new generated object
      */
-    public Wave16 decreaseResolution (@ParamDesc("Decreasing factor")double d)
+    public Wave16 decreaseResolution (@ParamDesc("Decreasing factor")float d)
     {
-        Wave16 out = m_base.functionsAmplitude.multiply(1.0/d);
+        Wave16 out = m_base.functionsAmplitude.multiply(1.0f/d);
         out = out.functionsMathematical.floorTo(1);
         out = out.functionsAmplitude.multiply(d);
         return out;

@@ -83,7 +83,7 @@ public class ScopeMouseAdapter implements MouseMotionListener, MouseListener
         if (m_scopeWindow.m_drawing_allowed)
         {
             // Draw in Wave16 object
-            double yp = 32768-((float)y/(float)d.height)*65535;
+            float yp = 32768-((float)y/(float)d.height)*65535;
             m_scopeWindow.m_wave.data[m_xp] = yp;
             m_scopeWindow.m_oscilloscope.repaint();
         }

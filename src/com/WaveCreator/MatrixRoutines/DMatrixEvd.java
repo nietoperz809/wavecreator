@@ -37,12 +37,12 @@ public class DMatrixEvd {
    */
   public DMatrixEvd(DMatrix a) {
     Check.argument(a.isSquare(),"matrix a is square");
-    double[][] aa = a.getArray();
+    float[][] aa = a.getArray();
     int n = a.getN();
     _n = n;
-    _v = new double[n][n];
-    _d = new double[n];
-    _e = new double[n];
+    _v = new float[n][n];
+    _d = new float[n];
+    _e = new float[n];
     if (a.isSymmetric()) {
       for (int i=0; i<n; ++i) {
           System.arraycopy(aa[i], 0, _v[i], 0, n);
@@ -50,7 +50,7 @@ public class DMatrixEvd {
       tred2(); // tridiagonalize
       tql2(); // diagonalize
     } else {
-      _h = new double[n][n];
+      _h = new float[n][n];
       for (int i=0; i<n; ++i) {
           System.arraycopy(aa[i], 0, _h[i], 0, n);
       }
@@ -73,10 +73,10 @@ public class DMatrixEvd {
    */
   public DMatrix getD() {
     DMatrix d = new DMatrix(_n,_n);
-    double[][] da = d.getArray();
+    float[][] da = d.getArray();
     for (int i=0; i<_n; ++i) {
       for (int j=0; j<_n; ++j) {
-        da[i][j] = 0.0;
+        da[i][j] = 0.0f;
       }
       da[i][i] = _d[i];
       if (_e[i]>0.0) {
@@ -92,7 +92,7 @@ public class DMatrixEvd {
    * Gets the real parts of the eigenvalues.
    * @return array of real parts = real(diag(D)).
    */
-  public double[] getRealEigenvalues() {
+  public float[] getRealEigenvalues() {
     return Array.copy(_d);
   }
 
@@ -100,7 +100,7 @@ public class DMatrixEvd {
    * Gets the imaginary parts of the eigenvalues
    * @return array of imaginary parts = imag(diag(D))
    */
-  public double[] getImagEigenvalues() {
+  public float[] getImagEigenvalues() {
     return Array.copy(_e);
   }
 
@@ -108,10 +108,10 @@ public class DMatrixEvd {
   // private
 
   private final int _n; // row and column dimensions for square matrix V
-  private final double[][] _v; // eigenvectors V
-  private final double[] _d;
-    private final double[] _e; // eigenvalues
-  private double[][] _h; // nonsymmetric Hessenberg form
+  private final float[][] _v; // eigenvectors V
+  private final float[] _d;
+    private final float[] _e; // eigenvalues
+  private float[][] _h; // nonsymmetric Hessenberg form
 
   // Symmetric Householder reduction to tridiagonal form.
   // This is derived from the Algol procedures tred2 by
@@ -126,16 +126,16 @@ public class DMatrixEvd {
     for (int i=n-1; i>0; --i) {
    
       // Scale to avoid under/overflow.
-      double scale = 0.0;
-      double h = 0.0;
+      float scale = 0.0f;
+      float h = 0.0f;
       for (int k=0; k<i; ++k)
         scale += abs(_d[k]);
       if (scale==0.0) {
         _e[i] = _d[i-1];
         for (int j=0; j<i; ++j) {
           _d[j] = _v[i-1][j];
-          _v[i][j] = 0.0;
-          _v[j][i] = 0.0;
+          _v[i][j] = 0.0f;
+          _v[j][i] = 0.0f;
         }
       } else {
    
@@ -144,15 +144,15 @@ public class DMatrixEvd {
           _d[k] /= scale;
           h += _d[k]*_d[k];
         }
-        double f = _d[i-1];
-        double g = sqrt(h);
+        float f = _d[i-1];
+        float g = (float) sqrt(h);
         if (f>0.0)
           g = -g;
         _e[i] = scale*g;
         h -= f * g;
         _d[i-1] = f-g;
         for (int j=0; j<i; ++j)
-          _e[j] = 0.0;
+          _e[j] = 0.0f;
    
         // Apply similarity transformation to remaining columns.
         for (int j=0; j<i; ++j) {
@@ -165,12 +165,12 @@ public class DMatrixEvd {
           }
           _e[j] = g;
         }
-        f = 0.0;
+        f = 0.0f;
         for (int j=0; j<i; ++j) {
           _e[j] /= h;
           f += _e[j]*_d[j];
         }
-        double hh = f/(h+h);
+        float hh = f/(h+h);
         for (int j=0; j<i; ++j) {
           _e[j] -= hh*_d[j];
         }
@@ -181,7 +181,7 @@ public class DMatrixEvd {
             _v[k][j] -= f*_e[k]+g*_d[k];
           }
           _d[j] = _v[i-1][j];
-          _v[i][j] = 0.0;
+          _v[i][j] = 0.0f;
         }
       }
       _d[i] = h;
@@ -190,13 +190,13 @@ public class DMatrixEvd {
     // Accumulate transformations.
     for (int i=0; i<n-1; ++i) {
       _v[n-1][i] = _v[i][i];
-      _v[i][i] = 1.0;
-      double h = _d[i+1];
+      _v[i][i] = 1.0f;
+      float h = _d[i+1];
       if (h!=0.0) {
         for (int k=0; k<=i; ++k)
           _d[k] = _v[k][i+1]/h;
         for (int j=0; j<=i; ++j) {
-          double g = 0.0;
+          float g = 0.0f;
           for (int k=0; k<=i; ++k)
             g += _v[k][i+1]*_v[k][j];
           for (int k=0; k<=i; ++k)
@@ -204,14 +204,14 @@ public class DMatrixEvd {
         }
       }
       for (int k=0; k<=i; ++k)
-        _v[k][i+1] = 0.0;
+        _v[k][i+1] = 0.0f;
     }
     for (int j=0; j<n; ++j) {
       _d[j] = _v[n-1][j];
-      _v[n-1][j] = 0.0;
+      _v[n-1][j] = 0.0f;
     }
-    _v[n-1][n-1] = 1.0;
-    _e[0] = 0.0;
+    _v[n-1][n-1] = 1.0f;
+    _e[0] = 0.0f;
   }
 
   // Symmetric tridiagonal QL algorithm.
@@ -222,10 +222,10 @@ public class DMatrixEvd {
   private void tql2() {
     int n = _n;
       System.arraycopy(_e, 1, _e, 0, n - 1);
-    _e[n-1] = 0.0;
-    double f = 0.0;
-    double tst1 = 0.0;
-    double eps = pow(2.0,-52.0);
+    _e[n-1] = 0.0f;
+    float f = 0.0f;
+    float tst1 = 0.0f;
+    float eps = (float) pow(2.0,-52.0);
     for (int l=0; l<n; ++l) {
 
       // Find small subdiagonal element.
@@ -244,34 +244,34 @@ public class DMatrixEvd {
           ++iter;  // (Could check iteration count here.)
 
           // Compute implicit shift
-          double g = _d[l];
-          double p = (_d[l+1] - g) / (2.0 * _e[l]);
-          double r = hypot(p,1.0);
+          float g = _d[l];
+          float p = (_d[l+1] - g) / (2.0f * _e[l]);
+          float r = (float) hypot(p,1.0f);
           if (p<0)
             r = -r;
           _d[l] = _e[l]/(p+r);
           _d[l+1] = _e[l]*(p+r);
-          double dl1 = _d[l+1];
-          double h = g-_d[l];
+          float dl1 = _d[l+1];
+          float h = g-_d[l];
           for (int i=l+2; i<n; ++i)
             _d[i] -= h;
           f += h;
    
           // Implicit QL transformation.
           p = _d[m];
-          double c = 1.0;
-          double c2 = c;
-          double c3 = c;
-          double el1 = _e[l+1];
-          double s = 0.0;
-          double s2 = 0.0;
+          float c = 1.0f;
+          float c2 = c;
+          float c3 = c;
+          float el1 = _e[l+1];
+          float s = 0.0f;
+          float s2 = 0.0f;
           for (int i=m-1; i>=l; --i) {
             c3 = c2;
             c2 = c;
             s2 = s;
             g = c * _e[i];
             h = c * p;
-            r = hypot(p,_e[i]);
+            r = (float) hypot(p,_e[i]);
             _e[i+1] = s*r;
             s = _e[i]/r;
             c = p/r;
@@ -293,13 +293,13 @@ public class DMatrixEvd {
         } while (abs(_e[l])>eps*tst1);
       }
       _d[l] += f;
-      _e[l] = 0.0;
+      _e[l] = 0.0f;
     }
      
     // Sort eigenvalues and corresponding vectors.
     for (int i=0; i<n-1; ++i) {
       int k = i;
-      double p = _d[i];
+      float p = _d[i];
       for (int j = i+1; j<n; ++j) {
         if (_d[j]<p) {
           k = j;
@@ -327,22 +327,22 @@ public class DMatrixEvd {
     int n = _n;
     int low = 0;
     int high = n-1;
-    double[] ort = new double[n];
+    float[] ort = new float[n];
     for (int m=low+1; m<=high-1; ++m) {
    
       // Scale column.
-      double scale = 0.0;
+      float scale = 0.0f;
       for (int i=m; i<=high; ++i)
         scale += abs(_h[i][m-1]);
       if (scale!=0.0) {
    
         // Compute Householder transformation.
-        double h = 0.0;
+        float h = 0.0f;
         for (int i=high; i>=m; --i) {
           ort[i] = _h[i][m-1]/scale;
           h += ort[i]*ort[i];
         }
-        double g = sqrt(h);
+        float g = (float) sqrt(h);
         if (ort[m]>0.0)
           g = -g;
         h -= ort[m]*g;
@@ -350,7 +350,7 @@ public class DMatrixEvd {
    
         // Householder similarity transformation H = (I-u*u'/h)*H*(I-u*u')/h).
         for (int j=m; j<n; ++j) {
-          double f = 0.0;
+          float f = 0.0f;
           for (int i=high; i>=m; --i)
             f += ort[i]*_h[i][j];
           f /= h;
@@ -358,7 +358,7 @@ public class DMatrixEvd {
             _h[i][j] -= f*ort[i];
         }
         for (int i=0; i<=high; ++i) {
-          double f = 0.0;
+          float f = 0.0f;
           for (int j=high; j>=m; --j)
             f += ort[j]*_h[i][j];
           f /= h;
@@ -373,7 +373,7 @@ public class DMatrixEvd {
     // Accumulate transformations (Algol's ortran).
     for (int i=0; i<n; ++i) {
       for (int j=0; j<n; ++j)
-        _v[i][j] = (i==j?1.0:0.0);
+        _v[i][j] = (i==j?1.0f:0.0f);
     }
 
     for (int m=high-1; m>=low+1; --m) {
@@ -381,10 +381,10 @@ public class DMatrixEvd {
         for (int i=m+1; i<=high; ++i)
           ort[i] = _h[i][m-1];
         for (int j=m; j<=high; ++j) {
-          double g = 0.0;
+          float g = 0.0f;
           for (int i=m; i<=high; ++i)
             g += ort[i]*_v[i][j];
-          g = (g/ort[m])/_h[m][m-1]; // double division avoids underflow
+          g = (g/ort[m])/_h[m][m-1]; // float division avoids underflow
           for (int i=m; i<=high; ++i)
             _v[i][j] += g*ort[i];
         }
@@ -394,9 +394,9 @@ public class DMatrixEvd {
 
 
   // Complex scalar division.
-  private double _cdivr, _cdivi;
-  private void cdiv(double xr, double xi, double yr, double yi) {
-    double r,d;
+  private float _cdivr, _cdivi;
+  private void cdiv(float xr, float xi, float yr, float yi) {
+    float r,d;
     if (abs(yr) > abs(yi)) {
       r = yi/yr;
       d = yr+r*yi;
@@ -423,16 +423,16 @@ public class DMatrixEvd {
     int n = nn-1;
     int low = 0;
     int high = nn-1;
-    double eps = pow(2.0,-52.0);
-    double exshift = 0.0;
-    double p=0.0,q=0.0,r=0.0,s=0.0,z=0.0,t,w,x,y;
+    float eps = (float) pow(2.0,-52.0);
+    float exshift = 0.0f;
+    float p=0.0f,q=0.0f,r=0.0f,s=0.0f,z=0.0f,t,w,x,y;
    
     // Store roots isolated by balance and compute matrix norm
-    double norm = 0.0;
+    float norm = 0.0f;
     for (int i=0; i<nn; ++i) {
       if (i<low || i>high) {
         _d[i] = _h[i][i];
-        _e[i] = 0.0;
+        _e[i] = 0.0f;
       }
       for (int j=max(i-1,0); j<nn; ++j)
         norm += abs(_h[i][j]);
@@ -459,7 +459,7 @@ public class DMatrixEvd {
       if (l==n) {
         _h[n][n] = _h[n][n] + exshift;
         _d[n] = _h[n][n];
-        _e[n] = 0.0;
+        _e[n] = 0.0f;
         --n;
         iter = 0;
       }
@@ -467,9 +467,9 @@ public class DMatrixEvd {
       // else if two roots found, ...
       else if (l==n-1) {
         w = _h[n][n-1]*_h[n-1][n];
-        p = (_h[n-1][n-1]-_h[n][n])/2.0;
+        p = (_h[n-1][n-1]-_h[n][n])/2.0f;
         q = p*p+w;
-        z = sqrt(abs(q));
+        z = (float) sqrt(abs(q));
         _h[n][n] = _h[n][n]+exshift;
         _h[n-1][n-1] = _h[n-1][n-1]+exshift;
         x = _h[n][n];
@@ -485,13 +485,13 @@ public class DMatrixEvd {
           _d[n] = _d[n-1];
           if (z!=0.0)
             _d[n] = x-w/z;
-          _e[n-1] = 0.0;
-          _e[n] = 0.0;
+          _e[n-1] = 0.0f;
+          _e[n] = 0.0f;
           x = _h[n][n-1];
           s = abs(x)+abs(z);
           p = x/s;
           q = z/s;
-          r = sqrt(p*p+q*q);
+          r = (float) sqrt(p*p+q*q);
           p /= r;
           q /= r;
    
@@ -533,8 +533,8 @@ public class DMatrixEvd {
    
         // Form shift
         x = _h[n][n];
-        y = 0.0;
-        w = 0.0;
+        y = 0.0f;
+        w = 0.0f;
         if (l<n) {
           y = _h[n-1][n-1];
           w = _h[n][n-1]*_h[n-1][n];
@@ -546,23 +546,23 @@ public class DMatrixEvd {
           for (int i=low; i<=n; ++i)
             _h[i][i] -= x;
           s = abs(_h[n][n-1])+abs(_h[n-1][n-2]);
-          x = y = 0.75*s;
-          w = -0.4375*s*s;
+          x = y = 0.75f*s;
+          w = -0.4375f*s*s;
         }
 
         // MATLAB's new ad hoc shift
         if (iter==30) {
-          s = (y-x)/2.0;
+          s = (y-x)/2.0f;
           s = s*s+w;
           if (s>0.0) {
-            s = sqrt(s);
+            s = (float) sqrt(s);
             if (y<x)
               s = -s;
-            s = x-w/((y-x)/2.0+s);
+            s = x-w/((y-x)/2.0f+s);
             for (int i=low; i<=n; ++i)
               _h[i][i] -= s;
             exshift += s;
-            x = y = w = 0.964;
+            x = y = w = 0.964f;
           }
         }
  
@@ -590,18 +590,18 @@ public class DMatrixEvd {
           --m;
         }
         for (int i=m+2; i<=n; ++i) {
-          _h[i][i-2] = 0.0;
+          _h[i][i-2] = 0.0f;
           if (i>m+2)
-            _h[i][i-3] = 0.0;
+            _h[i][i-3] = 0.0f;
         }
    
-        // Double QR step involving rows l:n and columns m:n
+        // Float QR step involving rows l:n and columns m:n
         for (int k=m; k<=n-1; ++k) {
           boolean notlast = (k!=n-1);
           if (k!=m) {
             p = _h[k][k-1];
             q = _h[k+1][k-1];
-            r = notlast?_h[k+2][k-1]:0.0;
+            r = notlast?_h[k+2][k-1]:0.0f;
             x = abs(p)+abs(q)+abs(r);
             if (x!=0.0) {
               p /= x;
@@ -611,7 +611,7 @@ public class DMatrixEvd {
           }
           if (x==0.0)
             break;
-          s = sqrt(p*p+q*q+r*r);
+          s = (float) sqrt(p*p+q*q+r*r);
           if (p<0.0)
             s = -s;
           if (s!=0.0) {
@@ -675,10 +675,10 @@ public class DMatrixEvd {
       // If real vector, ...
       if (q==0.0) {
         int l = n;
-        _h[n][n] = 1.0;
+        _h[n][n] = 1.0f;
         for (int i=n-1; i>=0; --i) {
           w = _h[i][i]-p;
-          r = 0.0;
+          r = 0.0f;
           for (int j=l; j<=n; ++j)
             r = r+_h[i][j]*_h[j][n];
           if (_e[i]<0.0) {
@@ -727,16 +727,16 @@ public class DMatrixEvd {
           _h[n-1][n-1] = q/_h[n][n-1];
           _h[n-1][n] = -(_h[n][n]-p)/_h[n][n-1];
         } else {
-          cdiv(0.0,-_h[n-1][n],_h[n-1][n-1]-p,q);
+          cdiv(0.0f,-_h[n-1][n],_h[n-1][n-1]-p,q);
           _h[n-1][n-1] = _cdivr;
           _h[n-1][n] = _cdivi;
         }
-        _h[n][n-1] = 0.0;
-        _h[n][n] = 1.0;
+        _h[n][n-1] = 0.0f;
+        _h[n][n] = 1.0f;
         for (int i=n-2; i>=0; --i) {
-          double ra,sa,vr,vi;
-          ra = 0.0;
-          sa = 0.0;
+          float ra,sa,vr,vi;
+          ra = 0.0f;
+          sa = 0.0f;
           for (int j=l; j<=n; ++j) {
             ra += _h[i][j]*_h[j][n-1];
             sa += _h[i][j]*_h[j][n];
@@ -758,7 +758,7 @@ public class DMatrixEvd {
               x = _h[i][i+1];
               y = _h[i+1][i];
               vr = (_d[i]-p)*(_d[i]-p)+_e[i]*_e[i]-q*q;
-              vi = (_d[i]-p)*2.0*q;
+              vi = (_d[i]-p)*2.0f*q;
               if (vr==0.0 && vi==0.0)
                 vr = eps*norm*(abs(w)+abs(q)+abs(x)+abs(y)+abs(z));
               cdiv(x*r-z*ra+q*sa,x*s-z*sa-q*ra,vr,vi);
@@ -797,7 +797,7 @@ public class DMatrixEvd {
     // Back transformation to get eigenvectors of original matrix
     for (int j=nn-1; j>=low; --j) {
       for (int i=low; i<=high; ++i) {
-        z = 0.0;
+        z = 0.0f;
         for (int k=low; k<=min(j,high); ++k)
           z += _v[i][k]*_h[k][j];
         _v[i][j] = z;

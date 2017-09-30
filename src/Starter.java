@@ -2,10 +2,7 @@ import com.WaveCreator.FrameManager;
 import com.WaveCreator.Functions.FunctionsGenerators;
 import com.WaveCreator.Wave16;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
+import javax.swing.*;
 
 /**
  * To change this template use File | Settings | File Templates.
@@ -23,6 +20,7 @@ public class Starter
 //        System.out.println(Arrays.toString(p));
         //FunctionsTesting.testHenon();
 
+        UIManager.setLookAndFeel("com.sun.java.swing.plaf.motif.MotifLookAndFeel");
         Wave16 s1 = FunctionsGenerators.curveSine(22050, 2000);
         FrameManager.getInstance().createFrame(s1, "Starting frame");
         //test();

@@ -84,9 +84,9 @@ public class Tools
         return (int) Math.pow(2.0, Math.ceil(Math.log(in) / Math.log(2.0)));
     }
 
-    public static double[] combineStereo (double[] in)
+    public static float[] combineStereo (float[] in)
     {
-        double[] out = new double[in.length / 2];
+        float[] out = new float[in.length / 2];
         for (int s = 0; s < in.length; s += 2)
         {
             out[s / 2] = (in[s] + in[s + 1]) / 2;
@@ -97,22 +97,22 @@ public class Tools
     /**
      * Fit values into defined range
      *
-     * @param in array of double value
-     * @return array of converted double values
+     * @param in array of float value
+     * @return array of converted float values
      */
-    public static double[] fitValues (double[] in)
+    public static float[] fitValues (float[] in)
     {
-        double[] out = new double[in.length];
+        float[] out = new float[in.length];
         Wave16AmplitudeInfo am = new Wave16AmplitudeInfo();
         am.calc(in);
-        double div = am.span / (Wave16.MAX_VALUE - Wave16.MIN_VALUE);
+        float div = am.span / (Wave16.MAX_VALUE - Wave16.MIN_VALUE);
         am.min = am.min / div;
         for (int s = 0; s < in.length; s++)
         {
             out[s] = in[s] / div + Wave16.MIN_VALUE - am.min;
-            if (Double.isInfinite(out[s]) || Double.isNaN(out[s]))
+            if (Float.isInfinite(out[s]) || Float.isNaN(out[s]))
             {
-                out[s] = 0.0;
+                out[s] = 0.0f;
             }
         }
         return out;
@@ -121,15 +121,15 @@ public class Tools
     /**
      * Fit values into BYTE range
      *
-     * @param in array of double value
-     * @return array of converted double values
+     * @param in array of float value
+     * @return array of converted float values
      */
-    public static double[] fitValuesToPositiveByteRange (double[] in)
+    public static float[] fitValuesToPositiveByteRange (float[] in)
     {
-        double[] out = new double[in.length];
+        float[] out = new float[in.length];
         Wave16AmplitudeInfo am = new Wave16AmplitudeInfo();
         am.calc(in);
-        double div = am.span / (Byte.MAX_VALUE - Byte.MIN_VALUE);
+        float div = am.span / (Byte.MAX_VALUE - Byte.MIN_VALUE);
         am.min = am.min / div;
         for (int s = 0; s < in.length; s++)
         {
@@ -141,15 +141,15 @@ public class Tools
     /**
      * Fit values into BYTE range
      *
-     * @param in array of double value
-     * @return array of converted double values
+     * @param in array of float value
+     * @return array of converted float values
      */
-    public static double[] fitValuesToByteRange (double[] in)
+    public static float[] fitValuesToByteRange (float[] in)
     {
-        double[] out = new double[in.length];
+        float[] out = new float[in.length];
         Wave16AmplitudeInfo am = new Wave16AmplitudeInfo();
         am.calc(in);
-        double div = am.span / (Byte.MAX_VALUE - Byte.MIN_VALUE);
+        float div = am.span / (Byte.MAX_VALUE - Byte.MIN_VALUE);
         am.min = am.min / div;
         for (int s = 0; s < in.length; s++)
         {
@@ -218,18 +218,18 @@ public class Tools
     }
 
     /**
-     * Read BE bytes inzo double array
+     * Read BE bytes inzo float array
      * @param inputBytes array of bytes
      * @param bytesPerFrame size of frame, 1...8
-     * @return newly created double array
+     * @return newly created float array
      */
-    public static double[] readBE (byte[] inputBytes, int bytesPerFrame)
+    public static float[] readBE (byte[] inputBytes, int bytesPerFrame)
     {
         int numframes = inputBytes.length/bytesPerFrame;
-        double[] outputWords = new double[numframes];
+        float[] outputWords = new float[numframes];
         for (int i=0; i<inputBytes.length; i+=bytesPerFrame)
         {
-            double n = 0;
+            float n = 0;
             for (int s = 0; s < bytesPerFrame; s++)
             {
                 n = (n * 256) + (inputBytes[i+s]);
@@ -239,13 +239,13 @@ public class Tools
         return outputWords;
     }
 
-    public static double[] readLE (byte[] inputBytes, int bytesPerFrame)
+    public static float[] readLE (byte[] inputBytes, int bytesPerFrame)
     {
         int numframes = inputBytes.length/bytesPerFrame;
-        double[] outputWords = new double[numframes];
+        float[] outputWords = new float[numframes];
         for (int i=0; i<inputBytes.length; i+=bytesPerFrame)
         {
-            double n = 0;
+            float n = 0;
             for (int s = bytesPerFrame-1; s > -1; s--)
             {
                 n = (n * 256) + (inputBytes[i+s]);

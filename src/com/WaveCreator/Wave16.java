@@ -14,20 +14,23 @@ public class Wave16 implements Serializable
     /**
      * Upper level constant
      */
-    public static final double MAX_VALUE = Short.MAX_VALUE;
+    public static final float MAX_VALUE = Short.MAX_VALUE;
     /**
      * Lower level constant
      */
-    public static final double MIN_VALUE = Short.MIN_VALUE;
+    public static final float MIN_VALUE = Short.MIN_VALUE;
     /**
      * Circle constant PI
      */
-    public static final double PI = Math.PI;
-    public static final double TWOPI = 2*Math.PI;
+    public static final float PI = (float) Math.PI;
+    public static final float TWOPI = (float) (2*Math.PI);
     /**
      *
      */
     private static final long serialVersionUID = 3070090589210322951L;
+
+    public final FunctionsTarsos functionsTarsos = new FunctionsTarsos(this);
+
     /**
      * Separated generator functions
      */
@@ -77,7 +80,7 @@ public class Wave16 implements Serializable
     /**
      * Data array that holds sampling data
      */
-    public volatile double[] data;
+    public volatile float[] data;
     /**
      * Sampling rate
      */
@@ -100,7 +103,7 @@ public class Wave16 implements Serializable
      */
     public Wave16 (int size, int rate)
     {
-        data = new double[size];
+        data = new float[size];
         samplingRate = rate;
         //name = Thread.currentThread().getStackTrace()[2].getMethodName();
     }
@@ -112,14 +115,22 @@ public class Wave16 implements Serializable
     }
 
     //     public int write(byte[] b, int off, int len);
+
+    /**
+     * Constructor from byte array
+     * @param in raw data byte array
+     * @param rate sampling rate
+     * @param offset offset of first data byte in array
+     * @param bytesInBuffer bytes to use
+     */
     public Wave16 (byte[] in, int rate, int offset, int bytesInBuffer)
     {
-        double[] d = new double[bytesInBuffer / 2];
+        float[] d = new float[bytesInBuffer / 2];
         for (int s = 0; s < bytesInBuffer; s += 2)
         {
             int off = s+offset;
             int i = (in[off] & 0xff | in[off + 1] << 8) & 0xffff;
-            d[s / 2] = (double) (short) i;
+            d[s / 2] = (float) (short) i;
         }
         data = d;
         samplingRate = rate;
@@ -130,7 +141,7 @@ public class Wave16 implements Serializable
         this(in, rate, 0, bytesInBuffer);
     }
 
-    public Wave16 (double[] d, int rate)
+    public Wave16 (float[] d, int rate)
     {
         data = d;
         samplingRate = rate;
@@ -138,7 +149,7 @@ public class Wave16 implements Serializable
 
     public Wave16 (short[] sh, int rate)
     {
-        double[] dd = new double[sh.length];
+        float[] dd = new float[sh.length];
         for (int s = 0; s < dd.length; s++)
         {
             dd[s] = sh[s];
@@ -149,7 +160,7 @@ public class Wave16 implements Serializable
 
     public Wave16 (Integer[] d, int rate)
     {
-        double[] dd = new double[d.length];
+        float[] dd = new float[d.length];
         for (int s = 0; s < d.length; s++)
         {
             dd[s] = d[s];
@@ -160,10 +171,10 @@ public class Wave16 implements Serializable
 
     public Wave16 (int[] d, int rate)
     {
-        double[] dd = new double[d.length];
+        float[] dd = new float[d.length];
         for (int s = 0; s < d.length; s++)
         {
-            dd[s] = (double) d[s];
+            dd[s] = (float) d[s];
         }
         data = dd;
         samplingRate = rate;
@@ -194,7 +205,7 @@ public class Wave16 implements Serializable
 
     public int maxIndex ()
     {
-        double d = Double.MIN_VALUE;
+        float d = Float.MIN_VALUE;
         int res = 0;
         for (int s = 0; s < data.length; s++)
         {
@@ -209,7 +220,7 @@ public class Wave16 implements Serializable
 
     public int minIndex ()
     {
-        double d = Double.MAX_VALUE;
+        float d = Float.MAX_VALUE;
         int res = 0;
         for (int s = 0; s < data.length; s++)
         {
@@ -222,11 +233,11 @@ public class Wave16 implements Serializable
         return res;
     }
 
-    public double[][] createQuaraticMatrix ()
+    public float[][] createQuaraticMatrix ()
     {
         Wave16 w1 = functionsLength.stretchToQuadratic();
         int sqr = (int) Math.sqrt(w1.data.length);
-        double[][] ret = new double[sqr][sqr];
+        float[][] ret = new float[sqr][sqr];
         for (int i = 0; i < sqr; i++)
         {
             System.arraycopy(w1.data, i * sqr, ret[i], 0, sqr);
@@ -235,9 +246,9 @@ public class Wave16 implements Serializable
         return ret;
     }
 
-    public Wave16 fromMatrix (double[][] mat)
+    public Wave16 fromMatrix (float[][] mat)
     {
-        double[] d = new double[mat.length * mat.length];
+        float[] d = new float[mat.length * mat.length];
         for (int i = 0; i < mat.length; i++)
         {
             System.arraycopy(mat[i], 0, d, i * mat.length, mat.length);
@@ -362,7 +373,7 @@ public class Wave16 implements Serializable
 
         for (int s = 0; s < res.data.length; s++)
         {
-            double v = 0;
+            float v = 0;
             for (Wave16 anArr : arr)
             {
                 v = v + anArr.data[s];
@@ -403,19 +414,17 @@ public class Wave16 implements Serializable
     public String toString ()
     {
         Wave16AmplitudeInfo inf = getAmplitude();
-        return new StringBuilder()
-                .append(name)
-                .append(" size:")
-                .append(data.length)
-                .append(" rate:")
-                .append(samplingRate)
-                .append(" min:")
-                .append(inf.min)
-                .append(" max:")
-                .append(inf.max)
-                .append(" span:")
-                .append(inf.span)
-                .toString();
+        return name +
+                " size:" +
+                data.length +
+                " rate:" +
+                samplingRate +
+                " min:" +
+                inf.min +
+                " max:" +
+                inf.max +
+                " span:" +
+                inf.span;
     }
 
     // Gets information about amplitudes of this Wave16
@@ -433,10 +442,10 @@ public class Wave16 implements Serializable
     public int[] getIntegerOffsetPoints (int parts)
     {
         ArrayList<Integer> list = new ArrayList<>();
-        double step = ((double) data.length - 1.0) / ((double) parts - 1.0) + (1.0 / (double) parts);
-        for (double s = 0; s < data.length; s += step)
+        float step = (float) (((float) data.length - 1.0) / ((float) parts - 1.0) + (1.0 / (float) parts));
+        for (float s = 0; s < data.length; s += step)
         {
-            list.add((int) (double) data[(int) s]);
+            list.add((int) (float) data[(int) s]);
         }
         int[] arr = new int[list.size()];
         for (int s = 0; s < list.size(); s++)

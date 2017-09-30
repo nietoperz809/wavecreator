@@ -38,13 +38,13 @@ public class DMatrixLud {
   public DMatrixLud(DMatrix a) {
     int m = _m = a.getM();
     int n = _n = a.getN();
-    double[][] lu = _lu = a.get();
+    float[][] lu = _lu = a.get();
     _piv = new int[m];
     for (int i=0; i<m; ++i)
       _piv[i] = i;
     _pivsign = 1;
-    double[] lurowi;
-    double[] lucolj = new double[m];
+    float[] lurowi;
+    float[] lucolj = new float[m];
 
     // A left-looking, dot-product, Crout/Doolittle algorithm.
     for (int j=0; j<n; ++j) {
@@ -73,7 +73,7 @@ public class DMatrixLud {
       }
       if (p!=j) {
         for (int k=0; k<n; ++k) {
-          double t = lu[p][k];
+          float t = lu[p][k];
           lu[p][k] = lu[j][k];
           lu[j][k] = t;
         }
@@ -116,15 +116,15 @@ public class DMatrixLud {
    * @return the m-by-n factor L.
    */
   public DMatrix getL() {
-    double[][] l = new double[_m][_n];
+    float[][] l = new float[_m][_n];
     for (int i=0; i<_m; ++i) {
       for (int j=0; j<_n; ++j) {
         if (i>j) {
           l[i][j] = _lu[i][j];
         } else if (i==j) {
-          l[i][j] = 1.0;
+          l[i][j] = 1.0f;
         } else {
-          l[i][j] = 0.0;
+          l[i][j] = 0.0f;
         }
       }
     }
@@ -136,13 +136,13 @@ public class DMatrixLud {
    * @return the n-by-n matrix factor U.
    */
   public DMatrix getU() {
-    double[][] u = new double[_n][_n];
+    float[][] u = new float[_n][_n];
     for (int i=0; i<_n; ++i) {
       for (int j=0; j<_n; ++j) {
         if (i<=j) {
           u[i][j] = _lu[i][j];
         } else {
-          u[i][j] = 0.0;
+          u[i][j] = 0.0f;
         }
       }
     }
@@ -175,7 +175,7 @@ public class DMatrixLud {
     // Copy of right-hand side with pivoting.
     int nx = b.getN();
     DMatrix xx = b.get(_piv,0,nx-1);
-    double[][] x = xx.getArray();
+    float[][] x = xx.getArray();
 
     // Solve L*Y = B(piv,:).
     for (int k=0; k<_n; ++k) {
@@ -219,7 +219,7 @@ public class DMatrixLud {
 
   final int _m;
     final int _n;
-  final double[][] _lu;
+  final float[][] _lu;
   final int[] _piv;
   int _pivsign;
 }

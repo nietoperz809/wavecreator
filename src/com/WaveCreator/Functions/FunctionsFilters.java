@@ -35,7 +35,7 @@ public final class FunctionsFilters extends Functions
         res.data[0] = m_base.data[0];
         for (int s=1; s<m_base.data.length; s++)
         {
-            res.data[s] = m_base.data[s] - m_base.data[s-1] + m * res.data[s-1];
+            res.data[s] = (float) (m_base.data[s] - m_base.data[s-1] + m * res.data[s-1]);
         }
         return res;
     }
@@ -79,11 +79,11 @@ public final class FunctionsFilters extends Functions
     public Wave16 movingAverageFilter (@ParamDesc("Number of samples to be combined") int num)
     {
         Wave16 out = m_base.createEmptyCopy();
-        double[] win = new double[num];
+        float[] win = new float[num];
         for (int n = 0; n < m_base.data.length; n++)
         {
             int vals;
-            double res = 0;
+            float res = 0f;
             if (n < num)
             {
                 win[n] = m_base.data[n];
@@ -115,13 +115,13 @@ public final class FunctionsFilters extends Functions
         Wave16 out = m_base.copy();
         for (int n=0; n<num; n++)
         {
-            out.data[1] = (out.data[0] + out.data[1] + out.data[2]) / 3.0;
-            out.data[0] = (out.data[0] + out.data[1]) / 2.0;
-            out.data[out.data.length - 2] = (out.data[out.data.length - 1] + out.data[out.data.length - 2] + out.data[out.data.length - 3]) / 3.0;
-            out.data[out.data.length - 1] = (out.data[out.data.length - 1] + out.data[out.data.length - 2]) / 2.0;
+            out.data[1] = (out.data[0] + out.data[1] + out.data[2]) / 3.0f;
+            out.data[0] = (out.data[0] + out.data[1]) / 2.0f;
+            out.data[out.data.length - 2] = (out.data[out.data.length - 1] + out.data[out.data.length - 2] + out.data[out.data.length - 3]) / 3.0f;
+            out.data[out.data.length - 1] = (out.data[out.data.length - 1] + out.data[out.data.length - 2]) / 2.0f;
             for (int i = 2; i < (out.data.length - 2); i++)
             {
-                out.data[i] = (out.data[i] + out.data[i + 1] + out.data[i - 1] + out.data[i + 2] + out.data[i - 2]) / 5.0;
+                out.data[i] = (out.data[i] + out.data[i + 1] + out.data[i - 1] + out.data[i + 2] + out.data[i - 2]) / 5.0f;
             }
         }
         out.data = Tools.fitValues(out.data);
@@ -148,12 +148,12 @@ public final class FunctionsFilters extends Functions
      * @param coeffs filter coefficents
      * @return The filtered new wave
      */
-    public Wave16 firFilter (@ParamDesc("Array of coefficients") double[] coeffs)
+    public Wave16 firFilter (@ParamDesc("Array of coefficients") float[] coeffs)
     {
         Wave16 out = m_base.createEmptyCopy();
         for (int s = 0; s < m_base.data.length; s++)
         {
-            double v1 = 0;
+            float v1 = 0;
             for (int n = 0; n < coeffs.length; n++)
             {
                 int idx = (s + n) % m_base.data.length;

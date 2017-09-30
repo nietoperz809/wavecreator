@@ -8,15 +8,15 @@ public final class Wave16AmplitudeInfo
     /**
      * Minimum amplitude
      */
-    public double min;
+    public float min;
     /**
      * Maximum amplitude
      */
-    public double max;
+    public float max;
     /**
      * Total amplitude span
      */
-    public double span;
+    public float span;
 
     public Wave16AmplitudeInfo()
     {
@@ -31,17 +31,17 @@ public final class Wave16AmplitudeInfo
      * Does calculation so that members are valid
      * @param arr Array to be used as base object
      */
-    public void calc(double arr[])
+    public void calc(float arr[])
     {
-        min = Double.MAX_VALUE;
-        max = -Double.MAX_VALUE;
+        min = Float.MAX_VALUE;
+        max = -Float.MAX_VALUE;
 
         // Find min and max
-        for (double anIn : arr)
+        for (float anIn : arr)
         {
             // Force forbidden values to zero
             if (Double.isInfinite(anIn) || Double.isNaN(anIn))
-                anIn = 0.0;
+                anIn = 0.0f;
 
             if (anIn < min)
             {

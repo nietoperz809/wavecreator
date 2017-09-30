@@ -30,7 +30,7 @@ public class Wave16IO
         {
             fileImageOutputStream.writeInt(dat.data.length);  // First write the length
             fileImageOutputStream.writeInt(dat.samplingRate);  // Then the samplingrate
-            fileImageOutputStream.writeDoubles(dat.data, 0, dat.data.length);
+            fileImageOutputStream.writeFloats(dat.data, 0, dat.data.length);
         } // First write the length
     }
 
@@ -44,12 +44,12 @@ public class Wave16IO
     public static Wave16 loadRaw (String filename) throws Exception
     {
         int samplingRate;
-        double[] arr;
+        float[] arr;
         try (FileImageInputStream fileImageInputStream = new FileImageInputStream(new File(filename)))
         {
             int size = fileImageInputStream.readInt(); // First read the length
             samplingRate = fileImageInputStream.readInt(); // Then get the sampling rate
-            arr = new double[size];
+            arr = new float[size];
             fileImageInputStream.readFully(arr, 0, size);
         } // First read the length
         return new Wave16(arr, samplingRate);
@@ -136,7 +136,7 @@ public class Wave16IO
                 // now in the audioBytes array...
                 ba.write(audioBytes, 0, numBytesRead);
             }
-            double[] dx = Tools.readBE(ba.toByteArray(), bytesPerFrame);
+            float[] dx = Tools.readBE(ba.toByteArray(), bytesPerFrame);
             return new Wave16(Tools.fitValues(dx), sampleRate);
         }
         catch (Exception ex)
@@ -169,7 +169,7 @@ public class Wave16IO
             System.err.println(e);
             return null;
         }
-        double[] frames = new double[(int) wv.getNumFrames() * wv.getNumChannels()];
+        float[] frames = new float[(int) wv.getNumFrames() * wv.getNumChannels()];
 
         try
         {

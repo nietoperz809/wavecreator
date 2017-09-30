@@ -58,12 +58,12 @@ public class MoogFilter
         r = res * scale;
     }
 
-    public void performFilter (double buffer[], int len)
+    public void performFilter (float buffer[], int len)
     {
         for (int i = 0, n = len; i < n; i++)
         {
             //--Inverted feed back for corner peaking
-            double x = (buffer[i] / 32768.0) - r * y4;
+            float x = (float) ((buffer[i] / 32768.0) - r * y4);
             if (buffer[i] != 0)
             {
 // 	System.out.println("B[i]=" + buffer[i] + " x= " + x + " y1:" + y1);

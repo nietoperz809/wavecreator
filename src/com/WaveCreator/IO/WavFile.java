@@ -29,8 +29,8 @@ public class WavFile
     private long numFrames;					// Number of frames within the data section
     private FileOutputStream oStream;	// Output stream used for writting data
     private FileInputStream iStream;		// Input stream used for reading data
-    private double floatScale;				// Scaling factor used for int <-> float conversion				
-    private double floatOffset;			// Offset factor used for int <-> float conversion				
+    private float floatScale;				// Scaling factor used for int <-> float conversion
+    private float floatOffset;			// Offset factor used for int <-> float conversion
     private boolean wordAlignAdjust;		// Specify if an extra byte at the end of the data chunk is required for word alignment
 
     // Wav Header
@@ -159,7 +159,7 @@ public class WavFile
             // Else if 8 or less validBits, data is unsigned
             // Conversion required dividing by max positive value
             wavFile.floatOffset = 1;
-            wavFile.floatScale = 0.5 * ((1 << wavFile.validBits) - 1);
+            wavFile.floatScale = (float) (0.5f * ((1 << wavFile.validBits) - 1));
         }
 
         // Finally, set the IO State
@@ -294,7 +294,7 @@ public class WavFile
             // Else if 8 or less validBits, data is unsigned
             // Conversion required dividing by max positive value
             wavFile.floatOffset = -1;
-            wavFile.floatScale = 0.5 * ((1 << wavFile.validBits) - 1);
+            wavFile.floatScale = 0.5f * ((1 << wavFile.validBits) - 1);
         }
 
         wavFile.bufferPointer = 0;
@@ -564,12 +564,12 @@ public class WavFile
 
     // Double
     // ------
-    public int readFrames(double[] sampleBuffer, int numFramesToRead) throws Exception
+    public int readFrames(float[] sampleBuffer, int numFramesToRead) throws Exception
     {
         return readFrames(sampleBuffer, 0, numFramesToRead);
     }
 
-    public int readFrames(double[] sampleBuffer, int offset, int numFramesToRead) throws Exception
+    public int readFrames(float[] sampleBuffer, int offset, int numFramesToRead) throws Exception
     {
         if (ioState != IOState.READING) throw new IOException("Cannot read from WavFile instance");
 
@@ -579,7 +579,7 @@ public class WavFile
 
             for (int c=0 ; c<numChannels ; c++)
             {
-                sampleBuffer[offset] = floatOffset + (double) readSample() / floatScale;
+                sampleBuffer[offset] = floatOffset + (float) readSample() / floatScale;
                 offset ++;
             }
 
@@ -612,12 +612,12 @@ public class WavFile
         return numFramesToRead;
     }
 
-    public int writeFrames(double[] sampleBuffer, int numFramesToWrite) throws Exception
+    public int writeFrames(float[] sampleBuffer, int numFramesToWrite) throws Exception
     {
         return writeFrames(sampleBuffer, 0, numFramesToWrite);
     }
 
-    public int writeFrames(double[] sampleBuffer, int offset, int numFramesToWrite) throws Exception
+    public int writeFrames(float[] sampleBuffer, int offset, int numFramesToWrite) throws Exception
     {
         if (ioState != IOState.WRITING) throw new IOException("Cannot write to WavFile instance");
 
@@ -726,7 +726,7 @@ public class WavFile
 
 //				int[] buffer = new int[BUF_SIZE * numChannels];
 //				long[] buffer = new long[BUF_SIZE * numChannels];
-                double[] buffer = new double[BUF_SIZE * numChannels];
+                float[] buffer = new float[BUF_SIZE * numChannels];
 
                 int framesRead;
                 int framesWritten;
@@ -744,7 +744,7 @@ public class WavFile
             }
 
             WavFile writeWavFile = newWavFile(new File("out2.wav"), 1, 10, 23, 44100);
-            double[] buffer = new double[10];
+            float[] buffer = new float[10];
             writeWavFile.writeFrames(buffer, 10);
             writeWavFile.close();
         }

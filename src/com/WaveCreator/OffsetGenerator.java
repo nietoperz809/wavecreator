@@ -5,11 +5,11 @@ package com.WaveCreator;
  */
 public class OffsetGenerator
 {
-    private final double m_start;
-    private final double m_stop;
-    private final double m_parts;
-    private final double m_linearDiv;
-    private final double m_logDiv;
+    private final float m_start;
+    private final float m_stop;
+    private final float m_parts;
+    private final float m_linearDiv;
+    private final float m_logDiv;
 
     /**
      * Constructor that sets all parameters
@@ -17,13 +17,13 @@ public class OffsetGenerator
      * @param stop  Last value
      * @param parts Zero-based maximum index
      */
-    public OffsetGenerator(double start, double stop, double parts)
+    public OffsetGenerator(float start, float stop, float parts)
     {
         m_start = start;
         m_stop = stop;
         m_parts = parts;
         m_linearDiv = (stop - start) / (parts - 1);
-        m_logDiv = (parts - 1) / Math.log(parts);
+        m_logDiv = (float) ((parts - 1) / Math.log(parts));
     }
 
     /**
@@ -45,7 +45,7 @@ public class OffsetGenerator
      * @return The linear value
      * @throws Exception from CheckIndex
      */
-    public double getLinearValue(int idx) throws Exception
+    public float getLinearValue(int idx) throws Exception
     {
         checkIndex(idx);
         return m_start + idx * m_linearDiv;
@@ -57,13 +57,13 @@ public class OffsetGenerator
      * @return The linear value
      * @throws Exception from CheckIndex
      */
-    public double getExponentialValue(int idx) throws Exception
+    public float getExponentialValue(int idx) throws Exception
     {
         checkIndex(idx);
         if (idx == m_parts - 1)
         {
             return m_stop;
         }
-        return m_start + (Math.exp(idx / m_logDiv) - 1) * m_linearDiv;
+        return (float) (m_start + (Math.exp(idx / m_logDiv) - 1) * m_linearDiv);
     }
 }
