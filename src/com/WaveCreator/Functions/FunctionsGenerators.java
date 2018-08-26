@@ -532,6 +532,62 @@ public final class FunctionsGenerators extends Functions
         return out;
     }
 
+    static public Wave16 curveFModSine(@ParamDesc("Sampling rate")int samplingrate,
+                                   @ParamDesc("Number of samples")int samples,
+                                   @ParamDesc("frequency")double freq,
+                                   @ParamDesc("Modulation freq")double freq2,
+                                   @ParamDesc("Modulation index")int beta)
+
+    {
+        Wave16 out = new Wave16(samples, samplingrate);
+
+        for (int x = 0; x < samples; x++)
+        {
+            out.data[x] = Wave16.MAX_VALUE * (float)Math.sin(x * Wave16.TWOPI / samplingrate * freq
+            - beta * Math.sin(x * Wave16.TWOPI / samplingrate * freq2));
+        }
+        out.data = Tools.fitValues(out.data);
+        return out;
+    }
+
+    static public Wave16 curveFModSquare(@ParamDesc("Sampling rate")int samplingrate,
+                                       @ParamDesc("Number of samples")int samples,
+                                       @ParamDesc("frequency")double freq,
+                                       @ParamDesc("Modulation freq")double freq2,
+                                       @ParamDesc("Modulation index")int beta)
+
+    {
+        Wave16 out = new Wave16(samples, samplingrate);
+
+        for (int x = 0; x < samples; x++)
+        {
+            out.data[x] = Wave16.MAX_VALUE * (float)Math.signum(Math.sin(x * Wave16.TWOPI / samplingrate * freq
+                    - beta * Math.sin(x * Wave16.TWOPI / samplingrate * freq2)));
+        }
+        out.data = Tools.fitValues(out.data);
+        return out;
+    }
+
+    static public Wave16 curveFModTriangle(@ParamDesc("Sampling rate")int samplingrate,
+                                         @ParamDesc("Number of samples")int samples,
+                                         @ParamDesc("frequency")double freq,
+                                         @ParamDesc("Modulation freq")double freq2,
+                                         @ParamDesc("Modulation index")int beta)
+
+    {
+        Wave16 out = new Wave16(samples, samplingrate);
+
+        for (int x = 0; x < samples; x++)
+        {
+            float c1 = (float)Math.sin(x * Wave16.TWOPI / samplingrate * freq
+                    - beta * Math.sin(x * Wave16.TWOPI / samplingrate * freq2));
+
+            out.data[x] = (float)(Wave16.MAX_VALUE * Math.asin(c1) / Math.asin(1));
+        }
+        out.data = Tools.fitValues(out.data);
+        return out;
+    }
+
     /**
      * Generates wave object of multiple sinus cardinalis curves
      * @param samplingrate The sampling rate
@@ -701,14 +757,30 @@ public final class FunctionsGenerators extends Functions
             float v = 0;
             for (int f : freq)
             {
-                v = (float) (v + Wave16.MAX_VALUE * Math.asin(Math.sin(x * Wave16.PI / s * f)) / Math.asin(1) *
-                                        Math.pow(-1, Math.floor(0.5 + x / ((float) s / f))));
+                v = (float) (v + Wave16.MAX_VALUE * saw2(x * Wave16.PI / s * f));
             }
             out.data[x] = (float) (v / freq.length);
         }
         out.data = Tools.fitValues(out.data);
         return out;
     }
+
+    /**
+     * Sawtooth function
+     * @param x point-x
+     * @return point-y
+     *
+     */
+    static private double saw (double x)
+    {
+        return 2*(x % Wave16.PI)/Wave16.PI -1;
+    }
+
+    static private double saw2 (double x)
+    {
+        return (2*x/Wave16.PI+1)%2 - 1;
+    }
+
 
     /**
      * Creates a single sawtooth wave
