@@ -48,7 +48,7 @@ class MyPMenu extends JPopupMenu
         mi.setHorizontalTextPosition(0);
         mi.setIconTextGap(0);
         mi.setMargin(nullInsets);
-        mi.setBackground(Color.CYAN);
+        mi.setBackground(Color.WHITE);
         mi.setOpaque(true);
     }
 
