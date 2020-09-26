@@ -13,7 +13,7 @@ public abstract class ButterFilterType extends PoleFilterType
         super(dFilterFrame);
     }
 
-    void getSPole (int i, Complex c1, double wc)
+    void getSPole (int i, InternalComplex c1, double wc)
     {
         double theta = DFilterFrame.pi / 2 + (2 * i + 1) * DFilterFrame.pi / (2 * n);
         c1.setMagPhase(Math.tan(wc * .5), theta);

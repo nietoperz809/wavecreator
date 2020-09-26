@@ -36,7 +36,7 @@ class ButterLowPass extends ButterFilterType
         return n;
     }
 
-    void getZero (int i, Complex c1)
+    void getZero (int i, InternalComplex c1)
     {
         c1.set(-sign);
     }

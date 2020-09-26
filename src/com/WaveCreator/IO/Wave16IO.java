@@ -6,6 +6,8 @@ import com.jcraft.jorbis.OggDecoder;
 
 import javax.imageio.stream.FileImageInputStream;
 import javax.imageio.stream.FileImageOutputStream;
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import java.io.*;
@@ -59,36 +61,20 @@ public class Wave16IO
     /**
      * Save data as mono WAV file
      *
-     * @param dat      Points to sampling data
+     * @param wav      Points to sampling data
      * @param filename Name of new file
      * @throws Exception If something's gone wrong
      */
-    public static void saveWave16 (Wave16 dat, String filename) throws Exception
+    public static void saveWave16 (Wave16 wav, String filename) throws Exception
     {
-        try (FileOutputStream fo = new FileOutputStream(filename))
-        {
-            ReverseOutputStream reverseOutputStream = new ReverseOutputStream(fo);
-
-            // Write WAVE header
-            reverseOutputStream.write("RIFF".getBytes());
-            reverseOutputStream.writeReverseInt(2 * dat.data.length + 44 - 8);
-            reverseOutputStream.write("WAVE".getBytes());
-            reverseOutputStream.write("fmt ".getBytes());
-            reverseOutputStream.writeInt(0x10000000);
-            reverseOutputStream.writeShort(0x0100);
-            reverseOutputStream.writeReverseShort((short) 1);
-            reverseOutputStream.writeReverseInt(dat.samplingRate);
-            reverseOutputStream.writeReverseInt(16 / 8 * dat.samplingRate);
-            reverseOutputStream.writeReverseShort((short) (16 / 8));
-            reverseOutputStream.writeReverseShort((short) 16);
-            reverseOutputStream.write("data".getBytes());
-            reverseOutputStream.writeReverseInt(dat.data.length * 2);
-
-            // Write WAVE data
-            reverseOutputStream.writeReverseShortArray(dat.toShortArray());
-
-            fo.flush();
-        }
+        byte[] pcm_data = wav.toByteArray();
+        AudioFormat frmt = new AudioFormat (wav.samplingRate,
+                16,1,true,false);
+        AudioInputStream ais = new AudioInputStream(
+                new ByteArrayInputStream(pcm_data)
+                ,frmt
+                ,pcm_data.length);
+        AudioSystem.write (ais, AudioFileFormat.Type.WAVE, new File(filename));
     }
 
     public static Wave16 loadAiff (String filename)

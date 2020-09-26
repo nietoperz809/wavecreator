@@ -52,7 +52,7 @@ class SincBandStopFilter extends FIRFilterType
         return 0;
     }
 
-    void getPole (int i, Complex c1)
+    void getPole (int i, InternalComplex c1)
     {
     }
 

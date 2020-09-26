@@ -3,14 +3,15 @@ package com.WaveCreator.Audio;
 import com.WaveCreator.ScopeWindow;
 import com.WaveCreator.Wave16;
 
-import javax.sound.sampled.Clip;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+
 import static java.lang.Thread.sleep;
 import static javax.sound.sampled.AudioSystem.getClip;
-import javax.sound.sampled.LineUnavailableException;
 
 /**
  * This is the asychronuous clip player class
@@ -110,7 +111,7 @@ public class ClipPlayer
              */
             while (true)
             {
-                /**
+                /*
                  * A small delay so that we don't consume too much time
                  */
                 try
@@ -122,12 +123,12 @@ public class ClipPlayer
                     e.printStackTrace(); // FUCK!!
                 }
 
-                /**
+                /*
                  * Move the scrollbar that shifts also the scope view
                  */
                 m_scopeFrame.updateView(m_clip.getFramePosition());
 
-                /**
+                /*
                  * Determine when to stop playing
                  * Either if clip ended or we were stopped
                  */

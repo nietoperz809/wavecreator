@@ -1,6 +1,6 @@
 package com.WaveCreator.Functions;
 
-import com.WaveCreator.FFT.Complex;
+//import com.WaveCreator.FFT.InternalComplex;
 import com.WaveCreator.GaloisField256;
 import com.WaveCreator.Helpers.Tools;
 import com.WaveCreator.MatrixRoutines.DMatrix;
@@ -10,6 +10,7 @@ import com.WaveCreator.MatrixRoutines.DMatrixQrd;
 import com.WaveCreator.ParamDesc;
 import com.WaveCreator.Wave16;
 import com.WaveCreator.lindenmayerrule.RuleManager;
+import org.apache.commons.math3.complex.Complex;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -457,6 +458,7 @@ public final class FunctionsTesting extends Functions
         return out;
     }
 
+
     public Wave16 aaMatrixEigenVectors ()
     {
         float[][] mat = m_base.createQuaraticMatrix();
@@ -795,7 +797,7 @@ public final class FunctionsTesting extends Functions
         {
             Random r = new Random(System.currentTimeMillis());
             Complex c, z, zold;
-            float normr, normi;
+            double normr, normi;
             int pitchr, pitchi, pitchOld, repeatCount;
             Wave16 ret = new Wave16(0, SAMPLERATE);
             final int ITERATIONS = 20;
@@ -810,13 +812,13 @@ public final class FunctionsTesting extends Functions
 
                 for (int k = 0; k < ITERATIONS; k++)
                 {
-                    z = (z.times(z)).plus(c); // z^2 + c
+                    z = (z.multiply(z)).add(c); // z^2 + c
                     if (modulus(z) > 2)
                     {
                         break;
                     }
-                    normr = (z.re + 2.0f) / 4.0f;
-                    normi = (z.im + 2.0f) / 4.0f;
+                    normr = (z.getReal() + 2.0) / 4.0;
+                    normi = (z.getImaginary() + 2.0) / 4.0;
                     pitchr = (int) (normr * (minorScale.length - 1));
                     pitchi = (int) (normi * (minorScale.length - 1));
 
@@ -845,7 +847,7 @@ public final class FunctionsTesting extends Functions
 
         private float modulus (Complex c)
         {
-            return (float) Math.sqrt(c.re * c.re + c.im * c.im);
+            return (float) Math.sqrt(c.getReal() * c.getReal() + c.getImaginary() * c.getImaginary());
         }
 
         public Wave16 makeHenon (int notes)

@@ -199,7 +199,6 @@ public class WavFile
         }
 
         boolean foundFormat = false;
-        boolean foundData;
 
         // Search for the Format and Data Chunks
         while (true)
@@ -267,7 +266,6 @@ public class WavFile
                 wavFile.numFrames = chunkSize / wavFile.blockAlign;
 
                 // Flag that we've found the wave data chunk
-                foundData = true;
 
                 break;
             }
@@ -278,8 +276,6 @@ public class WavFile
             }
         }
 
-        // Throw an exception if no data chunk has been found
-        if (!foundData) throw new Exception("Did not find a data chunk");
 
         // Calculate the scaling factor for converting to a normalised double
         if (wavFile.validBits > 8)

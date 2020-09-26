@@ -14,7 +14,7 @@ public class CascadeFilter extends Filter
     final double[] b1;
     final double[] b2;
     final int size;
-    Complex cm2, cm1, top, bottom;
+    InternalComplex cm2, cm1, top, bottom;
 
     CascadeFilter (DFilterFrame dFilterFrame, int s)
     {
@@ -81,14 +81,14 @@ public class CascadeFilter extends Filter
         //System.out.println("setBStage failed");
     }
 
-    void evalTransfer (Complex c)
+    void evalTransfer (InternalComplex c)
     {
         if (cm1 == null)
         {
-            cm1 = new Complex();
-            cm2 = new Complex();
-            top = new Complex();
-            bottom = new Complex();
+            cm1 = new InternalComplex();
+            cm2 = new InternalComplex();
+            top = new InternalComplex();
+            bottom = new InternalComplex();
         }
         int i;
         cm1.set(c);

@@ -14,7 +14,7 @@ class DelayFilter extends CombFilter
         this.dFilterFrame = dFilterFrame;
     }
 
-    void getResponse (double w, Complex c)
+    void getResponse (double w, InternalComplex c)
     {
         if (n > 212)
         {

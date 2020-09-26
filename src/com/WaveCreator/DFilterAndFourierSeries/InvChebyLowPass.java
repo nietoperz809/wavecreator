@@ -26,7 +26,7 @@ class InvChebyLowPass extends InvChebyFilterType
         setupCheby(2);
     }
 
-    void getZero (int i, Complex c1)
+    void getZero (int i, InternalComplex c1)
     {
         getChebyZero(i, c1, wc);
     }

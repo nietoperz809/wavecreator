@@ -27,7 +27,7 @@ public abstract class InvChebyFilterType extends ChebyFilterType
         scale = dFilterFrame.cosh(dFilterFrame.acosh(1 / epsilon) / n);
     }
 
-    void getSPole (int i, Complex c1, double wc)
+    void getSPole (int i, InternalComplex c1, double wc)
     {
         wc = DFilterFrame.pi - wc;
         super.getSPole(i, c1, wc);
@@ -42,12 +42,12 @@ public abstract class InvChebyFilterType extends ChebyFilterType
                         DFilterFrame.log10) + " dB";
     }
 
-    void getChebyZero (int i, Complex c1, double wc)
+    void getChebyZero (int i, InternalComplex c1, double wc)
     {
         double bk = 1 / Math.cos((2 * i + 1) * DFilterFrame.pi / (2 * n)) * scale;
         double a = Math.sin(DFilterFrame.pi / 4 - wc / 2) / Math.sin(DFilterFrame.pi / 4 + wc / 2);
         c1.set(1 + a, bk * (1 - a));
-        Complex c2 = new Complex(1 + a, bk * (a - 1));
+        InternalComplex c2 = new InternalComplex(1 + a, bk * (a - 1));
         c1.div(c2);
     }
 

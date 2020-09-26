@@ -42,7 +42,7 @@ class NotchFilter extends IIRFilterType
         return 2;
     }
 
-    void getPole (int i, Complex c1)
+    void getPole (int i, InternalComplex c1)
     {
         c1.set(-4 * a + (b + a * b) * (b + a * b));
         c1.sqrt();
@@ -54,7 +54,7 @@ class NotchFilter extends IIRFilterType
         c1.mult(.5);
     }
 
-    void getZero (int i, Complex c1)
+    void getZero (int i, InternalComplex c1)
     {
         c1.set(b * b - 1);
         c1.sqrt();

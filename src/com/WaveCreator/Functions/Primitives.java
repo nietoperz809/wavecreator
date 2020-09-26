@@ -44,7 +44,7 @@ public class Primitives
             double v = 0;
             for (double f : freq)
             {
-                v = v + (Wave16.MAX_VALUE * Math.sin(x * Wave16.TWOPI / rate * f));
+                v = v + (Wave16.MAX_VALUE * func.apply(x * Wave16.TWOPI / rate * f));
             }
             out.data[x] = (float)(v / freq.length);
         }
@@ -85,7 +85,7 @@ public class Primitives
      * @param freq2  Modulation
      * @param beta Modulation strength
      * @param func Waveform function
-     * @return
+     * @return  Wave16 object
      */
     static public Wave16 fmod(int samplingrate, int samples, double freq, double freq2, int beta,
                                        Function<Double, Double> func)
@@ -101,5 +101,4 @@ public class Primitives
         out.data = Tools.fitValues(out.data);
         return out;
     }
-
 }

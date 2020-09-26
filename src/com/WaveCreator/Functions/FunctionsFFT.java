@@ -1,10 +1,12 @@
 package com.WaveCreator.Functions;
 
 import com.WaveCreator.FFT.CepstrumTransform;
-import com.WaveCreator.FFT.Complex;
 import com.WaveCreator.FFT.FFT;
 import com.WaveCreator.Helpers.Tools;
 import com.WaveCreator.Wave16;
+import org.apache.commons.math3.complex.Complex;
+
+//import com.WaveCreator.FFT.InternalComplex;
 
 /**
  * New Class.
@@ -180,21 +182,21 @@ public final class FunctionsFFT extends Functions
             case IMAGINARY:
                 for (int s = 0; s < in.data.length; s++)
                 {
-                    out.data[s] = y[s].im;
+                    out.data[s] = (float)y[s].getImaginary();
                 }
                 break;
 
             case REAL:
                 for (int s = 0; s < in.data.length; s++)
                 {
-                    out.data[s] = y[s].re;
+                    out.data[s] = (float)y[s].getReal();
                 }
                 break;
 
             case ABSOLUTE:
                 for (int s = 0; s < in.data.length; s++)
                 {
-                    out.data[s] = y[s].abs();
+                    out.data[s] = (float)y[s].abs();
                 }
                 break;
         }

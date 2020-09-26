@@ -36,7 +36,7 @@ class ChebyBandPass extends ChebyFilterType
         return n * 2;
     }
 
-    void getZero (int i, Complex c1)
+    void getZero (int i, InternalComplex c1)
     {
         getBandPassZero(i, c1);
     }
@@ -48,7 +48,7 @@ class ChebyBandPass extends ChebyFilterType
         getInfoCheby(x);
     }
 
-    void getPole (int i, Complex c1)
+    void getPole (int i, InternalComplex c1)
     {
         getBandPassPole(i, c1);
     }

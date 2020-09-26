@@ -1,10 +1,12 @@
 package com.WaveCreator.FFT;
 
+import org.apache.commons.math3.complex.Complex;
+
 /**
  * **********************************************************************
  * Compilation:  javac FFT.java
  * Execution:    java FFT N
- * Dependencies: Complex.java
+ * Dependencies: InternalComplex.java
  * <p/>
  * Compute the FFT and inverse FFT of a length N complex sequence.
  * Bare bones implementation that runs in O(N log N) time. Our goal
@@ -68,8 +70,8 @@ public class FFT
         {
             double kth = -2 * k * Math.PI / N;
             Complex wk = new Complex(Math.cos(kth), Math.sin(kth));
-            y[k] = q[k].plus(wk.times(r[k]));
-            y[k + N / 2] = q[k].minus(wk.times(r[k]));
+            y[k] = q[k].add(wk.multiply(r[k]));
+            y[k + N / 2] = q[k].subtract(wk.multiply(r[k]));
         }
         return y;
     }
@@ -103,7 +105,7 @@ public class FFT
         // divide by N
         for (int i = 0; i < N; i++)
         {
-            y[i] = y[i].times(1.0f / N);
+            y[i] = y[i].multiply(1.0f / N);
         }
 
         return y;
@@ -137,7 +139,7 @@ public class FFT
         Complex[] c = new Complex[N];
         for (int i = 0; i < N; i++)
         {
-            c[i] = a[i].times(b[i]);
+            c[i] = a[i].multiply(b[i]);
         }
 
         // compute inverse FFT
@@ -172,12 +174,12 @@ public class FFT
         return cconvolve(a, b);
     }
 
-//    // display an array of Complex numbers to standard output
-//    private static void show(Complex[] x, String title)
+//    // display an array of InternalComplex numbers to standard output
+//    private static void show(InternalComplex[] x, String title)
 //    {
 //        System.out.println(title);
 //        System.out.println("-------------------");
-//        for (Complex aX : x)
+//        for (InternalComplex aX : x)
 //        {
 //            System.out.println(aX);
 //        }
@@ -235,30 +237,30 @@ public class FFT
 //    public static void main(String[] args)
 //    {
 //        int N = 4;
-//        Complex[] x = new Complex[N];
+//        InternalComplex[] x = new InternalComplex[N];
 //
 //        // original data
 //        for (int i = 0; i < N; i++)
 //        {
-//            //x[i] = new Complex(i, 0);
-//            x[i] = new Complex(-2 * Math.random() + 1, 0);
+//            //x[i] = new InternalComplex(i, 0);
+//            x[i] = new InternalComplex(-2 * Math.random() + 1, 0);
 //        }
 //        show(x, "x");
 //
 //        // FFT of original data
-//        Complex[] y = fft(x);
+//        InternalComplex[] y = fft(x);
 //        show(y, "y = fft(x)");
 //
 //        // take inverse FFT
-//        Complex[] z = ifft(y);
+//        InternalComplex[] z = ifft(y);
 //        show(z, "z = ifft(y)");
 //
 //        // circular convolution of x with itself
-//        Complex[] c = cconvolve(x, x);
+//        InternalComplex[] c = cconvolve(x, x);
 //        show(c, "c = cconvolve(x, x)");
 //
 //        // linear convolution of x with itself
-//        Complex[] d = convolve(x, x);
+//        InternalComplex[] d = convolve(x, x);
 //        show(d, "d = convolve(x, x)");
 //    }
 

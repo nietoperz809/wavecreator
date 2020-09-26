@@ -15,7 +15,7 @@ public abstract class Filter
         this.dFilterFrame = dFilterFrame;
     }
 
-    abstract void evalTransfer (Complex c);
+    abstract void evalTransfer (InternalComplex c);
 
     abstract int getImpulseOffset ();
 

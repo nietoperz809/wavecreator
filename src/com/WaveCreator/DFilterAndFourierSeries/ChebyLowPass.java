@@ -37,7 +37,7 @@ class ChebyLowPass extends ChebyFilterType
         return n;
     }
 
-    void getZero (int i, Complex c1)
+    void getZero (int i, InternalComplex c1)
     {
         c1.set(-sign);
     }
@@ -49,7 +49,7 @@ class ChebyLowPass extends ChebyFilterType
         getInfoCheby(x);
     }
 
-    void getPole (int i, Complex c1)
+    void getPole (int i, InternalComplex c1)
     {
         super.getPole(i, c1);
         c1.mult(sign);

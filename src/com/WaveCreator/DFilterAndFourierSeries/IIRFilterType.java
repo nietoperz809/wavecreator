@@ -15,7 +15,7 @@ public abstract class IIRFilterType extends FilterType
         super(d);
     }
 
-    void getResponse (double w, Complex c)
+    void getResponse (double w, InternalComplex c)
     {
         if (response == null)
         {
@@ -40,7 +40,7 @@ public abstract class IIRFilterType extends FilterType
         int n = getPoleCount();
         CascadeFilter f = new CascadeFilter(dFilterFrame, (n + 1) / 2);
         int i;
-        Complex c1 = new Complex();
+        InternalComplex c1 = new InternalComplex();
         for (i = 0; i != n; i++)
         {
             getPole(i, c1);
@@ -98,12 +98,12 @@ public abstract class IIRFilterType extends FilterType
     {
         // it's good to have this bigger for normalization
         response = new double[4096];
-        Complex czn1 = new Complex();
-        Complex czn2 = new Complex();
-        Complex ch = new Complex();
-        Complex ct = new Complex();
-        Complex cb = new Complex();
-        Complex cbot = new Complex();
+        InternalComplex czn1 = new InternalComplex();
+        InternalComplex czn2 = new InternalComplex();
+        InternalComplex ch = new InternalComplex();
+        InternalComplex ct = new InternalComplex();
+        InternalComplex cb = new InternalComplex();
+        InternalComplex cbot = new InternalComplex();
         int i, j;
         double maxresp = 0;
 
@@ -152,9 +152,9 @@ public abstract class IIRFilterType extends FilterType
     void setResponse (DirectFilter f)
     {
         response = new double[8192];
-        Complex czn = new Complex();
-        Complex top = new Complex();
-        Complex bottom = new Complex();
+        InternalComplex czn = new InternalComplex();
+        InternalComplex top = new InternalComplex();
+        InternalComplex bottom = new InternalComplex();
         int i, j;
         double maxresp = 0;
         f.bList[0] = 1;

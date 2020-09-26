@@ -36,7 +36,7 @@ class ResonatorFilter extends IIRFilterType
         return 2;
     }
 
-    void getPole (int i, Complex c1)
+    void getPole (int i, InternalComplex c1)
     {
         c1.setMagPhase(r, (i == 1) ? -wc : wc);
     }

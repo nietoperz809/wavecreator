@@ -17,17 +17,17 @@ abstract class PoleFilterType extends IIRFilterType
     }
 
     @Override
-    void getPole (int i, Complex c1)
+    void getPole (int i, InternalComplex c1)
     {
         getSPole(i, c1, wc);
         bilinearXform(c1);
     }
 
-    abstract void getSPole (int i, Complex c1, double wc);
+    abstract void getSPole (int i, InternalComplex c1, double wc);
 
-    void bilinearXform (Complex c1)
+    void bilinearXform (InternalComplex c1)
     {
-        Complex c2 = new Complex(c1);
+        InternalComplex c2 = new InternalComplex(c1);
         c1.add(1);
         c2.mult(-1);
         c2.add(1);
@@ -56,19 +56,19 @@ abstract class PoleFilterType extends IIRFilterType
         return 3;
     }
 
-    void getBandPassPole (int i, Complex z)
+    void getBandPassPole (int i, InternalComplex z)
     {
         getSPole(i / 2, z, DFilterFrame.pi * .5);
         bilinearXform(z);
         bandPassXform(i, z);
     }
 
-    void bandPassXform (int i, Complex z)
+    void bandPassXform (int i, InternalComplex z)
     {
         double a = Math.cos((wc + wc2) * .5) /
                 Math.cos((wc - wc2) * .5);
         double b = 1 / Math.tan(.5 * (wc - wc2));
-        Complex c2 = new Complex();
+        InternalComplex c2 = new InternalComplex();
         c2.addMult(4 * (b * b * (a * a - 1) + 1), z);
         c2.add(8 * (b * b * (a * a - 1) - 1));
         c2.mult(z);
@@ -80,26 +80,26 @@ abstract class PoleFilterType extends IIRFilterType
         }
         c2.addMult(2 * a * b, z);
         c2.add(2 * a * b);
-        Complex c3 = new Complex();
+        InternalComplex c3 = new InternalComplex();
         c3.addMult(2 * (b - 1), z);
         c3.add(2 * (1 + b));
         c2.div(c3);
         z.set(c2);
     }
 
-    void getBandStopPole (int i, Complex z)
+    void getBandStopPole (int i, InternalComplex z)
     {
         getSPole(i / 2, z, DFilterFrame.pi * .5);
         bilinearXform(z);
         bandStopXform(i, z);
     }
 
-    void bandStopXform (int i, Complex z)
+    void bandStopXform (int i, InternalComplex z)
     {
         double a = Math.cos((wc + wc2) * .5) /
                 Math.cos((wc - wc2) * .5);
         double b = Math.tan(.5 * (wc - wc2));
-        Complex c2 = new Complex();
+        InternalComplex c2 = new InternalComplex();
         c2.addMult(4 * (b * b + a * a - 1), z); // z^2 terms
         c2.add(8 * (b * b - a * a + 1)); // z terms
         c2.mult(z);
@@ -108,19 +108,19 @@ abstract class PoleFilterType extends IIRFilterType
         c2.mult(((i & 1) == 0) ? .5 : -.5);
         c2.add(a);
         c2.addMult(-a, z);
-        Complex c3 = new Complex(b + 1, 0);
+        InternalComplex c3 = new InternalComplex(b + 1, 0);
         c3.addMult(b - 1, z);
         c2.div(c3);
         z.set(c2);
     }
 
-    void getBandStopZero (int i, Complex z)
+    void getBandStopZero (int i, InternalComplex z)
     {
         z.set(-1, 0);
         bandStopXform(i, z);
     }
 
-    void getBandPassZero (int i, Complex c1)
+    void getBandPassZero (int i, InternalComplex c1)
     {
         if (i >= n)
         {

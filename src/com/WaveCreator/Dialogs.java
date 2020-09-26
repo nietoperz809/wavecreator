@@ -1,10 +1,12 @@
 package com.WaveCreator;
 
+import com.WaveCreator.FFT.DFT;
 import com.WaveCreator.IO.Wave16IO;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.util.Arrays;
 
 /**
  * This class has static members to display dialogs.
@@ -70,6 +72,11 @@ public class Dialogs
             dlg.add (new JLabel ("------------------ Generator aguments ------------------"));
             dlg.add (new JTextArea (owner.m_arguments));
         }
+
+        int maxsamp = 16384;
+        java.util.List<Float> freqs = DFT.processWave(owner.m_wave, maxsamp);
+        dlg.add (new JLabel ("---- Frequencies in first "+maxsamp+" samples ----"));
+        dlg.add (new JTextArea (Arrays.toString(freqs.toArray())));
 
         dlg.pack();
         dlg.setLocationRelativeTo(owner);

@@ -27,7 +27,7 @@ class EllipticBandPass extends EllipticFilterType
         setupElliptic(3);
     }
 
-    void getZero (int i, Complex c1)
+    void getZero (int i, InternalComplex c1)
     {
         getEllipticZero(i / 2, c1, DFilterFrame.pi * .5);
         bandPassXform(i, c1);
@@ -50,7 +50,7 @@ class EllipticBandPass extends EllipticFilterType
         return n * 2;
     }
 
-    void getPole (int i, Complex c1)
+    void getPole (int i, InternalComplex c1)
     {
         getBandPassPole(i, c1);
     }

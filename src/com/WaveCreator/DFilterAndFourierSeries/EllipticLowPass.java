@@ -26,7 +26,7 @@ class EllipticLowPass extends EllipticFilterType
         setupElliptic(2);
     }
 
-    void getZero (int i, Complex c1)
+    void getZero (int i, InternalComplex c1)
     {
         getEllipticZero(i, c1, wc);
     }

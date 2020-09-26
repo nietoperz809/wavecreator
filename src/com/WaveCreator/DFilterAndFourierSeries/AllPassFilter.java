@@ -37,7 +37,7 @@ public class AllPassFilter extends IIRFilterType
     }
 
     @Override
-    void getPole (int i, Complex c1)
+    void getPole (int i, InternalComplex c1)
     {
         c1.set(-a);
     }

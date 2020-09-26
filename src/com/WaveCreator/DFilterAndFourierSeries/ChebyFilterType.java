@@ -38,9 +38,9 @@ abstract class ChebyFilterType extends PoleFilterType
         epsilon = Math.sqrt(1 / ripval - 1);
     }
 
-    void getSPole (int i, Complex c1, double wc)
+    void getSPole (int i, InternalComplex c1, double wc)
     {
-        //Complex c2 = new Complex();
+        //InternalComplex c2 = new InternalComplex();
         double alpha = 1 / epsilon + Math.sqrt(1 + 1 / (epsilon * epsilon));
         double a = .5 * (Math.pow(alpha, 1. / n) - Math.pow(alpha, -1. / n));
         double b = .5 * (Math.pow(alpha, 1. / n) + Math.pow(alpha, -1. / n));

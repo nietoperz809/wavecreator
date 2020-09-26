@@ -13,12 +13,12 @@ class ButterBandStop extends ButterBandPass
         super(dFilterFrame);
     }
 
-    void getZero (int i, Complex c1)
+    void getZero (int i, InternalComplex c1)
     {
         getBandStopZero(i, c1);
     }
 
-    void getPole (int i, Complex c1)
+    void getPole (int i, InternalComplex c1)
     {
         getBandStopPole(i, c1);
     }

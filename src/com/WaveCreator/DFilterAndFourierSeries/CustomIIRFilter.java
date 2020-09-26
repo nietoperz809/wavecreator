@@ -38,12 +38,12 @@ class CustomIIRFilter extends IIRFilterType
         return nzeros;
     }
 
-    void getPole (int i, Complex c1)
+    void getPole (int i, InternalComplex c1)
     {
         c1.set(dFilterFrame.customPoles[i]);
     }
 
-    void getZero (int i, Complex c1)
+    void getZero (int i, InternalComplex c1)
     {
         c1.set(dFilterFrame.customZeros[i]);
     }
@@ -54,7 +54,7 @@ class CustomIIRFilter extends IIRFilterType
         x[1] = npoles + " poles and zeros";
     }
 
-    void editPoleZero (Complex c)
+    void editPoleZero (InternalComplex c)
     {
         if (c.mag > 1.1)
         {

@@ -26,7 +26,7 @@ class InvChebyBandPass extends InvChebyFilterType
         setupCheby(3);
     }
 
-    void getZero (int i, Complex c1)
+    void getZero (int i, InternalComplex c1)
     {
         getChebyZero(i / 2, c1, DFilterFrame.pi * .5);
         bandPassXform(i, c1);
@@ -49,7 +49,7 @@ class InvChebyBandPass extends InvChebyFilterType
         return n * 2;
     }
 
-    void getPole (int i, Complex c1)
+    void getPole (int i, InternalComplex c1)
     {
         getBandPassPole(i, c1);
     }

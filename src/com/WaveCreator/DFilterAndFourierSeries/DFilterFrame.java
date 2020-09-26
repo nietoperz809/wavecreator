@@ -44,7 +44,7 @@ public class DFilterFrame extends Frame
     /**
      * Filtered output buffer (in bytes!!!)
      */
-    private final ByteBucket m_bucket = new ByteBucket(1000000);
+    private final ByteBucket m_bucket = new ByteBucket(100000);
     private final int SELECT_RESPONSE = 1;
     private final int SELECT_SPECTRUM = 2;
     private final int SELECT_POLES = 3;
@@ -68,7 +68,7 @@ public class DFilterFrame extends Frame
     int lastPoleCount = 2;
     NumberFormat showFormat;
     double uresp[];
-    Complex customPoles[], customZeros[];
+    InternalComplex customPoles[], customZeros[];
     private byte[] outputBuffer;
     private Dimension winSize;
     private Image dbimage;
@@ -173,15 +173,15 @@ public class DFilterFrame extends Frame
             }
         }
 
-        customPoles = new Complex[20];
-        customZeros = new Complex[20];
+        customPoles = new InternalComplex[20];
+        customZeros = new InternalComplex[20];
         for (i = 0; i != customPoles.length; i++)
         {
-            customPoles[i] = new Complex();
+            customPoles[i] = new InternalComplex();
         }
         for (i = 0; i != customZeros.length; i++)
         {
-            customZeros[i] = new Complex();
+            customZeros[i] = new InternalComplex();
         }
 
         setLayout(new DFilterLayout());
@@ -826,7 +826,7 @@ public class DFilterFrame extends Frame
         double minf = 40. / sampleRate;
         minlog = Math.log(minf);
         logrange = Math.log(.5) - minlog;
-        Complex cc = new Complex();
+        InternalComplex cc = new InternalComplex();
 
         int i;
         if (respView != null)
@@ -1024,7 +1024,7 @@ public class DFilterFrame extends Frame
                 g.drawOval(cx - pw, cy - ph, pw * 2, ph * 2);
                 g.drawLine(cx, cy - ph, cx, cy + ph);
                 g.drawLine(cx - ph, cy, cx + ph, cy);
-                Complex c1 = new Complex();
+                InternalComplex c1 = new InternalComplex();
                 for (i = 0; i != polect; i++)
                 {
                     filterType.getPole(i, c1);
@@ -1052,7 +1052,7 @@ public class DFilterFrame extends Frame
                 if (filterChanged)
                 {
                     int ri, ii;
-                    Complex c1 = new Complex();
+                    InternalComplex c1 = new InternalComplex();
                     for (ri = 0; ri != polesView.width; ri++)
                     {
                         for (ii = 0; ii != polesView.height; ii++)
@@ -1484,7 +1484,7 @@ public class DFilterFrame extends Frame
         int polect = filterType.getPoleCount();
         int zeroct = filterType.getZeroCount();
         int i, n;
-        Complex c1 = new Complex();
+        InternalComplex c1 = new InternalComplex();
         for (i = 0, n = 0; i != polect; i++)
         {
             filterType.getPole(i, c1);
@@ -1611,7 +1611,7 @@ public class DFilterFrame extends Frame
                 }
             }
             Wave16 w = new Wave16(m_bucket.getArray(), sampleRate, m_bucket.getSize()).functionsAmplitude.fitValues();
-            FrameManager.getInstance().createFrame(w, "Applet snapshot");
+            FrameManager.getInstance().createFrame(w, "DFilter Applet snapshot");
         }
     }
 
@@ -1681,7 +1681,7 @@ public class DFilterFrame extends Frame
         int ph = polesView.height / 2;
         int cx = polesView.x + ph;
         int cy = polesView.y + ph;
-        Complex c1 = new Complex();
+        InternalComplex c1 = new InternalComplex();
         int polect = filterType.getPoleCount();
         int zeroct = filterType.getZeroCount();
         int bestdist = 10000;
@@ -1830,7 +1830,7 @@ public class DFilterFrame extends Frame
         int ph = polesView.height / 2;
         int cx = polesView.x + ph;
         int cy = polesView.y + ph;
-        Complex c1 = new Complex();
+        InternalComplex c1 = new InternalComplex();
         c1.set((x - cx) / (double) ph, (y - cy) / (double) ph);
         ((CustomIIRFilter) filterType).editPoleZero(c1);
         setupFilter();

@@ -229,4 +229,19 @@ public final class FunctionsReorder extends Functions
         }
         return res;
     }
+
+    /**
+     * Change sign of samples
+     * @return ...
+     */
+    public Wave16 negate()
+    {
+        Wave16 res = m_base.createEmptyCopy();
+
+        for (int s = 0; s < m_base.data.length; s++)
+        {
+            res.data[s] = -m_base.data[s];
+        }
+        return res;
+    }
 }

@@ -16,7 +16,7 @@ public abstract class FIRFilterType extends FilterType
     }
 
     @Override
-    void getResponse (double w, Complex c)
+    void getResponse (double w, InternalComplex c)
     {
         if (response == null)
         {

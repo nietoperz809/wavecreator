@@ -1,7 +1,10 @@
 package com.WaveCreator.DFilterAndFourierSeries;
 
+import com.WaveCreator.FrameManager;
 import com.WaveCreator.ScopeWindow;
+import com.WaveCreator.Wave16;
 
+import javax.sound.sampled.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.lang.reflect.Constructor;
@@ -27,6 +30,7 @@ public class FourierFrame extends Frame
     public static final double halfSampleCountFloat = sampleCount / 2;
     final static int rate = 22050;
     final static int playSampleCount = 16384;
+    private final ByteBucket m_bucket = new ByteBucket(1024*2);
     static final double pi = 3.14159265358979323846;
     static final double step = 2 * pi / sampleCount;
     final static int maxTerms = 160;
@@ -52,6 +56,7 @@ public class FourierFrame extends Frame
     Button squareButton;
     Button noiseButton;
     Button blankButton;
+    Button snapButton;
     Button phaseButton;
     Button clipButton;
     Button resampleButton;
@@ -200,7 +205,25 @@ public class FourierFrame extends Frame
         fullRectButton = doButton("Full Rectify");
         highPassButton = doButton("High-Pass Filter");
         blankButton = doButton("Clear");
+        snapButton = doButton ("Snapshot");
+        snapButton.addActionListener(e -> {
+            m_bucket.reset();
+            while (!m_bucket.isFull())
+            {
+                try
+                {
+                    Thread.sleep(100);
+                }
+                catch (InterruptedException e1)
+                {
+                    e1.printStackTrace();
+                }
+            }
+            m_bucket.reverseEndian16();
+            Wave16 w = new Wave16(m_bucket.getArray(), rate, m_bucket.getSize()).functionsAmplitude.fitValues();
+            FrameManager.getInstance().createFrame(w, "DFilter Applet snapshot");
 
+        });
         soundCheck = doCheckbox("Sound");
 //        if (!java2)
 //        {
@@ -1555,50 +1578,18 @@ public class FourierFrame extends Frame
 
         public void run ()
         {
-
-            // this lovely code is a translation of the following, using
-            // reflection, so we can run on JDK 1.1:
-
-            // AudioFormat format = new AudioFormat(rate, 8, 1, true, true);
-            // DataLine.Info info =
-            //           new DataLine.Info(SourceDataLine.class, format);
-            // SourceDataLine line = null;
-            // line = (SourceDataLine) AudioSystem.getLine(info);
-            // line.open(format, playSampleCount);
-            // line.start();
-
-            Object line;
             Method wrmeth;
-            try
-            {
-                Class afclass = Class.forName("javax.sound.sampled.AudioFormat");
-                Constructor cstr = afclass.getConstructor(
-                        float.class, int.class, int.class,
-                        boolean.class, boolean.class);
-                Object format = cstr.newInstance((float) rate, 16, 1,
-                        true, true);
-                Class ifclass = Class.forName("javax.sound.sampled.DataLine$Info");
-                Class sdlclass =
-                        Class.forName("javax.sound.sampled.SourceDataLine");
-                cstr = ifclass.getConstructor(
-                        Class.class, afclass);
-                Object info = cstr.newInstance(sdlclass, format);
-                Class asclass = Class.forName("javax.sound.sampled.AudioSystem");
-                Class liclass = Class.forName("javax.sound.sampled.Line$Info");
-                Method glmeth = asclass.getMethod("getLine",
-                        new Class[]{liclass});
-                line = glmeth.invoke(null, info);
-                Method opmeth = sdlclass.getMethod("open",
-                        new Class[]{afclass, int.class});
-                opmeth.invoke(line, format,
-                        4096);
-                Method stmeth = sdlclass.getMethod("start", (Class) null);
-                stmeth.invoke(line, (Object) null);
-                byte b[] = new byte[1];
-                wrmeth = sdlclass.getMethod("write",
-                        new Class[]{b.getClass(), int.class, int.class});
-            }
-            catch (Exception e)
+            SourceDataLine line = null;
+
+            try {
+                AudioFormat format = new AudioFormat(rate, 16, 1, true, true);
+                DataLine.Info info =
+                          new DataLine.Info(SourceDataLine.class, format);
+                line = null;
+                line = (SourceDataLine) AudioSystem.getLine(info);
+                line.open(format, playSampleCount);
+                line.start();
+            } catch (LineUnavailableException e)
             {
                 e.printStackTrace();
                 playThread = null;
@@ -1607,7 +1598,7 @@ public class FourierFrame extends Frame
 
             FFT playFFT = new FFT(playSampleCount);
             double playfunc[] = null;
-            byte b[] = null;
+            byte bufferHere[] = null;
             int offset = 0;
 
             while (!shutdownRequested && soundCheck.getState() /*&& applet.ogf != null*/)
@@ -1653,25 +1644,25 @@ public class FourierFrame extends Frame
                         }
                     }
 
-                    b = new byte[playSampleCount * 2];
+                    bufferHere = new byte[playSampleCount * 2];
                     double mult = 32767 / mx;
                     for (i = 0; i != playSampleCount; i++)
                     {
                         short x = (short) (playfunc[i * 2] * mult);
-                        b[i * 2] = (byte) (x / 256);
-                        b[i * 2 + 1] = (byte) (x & 255);
+                        bufferHere[i * 2] = (byte) (x / 256);
+                        bufferHere[i * 2 + 1] = (byte) (x & 255);
                     }
                 }
 
                 try
                 {
                     int ss = 4096;
-                    if (offset >= b.length)
+                    if (offset >= bufferHere.length)
                     {
                         offset = 0;
                     }
-                    wrmeth.invoke(line, b, offset,
-                            ss);
+                    line.write(bufferHere, offset, ss);
+                    m_bucket.put(bufferHere, ss);
                     offset += ss;
                 }
                 catch (Exception e)

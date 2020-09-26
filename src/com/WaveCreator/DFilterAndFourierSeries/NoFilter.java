@@ -13,7 +13,7 @@ class NoFilter extends FilterType
         super(d);
     }
 
-    void getResponse (double w, Complex c)
+    void getResponse (double w, InternalComplex c)
     {
         c.set(1);
     }

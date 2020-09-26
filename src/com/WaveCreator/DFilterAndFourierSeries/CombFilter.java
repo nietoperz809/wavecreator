@@ -44,13 +44,13 @@ class CombFilter extends IIRFilterType
         return n;
     }
 
-    void getPole (int i, Complex c1)
+    void getPole (int i, InternalComplex c1)
     {
         int odd = (sign == 1) ? 0 : 1;
         c1.setMagPhase(Math.pow(mult, 1. / n), DFilterFrame.pi * (odd + 2 * i) / n);
     }
 
-    void getZero (int i, Complex c1)
+    void getZero (int i, InternalComplex c1)
     {
         c1.set(0);
     }

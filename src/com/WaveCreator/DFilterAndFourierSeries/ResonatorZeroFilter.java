@@ -18,7 +18,7 @@ class ResonatorZeroFilter extends ResonatorFilter
         return 2;
     }
 
-    void getZero (int i, Complex c1)
+    void getZero (int i, InternalComplex c1)
     {
         c1.set(i == 0 ? 1 : -1);
     }

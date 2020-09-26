@@ -10,7 +10,7 @@ public class DirectFilter extends Filter
 {
     double aList[], bList[];
     int nList[];
-    Complex czn, top, bottom;
+    InternalComplex czn, top, bottom;
 
     DirectFilter (DFilterFrame dFilterFrame)
     {
@@ -41,13 +41,13 @@ public class DirectFilter extends Filter
         System.out.println("");
     }
 
-    void evalTransfer (Complex c)
+    void evalTransfer (InternalComplex c)
     {
         if (czn == null)
         {
-            czn = new Complex();
-            top = new Complex();
-            bottom = new Complex();
+            czn = new InternalComplex();
+            top = new InternalComplex();
+            bottom = new InternalComplex();
         }
         int i; //, j;
         czn.set(1);

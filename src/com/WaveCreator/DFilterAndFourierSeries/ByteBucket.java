@@ -18,6 +18,16 @@ public class ByteBucket
         reset();
     }
 
+    public void reverseEndian16()
+    {
+        for (int s=0; s<m_array.length; s+=2)
+        {
+            byte b1 = m_array[s];
+            m_array[s] = m_array[s+1];
+            m_array[s+1] = b1;
+        }
+    }
+
     public void reset ()
     {
         m_count = 0;

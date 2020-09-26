@@ -393,7 +393,7 @@ public class DMatrixEvd {
   }
 
 
-  // Complex scalar division.
+  // InternalComplex scalar division.
   private float _cdivr, _cdivi;
   private void cdiv(float xr, float xi, float yr, float yi) {
     float r,d;

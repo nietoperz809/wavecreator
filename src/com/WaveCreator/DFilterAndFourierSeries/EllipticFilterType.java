@@ -334,13 +334,13 @@ public abstract class EllipticFilterType extends PoleFilterType
         }
     }
 
-    void getSPole (int i, Complex c1, double wc)
+    void getSPole (int i, InternalComplex c1, double wc)
     {
         double tanwc = Math.tan(wc * .5);
         c1.set(rootR[i + 1] * tanwc, rootI[i + 1] * tanwc);
     }
 
-    void getEllipticZero (int i, Complex c1, double wc)
+    void getEllipticZero (int i, InternalComplex c1, double wc)
     {
         double tanwc = Math.tan(wc * .5);
         c1.set(0, zeros[i / 2] * tanwc);

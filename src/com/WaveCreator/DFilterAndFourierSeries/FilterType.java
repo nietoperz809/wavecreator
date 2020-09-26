@@ -24,7 +24,7 @@ public abstract class FilterType
     {
     }
 
-    abstract void getResponse (double w, Complex c);
+    abstract void getResponse (double w, InternalComplex c);
 
     int getPoleCount ()
     {
@@ -36,12 +36,12 @@ public abstract class FilterType
         return 0;
     }
 
-    void getPole (int i, Complex c)
+    void getPole (int i, InternalComplex c)
     {
         c.set(0);
     }
 
-    void getZero (int i, Complex c)
+    void getZero (int i, InternalComplex c)
     {
         c.set(0);
     }
