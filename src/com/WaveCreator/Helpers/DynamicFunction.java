@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Arrays;
+import java.util.Collections;
 import javax.tools.JavaCompiler;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
@@ -18,10 +19,10 @@ import javax.tools.ToolProvider;
  */
 public class DynamicFunction
 {
-    String dir = System.getProperty("java.io.tmpdir");
-    String classname = "Hello";
-    String fname = classname + ".java";
-    File sourceFile = new File(dir + fname);
+    final String dir = System.getProperty("java.io.tmpdir");
+    final String classname = "Hello";
+    final String fname = classname + ".java";
+    final File sourceFile = new File(dir + fname);
     Method thisMethod = null;
     Object iClass = null;
 
@@ -48,14 +49,14 @@ public class DynamicFunction
                 = compiler.getStandardFileManager(null, null, null);
 
         fileManager.setLocation(StandardLocation.CLASS_OUTPUT,
-                Arrays.asList(new File(dir)));
+                Collections.singletonList(new File(dir)));
         // Compile the file
         compiler.getTask(null,
                 fileManager,
                 null,
                 null,
                 null,
-                fileManager.getJavaFileObjectsFromFiles(Arrays.asList(sourceFile)))
+                fileManager.getJavaFileObjectsFromFiles(Collections.singletonList(sourceFile)))
                 .call();
         fileManager.close();
     }
@@ -64,7 +65,7 @@ public class DynamicFunction
     {
         if (thisMethod == null)
         {
-            Class<?> params[] =
+            Class<?>[] params =
                     {
                             Double.class,
                     };
@@ -80,9 +81,8 @@ public class DynamicFunction
             iClass = thisClass.newInstance();
             thisMethod = thisClass.getDeclaredMethod("doit", params);
         }
-        Object paramsObj[] = {in};
-        Double d = (Double) thisMethod.invoke(iClass, paramsObj);
-        return d;
+        Object[] paramsObj = {in};
+        return (Double) thisMethod.invoke(iClass, paramsObj);
     }
 
     // Test

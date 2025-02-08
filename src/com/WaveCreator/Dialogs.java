@@ -76,7 +76,9 @@ public class Dialogs
         int maxsamp = 16384;
         java.util.List<Float> freqs = DFT.processWave(owner.m_wave, maxsamp);
         dlg.add (new JLabel ("---- Frequencies in first "+maxsamp+" samples ----"));
-        dlg.add (new JTextArea (Arrays.toString(freqs.toArray())));
+        JTextArea jt = new JTextArea (Arrays.toString(freqs.toArray()));
+        jt.setWrapStyleWord(true);
+        dlg.add (jt);
 
         dlg.pack();
         dlg.setLocationRelativeTo(owner);

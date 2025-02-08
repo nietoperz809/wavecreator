@@ -1,5 +1,6 @@
 package com.WaveCreator.FFT;
 
+import com.WaveCreator.Helpers.Tools;
 import com.WaveCreator.Wave16;
 import org.apache.commons.math3.complex.Complex;
 import org.apache.commons.math3.transform.DftNormalization;
@@ -21,11 +22,12 @@ public class DFT
     public static List<Float> processWave (Wave16 in, int maxsamples)
     {
         int len = Math.min (in.data.length, maxsamples);
-        double[] dat = new double[len];
+        int len2 = Tools.nextPowerOfTwo(len);
+        double[] dat = new double[len2];
         for (int s=0; s<len; s++)
             dat[s] = in.data[s];
-        float[] outR = new float[len];
-        float[] outI = new float[len];
+        float[] outR = new float[len2];
+        float[] outI = new float[len2];
 
         // dft (in.data, outR, outI);
         FastFourierTransformer fft = new FastFourierTransformer(DftNormalization.STANDARD);
